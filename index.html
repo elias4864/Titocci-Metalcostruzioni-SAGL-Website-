@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="src/assets/Navicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Titocci - Metalcostruzioni SAGL</title>
+
+    <script>
+
+      function updateTitle() {
+        const path = window.location.pathname;
+        let title = "Home - Titocci Metalcostruzioni SAGL";
+
+        // Hier kannst du je nach Pfad den Titel anpassen, falls gewünscht:
+        // if (path.includes('/kontakt')) {
+        //   title = "Kontakt - Titocci Metalcostruzioni SAGL";
+        // }
+
+        document.title = title;
+      }
+
+      // Event-Listener korrekt registrieren (ohne Klammern bei updateTitle!)
+      window.addEventListener('popstate', updateTitle);
+
+      document.addEventListener('DOMContentLoaded', () => {
+        updateTitle(); // Einmalig beim Start ausführen
+
+        const root = document.getElementById('root');
+        if (root) {
+          const observer = new MutationObserver(updateTitle);
+          observer.observe(root, { childList: true, subtree: true });
+        }
+      });
+    </script>
+
+
+
+
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

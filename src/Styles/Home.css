@@ -1,0 +1,21 @@
+.App-header{
+    background-color: white;
+    display: flex;
+    gap:15px;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+
+}
+.header-img{
+    width: 70px;
+    height: 70px;
+    align-items: flex-start;
+}p{
+    color: black;
+ }
+
+ .orange-section{
+     border-color: orange !important;
+     
+ }
