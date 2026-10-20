@@ -4,6 +4,13 @@ import Icon from '../assets/Icon.jpg';
 import Zeit from '../assets/Zeit.png';
 import Email from '../assets/Email.jpg';
 import PC from '../assets/PC.jpg';
+import Zangen from '../assets/Zangen.jpg';
+import Schleifbild from '../assets/Schleifen.jpg';
+import Bauplan from '../assets/Baubplan.jpg';
+import Diplom from '../assets/Diplom.jpg';
+import Person from '../assets/Person.jpg';
+import Werkstattbild from '../assets/Werkstatt.jpg';
+import Kreislauf  from '../assets/Schwankungen.jpg';
 import '../Styles/Home.css';
 
 const IMAGES = [
@@ -50,7 +57,7 @@ const heroOverlayStyle = {
     top: '45%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: '90%',
+    width: '100%',
     textAlign: 'center',
     color: 'white',
     zIndex: 5,
@@ -96,7 +103,7 @@ function Home() {
             <div style={{ maxWidth: '800px', margin: '20px auto', textAlign: 'center' }}>
 
                 {/* Hauptbild mit integriertem Text-Overlay */}
-                <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
+                <div style={{ position: 'relative', display: 'inline-block', width: '100%', justifyContent: 'space-between' }}>
                     <button onClick={prevImage} style={{ ...navButtonStyle, left: '10px' }}>◀</button>
 
                     <img
@@ -116,9 +123,10 @@ function Home() {
                     <div style={heroOverlayStyle}>
                         <h1 style={{
                             color: '#e62b2b',
-                            fontSize: '3rem',
+                            fontSize: '4rem',
                             fontWeight: 'bold',
                             margin: '0 0 5px 0',
+
                             textShadow: '1px 1px 4px rgba(0,0,0,0.8)'
                         }}>
                             Progettazione
@@ -129,7 +137,7 @@ function Home() {
                             fontWeight: 'bold',
                             margin: '0 0 18px 0',
                             color: '#ffffff',
-                            textShadow: '1px 1px 4px rgba(0,0,0,0.8)'
+                            textShadow: '1px 1px 4px rgba(0,0,0,0.8)',
                         }}>
                             Preventivi e <span style={{ color: '#e62b2b' }}>consulenze</span>
                         </h2>
@@ -187,11 +195,87 @@ function Home() {
             <div className="div-white">
 
                    <div className="orange-section">
-                       <img  className="pc-img" src={PC}></img>
+                       <img  className="section-img" src={PC}></img>
+                       <h2 className="section-title">Progettazione
+                       </h2>
+                   </div>
+
+                <div className="grey-section">
+                    <img  className="section-img" src={Schleifbild}></img>
+                    <h2 className="section-title">Costruzione</h2>
+                </div>
 
 
-                 </div>
+                <div className="orange-section">
+                    <img  className="section-img" src={Bauplan}></img>
+                    <h2 className="section-title">Montaggio
+                    </h2>
+                </div>
+
+                <div className="grey-section">
+                    <img  className="section-img" src={Zangen}></img>
+                    <h2 className="section-title">Assistenza
+                    </h2>
+                </div>
+
             </div>
+
+            <div className="orange-div">
+                <h2 className="text-red">I NOSTRI PUNTI DI FORZA
+                </h2>
+                <img  className="diplom-img" src={Diplom}></img>
+                <p><b>Personale qualificato</b></p>
+
+
+                <img  className="person-img" src={Person}></img>
+                <p><b>Tantissimi clienti soddisfatti
+                </b></p>
+
+                <img className="werkstatt-img" src={Werkstattbild}/><img/>
+                <p><b>Officina ultra attrezzata</b></p>
+            </div>
+
+
+            <div className="white-div">
+                <h2 className="text-white">I NOSTRI PUNTI DI LAVORI</h2>
+            </div>
+
+
+
+            <div className="orange-div">
+                <h2 className="text-white"> </h2>
+                <img  className="wirtschaft-img" src={Kreislauf}></img>
+
+
+            {/* Die 4 Statistik-Blöcke nebeneinander */}
+            <div className="banner-stats">
+                <div className="stat-item">
+                    <span className="stat-number">+286</span>
+                    <span className="stat-text">Progetti<br />realizzati</span>
+                </div>
+
+                <div className="stat-item">
+                    <span className="stat-number">286</span>
+                    <span className="stat-text">Clienti<br />soddisfatti</span>
+                </div>
+
+                <div className="stat-item">
+                    <span className="stat-number">8</span>
+                    <span className="stat-text">Progetti<br />attivi</span>
+                </div>
+
+                <div className="stat-item">
+                    <span className="stat-number">6</span>
+                    <span className="stat-text">Progetti<br />in attesa</span>
+                </div>
+
+            </div>
+
+            </div>
+
+
+
+
 
         </>
     );

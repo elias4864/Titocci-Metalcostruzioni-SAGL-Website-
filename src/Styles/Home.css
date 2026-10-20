@@ -15,7 +15,181 @@
     color: black;
  }
 
- .orange-section{
-     border-color: orange !important;
-     
+ .white-div{
+     background-color: white;
  }
+
+ .text-white{
+     color: orange;
+     font-weight: bold;
+ }
+
+
+.wirtschaft-img{
+    width: 70px;
+    height: 70px;
+    justify-content: flex-start;
+    align-items: center;
+    object-fit: contain;
+
+}
+
+
+.banner-stats {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 45px;
+    flex-wrap: wrap;
+}
+
+/* Einzelner Block (Zahl + Text) */
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Linksbündig ausgerichtet */
+    text-align: left;
+}
+
+/* Die roten großen Zahlen */
+.stat-number {
+    color: #e62b2b; /* Rote Farbe */
+    font-size: 3rem;
+    font-weight: bold;
+    line-height: 1;
+    margin-bottom: 5px;
+}
+
+/* Der Text unter der Zahl */
+.stat-text {
+    color: gray;
+    font-size: 0.95rem;
+    line-height: 1.2;
+    font-weight: 500;
+}
+.orange-div{
+    background-color: orange !important;
+    color: black;
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+    padding: 40px 20px;
+    margin: 30px auto;
+
+    /* NEU: Macht den Container zur Flexbox für die Elemente nebeneinander */
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap; /* Falls der Bildschirm zu klein wird, bricht es automatisch um */
+    gap: 30px;
+}
+
+
+p{
+    color: black;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 20px;
+
+}
+.diplom-img{
+flex-direction: column;
+
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
+.person-img{
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    margin-bottom: 10px;
+
+}
+ .orange-section{
+     background-color: orange!important; /* Oder z. B. #ffeb3b / gold für ein schöneres Gelb */
+     border-radius: 0.5px;
+     padding: 55px;
+
+     /* Flexbox sorgt dafür, dass Inhalt nebeneinander liegt */
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     justify-content: flex-start;
+     gap: 15px;
+
+     box-sizing: border-box;
+
+
+     /* Falls der Inhalt nicht abgeschnitten werden soll, Breite/Höhe anpassen: */
+
+ }
+
+ .grey-section{
+
+     background-color: rgb(166 162 162 / 0.89) !important; /* Oder z. B. #ffeb3b / gold für ein schöneres Gelb */
+     border-radius:0.5px;
+     padding: 20px;
+
+     /* Flexbox sorgt dafür, dass Inhalt nebeneinander liegt */
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     justify-content: flex-start;
+     gap: 15px;
+
+     box-sizing: border-box;
+
+ }
+
+
+.section-title {
+    color: #e62b2b; /* Rote Schrift wie auf dem Bild */
+    font-weight: bold;
+    margin: 0;
+    font-size: 1rem;
+    text-align:left;
+}
+
+ .div-white {
+     display: flex;
+     flex-direction: row;      /* Richtet die Boxen nebeneinander aus */
+     justify-content: center;  /* Zentriert die Elemente horizontal */
+     align-items: center;      /* Zentriert die Elemente vertikal */
+     gap: 20px;                /* Abstand zwischen den Boxen */
+     flex-wrap: nowrap;          /* Verhindert Überlappungen */
+     margin: 40px auto;
+     width: 100%;
+
+ }
+ h2{
+     font-family: 'Montserrat', sans-serif;
+     font-size: 40px;
+     color: red;
+     align-items: flex-start /* Zentriert Bild und Text horizontal (optional) */
+
+ }
+
+ .werkstatt-img{
+
+     flex-direction: column;
+     width: 50px;
+     height: 50px;
+     display: flex;
+     align-items: center;
+     flex-wrap: nowrap;
+ }
+
+.section-img {
+    width: 100%;
+    height: 110px;
+    object-fit: cover;
+    border-radius: 2px;
+}
