@@ -11,7 +11,12 @@ import Diplom from '../assets/Diplom.jpg';
 import Person from '../assets/Person.jpg';
 import Werkstattbild from '../assets/Werkstatt.jpg';
 import Kreislauf  from '../assets/Schwankungen.jpg';
+import CountUp from 'react-countup';
+import StatCard    from '../pages/StatCard';
+import { useInView } from 'react-intersection-observer';
 import '../Styles/Home.css';
+import {useRef} from "react";
+
 
 const IMAGES = [
     { id: 1, url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFVirl6neqny0T2cnyJFMtcaUhsAXd1M7DOrKlXOmUmA&s=10', title: 'Holzkonstrukt' },
@@ -19,6 +24,8 @@ const IMAGES = [
     { id: 3, url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBaznEf847qP7ZInEym9tGqMevvKi37uEgjnNr56jCjuzOuJEHfEYSEbZo&s=10', title: 'Treppe Holzbau' },
     { id: 4, url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXYGuJJ3Q4UY5DPdIhw6YTVdNPx_cdmms6o8hXfSdVPrMxoqnj3O7Xus0&s=10', title: 'Metallgiter Haus' }
 ];
+
+
 
 const navButtonStyle = {
     position: 'absolute',
@@ -70,6 +77,13 @@ function Home() {
     const nextImage = () => {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % IMAGES.length);
     };
+
+
+    const { ref, inView } = useInView({
+        triggerOnce: true, // Animiert nur beim ersten Mal Sichtbarwerden
+        threshold: 0.1,    // Startet, wenn 10% der Komponente sichtbar sind
+    });
+
 
     const prevImage = () => {
         setCurrentIndex((prevIndex) => (prevIndex - 1 + IMAGES.length) % IMAGES.length);
@@ -246,32 +260,54 @@ function Home() {
                 <h2 className="text-white"> </h2>
                 <img  className="wirtschaft-img" src={Kreislauf}></img>
 
+                <div className="banner-stats">
+                    <StatCard value={286} suffix="+" label="Progetti realizzati" />
+                    <StatCard value={286} label="Clienti soddisfatti" />
+                    <StatCard value={8} label="Progetti attivi" />
+                    <StatCard value={6} label="Progetti in attesa" />
+                </div>
+
+
 
             {/* Die 4 Statistik-Blöcke nebeneinander */}
-            <div className="banner-stats">
-                <div className="stat-item">
-                    <span className="stat-number">+286</span>
-                    <span className="stat-text">Progetti<br />realizzati</span>
-                </div>
 
-                <div className="stat-item">
-                    <span className="stat-number">286</span>
-                    <span className="stat-text">Clienti<br />soddisfatti</span>
-                </div>
-
-                <div className="stat-item">
-                    <span className="stat-number">8</span>
-                    <span className="stat-text">Progetti<br />attivi</span>
-                </div>
-
-                <div className="stat-item">
-                    <span className="stat-number">6</span>
-                    <span className="stat-text">Progetti<br />in attesa</span>
-                </div>
 
             </div>
 
-            </div>
+            <footer className="footer-div">
+                <section>
+                    <h1 className="text-footer">CHI SIAMO</h1>
+                    <p className="white-footer">Dal 1973 creiamo cancelli per giardino, cancellate in ferro, parapetti, ringhiere, e tutti i servizi di fabbro per i nostri clienti ad Avegno e zone limitrofe.</p>
+                </section>
+
+                <section>
+                    <p className="white-footer">SERVIZI</p>
+                    <p className="text-column">Progettazione</p>
+                    <p className="text-column">Costruzione</p>
+                    <p className="text-column">Montaggio</p>
+                    <p className="text-column">Assistenza</p>
+                    <p className="text-column">Aree</p>
+
+                </section>
+                <section>
+                    <h1 className="text-footer">CONTATTI</h1>
+                    <p className="text-column">In di Salécc 2,
+                        6670 Avegno</p>
+
+
+                    <a href=""></a>
+                    <a className="highlight-red">Tel. +41 91 796 23 69</a>
+
+
+
+
+
+                </section>
+
+
+            </footer>
+
+
 
 
 
