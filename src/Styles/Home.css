@@ -217,7 +217,11 @@ flex-direction: column;
     color: white;
     gap: 10px;
 }
-
+.icon-img{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
 .white-footer{
     color: white;
     font-size: 15px;
@@ -225,6 +229,9 @@ flex-direction: column;
 
 }
 
+.highlight-red{
+    color: red;
+}
 p .text-column{
     font-size: 10px;
 }

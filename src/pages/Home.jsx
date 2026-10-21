@@ -10,6 +10,7 @@ import Bauplan from '../assets/Baubplan.jpg';
 import Diplom from '../assets/Diplom.jpg';
 import Person from '../assets/Person.jpg';
 import Werkstattbild from '../assets/Werkstatt.jpg';
+import NavIcon  from '../assets/Navicon.png';
 import Kreislauf  from '../assets/Schwankungen.jpg';
 import CountUp from 'react-countup';
 import StatCard    from '../pages/StatCard';
@@ -170,6 +171,16 @@ function Home() {
                         }}>
                             Contattaci
                         </Link>
+
+                        <img
+                            className="icon-img"
+                            src={NavIcon}
+                            alt="Icon Header"
+                            style={{ width: '40px', height: '40px', marginBottom: '15px' , float: 'left' ,position:'absolute', marginTop:'15px',   top: '0',
+                                left: '0'
+                            }}
+                        />
+
                     </div>
 
                     {/* Bildbezeichnung ganz unten im Bild */}

@@ -1,9 +1,17 @@
 import React from 'react';
 import { Link, Routes, Route } from 'react-router-dom';
 import Home from "./pages/Home.jsx";
+import Dropdown from "./assets/Dropdown.png";
 import './App.css';
 
 function App() {
+
+    const scrollToTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    };
     return (
         <>
             <nav className="navbar">
@@ -24,20 +32,30 @@ function App() {
 
 
 
-                <div className="footer-bottom">
-                    <p className="copyright-text">
-                        Copyright &copy; {new Date().getFullYear()}
-                        <Link to="/home" className="hover">Titocci Metalcostruzioni SAGL |</Link> |{" "}
-                        <Link to="/https://titocci.ch/impressum/" className="hover">Impressum </Link> |{""}
-                        <Link to="/datenschutzerklärung" className="hover"></Link>|{""}
-                        <Link to="/https://titocci.ch/privacy/" className="hover">Privacy</Link>
-                    </p>
+                <div className="footer-bottom copyright-container">
+                    <div className="copyright-left">
+                        <span>&copy; {new Date().getFullYear()}</span>
+                        <Link to="/home" className="hover-red">Titocci Metalcostruzioni SAGL</Link>
+                        <span>|</span>
+                        <Link to="/impressum" className="hover">Impressum</Link>
+                        <span>|</span>
+                        <Link to="/privacy" className="hover">Privacy</Link>
+                    </div>
+                    <div className="copyright-right">
+                        Web Design by <a href="https://marketingmaster.ch" target="_blank" rel="noopener noreferrer"><p className="hover-red">marketingmaster.ch</p></a> with love
+                    </div>
+
+
+
+                    <button className="scroll-to-top" onClick={scrollToTop} title="Nach oben scrollen">
+                        <img className="dropdown-img" src={Dropdown}></img>
+                    </button>
 
                 </div>
 
 
 
-                <p className="seo-text">SEO & Webdesign by <a href="https://marketingmaster.ch" className="marketingmaster">marketingmaster.ch</a> with love</p>
+
 
             </main>
         </>
