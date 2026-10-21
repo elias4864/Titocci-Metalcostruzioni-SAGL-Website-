@@ -1,31 +1,29 @@
-name: Docker CI React Frontend(Node) Build 
+name: Docker CI React Frontend(Node) Build
 
 on:
   push:
-    branches: [ "main", "dev" ]
+    branches: ["main", "dev"]
   pull_request:
-    branches: [ "main", "dev" ]
+    branches: ["main", "dev"]
 
 jobs:
   build-docker:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Code auschecken
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      # Directory prüfen (Korrektur: use 'run:' statt 'uses:')
-      - name: Verzeichnisinhalt anzeigen
+      - name: Show repository contents
         run: ls -la
 
-      # 2. Docker Buildx einrichten (für modernes Bauen)
-      - name: Docker Setup Buildx
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # 3. Docker-Image bauen (Testet, ob Dockerfile & React-Build fehlerfrei durchlaufen)
-      - name: Docker Image bauen
+      - name: Build Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./Dockerfile
-          push: false # Steht auf false, da wir hier nur testen wollen
+          context: .
+          file: ./Dockerfile
+          push: false
           tags: titocci-website:latest
