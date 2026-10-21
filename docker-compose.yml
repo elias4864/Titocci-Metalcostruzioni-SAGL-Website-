@@ -1,0 +1,15 @@
+services:
+  frontend:
+    build:
+      context: .
+    container_name: titocci-container
+    restart: unless-stopped
+    ports:
+      - "5174:80"
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+volumes:
+  carosserie_mysql_data:
+    driver: local
