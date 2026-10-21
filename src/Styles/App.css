@@ -182,3 +182,80 @@
     border-right-color: var(--border);
   }
 }
+.navbar a {
+  display: flex;
+  color: white;           /* Rote Textfarbe */
+  text-decoration: none;      /* Standardmäßig KEINE Unterstreichung */
+  font-weight: bold;
+  padding: 5px 10px;
+  transition: color 0.2s ease, text-decoration 0.2s ease; /* Weicher Übergang beim Drüberfahren */
+}
+
+/* Hover-Effekt: Beim Drüberfahren wird das Rot intensiver/dunkler */
+.navbar a:hover {
+  color: red;        /* Kräftiges/Dunkleres Rot beim Hover */
+  text-decoration: underline;
+}
+.cookie-banner {
+  background-color: white;
+}
+p  {
+  font-size: 15px !important;
+}
+ .cookie-banner {
+   position: fixed;
+   left: 20px;
+   right: 20px;
+   bottom: 20px;
+   background: white;
+   color: #fff;
+   padding: 20px;
+   border-radius: 12px;
+   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+   z-index: 9999;
+ }
+
+.cookie-banner-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.cookie-banner-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.cookie-banner button {
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+#cookieAccept {
+  background: red;
+  color: #fff;
+}
+
+#cookieDecline {
+  background: #636e72;
+  color:grey;
+}
+#cookiePreference {
+  background: grey;
+}
+
+.cookie-banner.hidden {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .cookie-banner-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
