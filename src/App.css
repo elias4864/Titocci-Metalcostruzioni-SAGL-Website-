@@ -17,6 +17,26 @@
   }
 }
 
+
+.seo-text {
+  width: 100%;
+  max-width: 1200px;
+  margin: 20px 0 0 0;
+  padding: 0;
+  box-sizing: border-box;
+  color: #aaaaaa;
+  text-align: left;
+  line-height: 1.4;
+}
+
+.copyright-text {
+  text-align: center;
+  margin-top: 25px;
+  font-size: 10px;
+  color: #888888;
+}
+
+
 .hero {
   position: relative;
 
