@@ -2,21 +2,20 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Icon from '../assets/Icon.jpg';
 import Zeit from '../assets/Zeit.png';
-import Email from '../assets/Email.jpg';
-import PC from '../assets/PC.jpg';
-import Zangen from '../assets/Zangen.jpg';
-import Schleifbild from '../assets/Schleifen.jpg';
-import Bauplan from '../assets/Baubplan.jpg';
-import Diplom from '../assets/Diplom.jpg';
-import Person from '../assets/Person.jpg';
-import Werkstattbild from '../assets/Werkstatt.jpg';
-import Kreislauf  from '../assets/Schwankungen.jpg';
-import CountUp from 'react-countup';
-import StatCard    from '../pages/StatCard';
-import { useInView } from 'react-intersection-observer';
+import Email from '../assets/Email.png';
+import PC from '../assets/PC.png';
+import Facebook from '../assets/Facebook.png';
+import Zangen from '../assets/Zangen.jfif';
+import Schleifen from '../assets/Schleifen.jpg';
+import Bauplan from '../assets/Bauplan.jfif';
+import Diplom from '../assets/Diplom.jfif';
+import Person from '../assets/Person.jfif';
+import Werkstattbild from '../assets/Werkstatt.jfif';
+import Kreislauf from '../assets/Statistiken.jfif';
+import Google from '../assets/Google.png';
+import StatCard from '../pages/StatCard';
+import Verifizierung from '../assets/Verifizierung.gif';
 import '../Styles/Home.css';
-import {useRef} from "react";
-
 
 const IMAGES = [
     { id: 1, url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFVirl6neqny0T2cnyJFMtcaUhsAXd1M7DOrKlXOmUmA&s=10', title: 'Holzkonstrukt' },
@@ -24,8 +23,6 @@ const IMAGES = [
     { id: 3, url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBaznEf847qP7ZInEym9tGqMevvKi37uEgjnNr56jCjuzOuJEHfEYSEbZo&s=10', title: 'Treppe Holzbau' },
     { id: 4, url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXYGuJJ3Q4UY5DPdIhw6YTVdNPx_cdmms6o8hXfSdVPrMxoqnj3O7Xus0&s=10', title: 'Metallgiter Haus' }
 ];
-
-
 
 const navButtonStyle = {
     position: 'absolute',
@@ -40,7 +37,6 @@ const navButtonStyle = {
     zIndex: 10
 };
 
-// Caption unten im Bild (Bildtitel)
 const imageCaptionStyle = {
     position: 'absolute',
     bottom: '0',
@@ -58,7 +54,6 @@ const imageCaptionStyle = {
     zIndex: 2
 };
 
-// Text-Overlay zentriert im Bild
 const heroOverlayStyle = {
     position: 'absolute',
     top: '45%',
@@ -68,7 +63,7 @@ const heroOverlayStyle = {
     textAlign: 'center',
     color: 'white',
     zIndex: 5,
-    pointerEvents: 'none' // Damit Buttons anklickbar bleiben
+    pointerEvents: 'none'
 };
 
 function Home() {
@@ -77,13 +72,6 @@ function Home() {
     const nextImage = () => {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % IMAGES.length);
     };
-
-
-    const { ref, inView } = useInView({
-        triggerOnce: true, // Animiert nur beim ersten Mal Sichtbarwerden
-        threshold: 0.1,    // Startet, wenn 10% der Komponente sichtbar sind
-    });
-
 
     const prevImage = () => {
         setCurrentIndex((prevIndex) => (prevIndex - 1 + IMAGES.length) % IMAGES.length);
@@ -115,9 +103,7 @@ function Home() {
             </header>
 
             <div style={{ maxWidth: '800px', margin: '20px auto', textAlign: 'center' }}>
-
-                {/* Hauptbild mit integriertem Text-Overlay */}
-                <div style={{ position: 'relative', display: 'inline-block', width: '100%', justifyContent: 'space-between' }}>
+                <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
                     <button onClick={prevImage} style={{ ...navButtonStyle, left: '10px' }}>◀</button>
 
                     <img
@@ -129,18 +115,16 @@ function Home() {
                             objectFit: 'cover',
                             borderRadius: '8px',
                             display: 'block',
-                            filter: 'brightness(0.7)' // Leicht abgedunkelt, damit der Text perfekt lesbar ist
+                            filter: 'brightness(0.7)'
                         }}
                     />
 
-                    {/* Der Text DIREKT IM BILD */}
                     <div style={heroOverlayStyle}>
                         <h1 style={{
                             color: '#e62b2b',
                             fontSize: '4rem',
                             fontWeight: 'bold',
                             margin: '0 0 5px 0',
-
                             textShadow: '1px 1px 4px rgba(0,0,0,0.8)'
                         }}>
                             Progettazione
@@ -165,14 +149,13 @@ function Home() {
                             fontWeight: 'bold',
                             borderRadius: '4px',
                             fontSize: '0.95rem',
-                            pointerEvents: 'auto', // Button wieder klickbar machen
+                            pointerEvents: 'auto',
                             boxShadow: '0 2px 6px rgba(0,0,0,0.4)'
                         }}>
                             Contattaci
                         </Link>
                     </div>
 
-                    {/* Bildbezeichnung ganz unten im Bild */}
                     <p style={imageCaptionStyle}>
                         {IMAGES[currentIndex].title}
                     </p>
@@ -180,10 +163,6 @@ function Home() {
                     <button onClick={nextImage} style={{ ...navButtonStyle, right: '10px' }}>▶</button>
                 </div>
 
-
-
-
-                {/* Vorschaubilder (Thumbnails) */}
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '15px' }}>
                     {IMAGES.map((image, index) => (
                         <img
@@ -207,58 +186,46 @@ function Home() {
             </div>
 
             <div className="div-white">
-
-                   <div className="orange-section">
-                       <img  className="section-img" src={PC}></img>
-                       <h2 className="section-title">Progettazione
-                       </h2>
-                   </div>
+                <div className="orange-section">
+                    <img className="section-img" src={PC} alt="Progettazione" />
+                    <h2 className="section-title">Progettazione</h2>
+                </div>
 
                 <div className="grey-section">
-                    <img  className="section-img" src={Schleifbild}></img>
+                    <img className="section-img" src={Schleifen} alt="Costruzione" />
                     <h2 className="section-title">Costruzione</h2>
                 </div>
 
-
                 <div className="orange-section">
-                    <img  className="section-img" src={Bauplan}></img>
-                    <h2 className="section-title">Montaggio
-                    </h2>
+                    <img className="section-img" src={Bauplan} alt="Montaggio" />
+                    <h2 className="section-title">Montaggio</h2>
                 </div>
 
                 <div className="grey-section">
-                    <img  className="section-img" src={Zangen}></img>
-                    <h2 className="section-title">Assistenza
-                    </h2>
+                    <img className="section-img" src={Zangen} alt="Assistenza" />
+                    <h2 className="section-title">Assistenza</h2>
                 </div>
-
             </div>
 
             <div className="orange-div">
-                <h2 className="text-red">I NOSTRI PUNTI DI FORZA
-                </h2>
-                <img  className="diplom-img" src={Diplom}></img>
+                <h2 className="text-red">I NOSTRI PUNTI DI FORZA</h2>
+                <img className="diplom-img" src={Diplom} alt="Diplom" />
                 <p><b>Personale qualificato</b></p>
 
+                <img className="person-img" src={Person} alt="Person" />
+                <p><b>Tantissimi clienti soddisfatti</b></p>
 
-                <img  className="person-img" src={Person}></img>
-                <p><b>Tantissimi clienti soddisfatti
-                </b></p>
-
-                <img className="werkstatt-img" src={Werkstattbild}/><img/>
+                <img className="werkstatt-img" src={Werkstattbild} alt="Werkstatt" />
                 <p><b>Officina ultra attrezzata</b></p>
             </div>
-
 
             <div className="white-div">
                 <h2 className="text-white">I NOSTRI PUNTI DI LAVORI</h2>
             </div>
 
-
-
             <div className="orange-div">
                 <h2 className="text-white"> </h2>
-                <img  className="wirtschaft-img" src={Kreislauf}></img>
+                <img className="wirtschaft-img" src={Kreislauf} alt="Kreislauf" />
 
                 <div className="banner-stats">
                     <StatCard value={286} suffix="+" label="Progetti realizzati" />
@@ -266,12 +233,6 @@ function Home() {
                     <StatCard value={8} label="Progetti attivi" />
                     <StatCard value={6} label="Progetti in attesa" />
                 </div>
-
-
-
-            {/* Die 4 Statistik-Blöcke nebeneinander */}
-
-
             </div>
 
             <footer className="footer-div">
@@ -287,32 +248,32 @@ function Home() {
                     <p className="text-column">Montaggio</p>
                     <p className="text-column">Assistenza</p>
                     <p className="text-column">Aree</p>
-
                 </section>
+
                 <section>
                     <h1 className="text-footer">CONTATTI</h1>
-                    <p className="text-column">In di Salécc 2,
-                        6670 Avegno</p>
+                    <p className="text-column">In di Salécc 2, 6670 Avegno</p>
 
+                    <a  className="highlight-red" href="mailto:info@titocci.ch">info@titocci.ch</a>
+                    <a className="highlight-red" href="tel:+41917962369">Tel. +41 91 796 23 69</a>
 
-                    <a href=""></a>
-                    <a className="highlight-red">Tel. +41 91 796 23 69</a>
+                    <img src={Verifizierung} alt="Verifizierung" />
 
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d11043.906817275687!2d8.742987830688485!3d46.21091841923832!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4785b75776b14f6b%3A0x1a856f78a38373de!2sTitocci%20Metalcostruzioni%20SAGL!5e0!3m2!1sde!2sus!4v1792586980608!5m2!1sde!2sus"
+                        width="300"
+                        height="400"
+                        style={{ border: 0 }}
+                        allowFullScreen=""
+                        loading="lazy"
+                        referrerPolicy="strict-origin-when-cross-origin"
+                        title="Google Maps Standort"
+                    ></iframe>
 
-
-
-
+                   <a className="img-facebook" href="https://www.facebook.com/people/Titocci-Metalcostruzioni-Sagl/100063745770320/#"> <img src={Facebook} alt="Facebook Icon" ></img></a>
+                    <a className="img-google" href="https://www.google.com/maps/place/Titocci+Metalcostruzioni+SAGL/@46.2040504,8.7647245,17z/data=!3m1!4b1!4m5!3m4!1s0x4785b75776b14f6b:0x1a856f78a38373de!8m2!3d46.2040504!4d8.7669132"><img src={Google}></img></a>
                 </section>
-
-
             </footer>
-
-
-
-
-
-
-
         </>
     );
 }
