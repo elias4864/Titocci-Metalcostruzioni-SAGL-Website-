@@ -1,4 +1,4 @@
-name: Docker CI  React Frontend(Node) Build
+name: Docker CI React Frontend(Node) Build 
 
 on:
   push:
@@ -11,13 +11,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Repository auf den Server laden
       - name: Code auschecken
         uses: actions/checkout@v4
 
-      # Directory prüfen
+      # Directory prüfen (Korrektur: use 'run:' statt 'uses:')
       - name: Verzeichnisinhalt anzeigen
-       uses: ls -la 
+        run: ls -la
 
       # 2. Docker Buildx einrichten (für modernes Bauen)
       - name: Docker Setup Buildx
@@ -28,5 +27,5 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          push: false # Steht auf false, da wir hier nur testen wollen. (Kann später für Docker Hub auf true gesetzt werden)
+          push: false # Steht auf false, da wir hier nur testen wollen
           tags: titocci-website:latest
