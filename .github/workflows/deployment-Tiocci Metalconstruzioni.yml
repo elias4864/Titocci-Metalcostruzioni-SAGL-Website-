@@ -26,6 +26,6 @@ jobs:
       - name: Docker Image bauen
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./Dockerfile
           push: false # Steht auf false, da wir hier nur testen wollen
           tags: titocci-website:latest
