@@ -2,9 +2,9 @@ name: Docker CI React Frontend (Node) Build
 
 on:
   push:
-    branches: [ "main", "dev" ]
+    branches: ["main", "dev"]
   pull_request:
-    branches: [ "main", "dev" ]
+    branches: ["main", "dev"]
 
 jobs:
   build-docker:
@@ -14,16 +14,26 @@ jobs:
       - name: Code auschecken
         uses: actions/checkout@v4
 
-      # 1. Verzeichnisinhalt anzeigen
       - name: Verzeichnisinhalt anzeigen
         run: ls -la
 
-      # 2. Docker Buildx einrichten
+      - name: Dockerfile prüfen
+        id: dockerfile
+        run: |
+          if [ -f Dockerfile ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Dockerfile found in repository root."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "No Dockerfile found in repository root. Skipping Docker build."
+          fi
+
       - name: Docker Setup Buildx
+        if: ${{ steps.dockerfile.outputs.exists == 'true' }}
         uses: docker/setup-buildx-action@v3
 
-      # 3. Docker-Image bauen (Pfad auf ./src/Dockerfile angepasst)
       - name: Docker Image bauen
+        if: ${{ steps.dockerfile.outputs.exists == 'true' }}
         uses: docker/build-push-action@v5
         with:
           context: .
