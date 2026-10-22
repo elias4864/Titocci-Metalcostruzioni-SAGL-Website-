@@ -9,9 +9,11 @@ return (
     <div className="App-Header">
 
         <div className="info-row">
-            <img src={Icon} alt="Standort" className="header-img" />
-            <p><b>In di Salécc 2, 6670 Avegno</b></p>
+            <img src={ChiSiamoimg} alt="Standort" className="header-img" />
+            <p className="red-title"><b>Il Fabbro: creazioni personalizzate</b></p>
         </div>
+
+
     </div>
 
 )

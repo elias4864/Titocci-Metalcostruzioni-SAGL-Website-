@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Icon from '../assets/Icon.jpg';
 import Zeit from '../assets/Zeit.png';
@@ -15,8 +15,10 @@ import Person from '../assets/Person.jfif';
 import Werkstattbild from '../assets/Werkstatt.jfif';
 import Kreislauf from '../assets/Statistiken.jfif';
 import Google from '../assets/Google.png';
+import RedGoogleMaps from '../assets/RedGoogleMaps.jfif';
 import Verifizierung from '../assets/Verifizierung.gif';
 import '../Styles/Home.css';
+import RedFacebook from "../assets/Redfacebook.jfif";
 
 const IMAGES = [
     { id: 1, url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFVirl6neqny0T2cnyJFMtcaUhsAXd1M7DOrKlXOmUmA&s=10', title: 'Holzkonstrukt' },
@@ -61,6 +63,9 @@ const heroOverlayStyle = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    boxSizing: 'border-box',
     textAlign: 'center',
     color: 'white',
     zIndex: 5,
@@ -69,6 +74,14 @@ const heroOverlayStyle = {
 
 function Home() {
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [isOpen, setIsOpen] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setIsOpen(true);
+        }, 2000);
+        return () => clearTimeout(timer);
+    }, []);
 
     const nextImage = () => {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % IMAGES.length);
@@ -77,6 +90,8 @@ function Home() {
     const prevImage = () => {
         setCurrentIndex((prevIndex) => (prevIndex - 1 + IMAGES.length) % IMAGES.length);
     };
+
+    if (!isOpen) return null;
 
     return (
         <>
@@ -92,6 +107,15 @@ function Home() {
                         Lunedì - Venerdì: 7:30 - 12:00 / 13:15 - 17:00;<br />
                         Sabato / Domenica: Chiuso
                     </b></p>
+
+                    <div className="footer-social-icons">
+                        <a className="img-facebook" href="https://www.facebook.com/people/Titocci-Metalcostruzioni-Sagl/100063745770320/#" target="_blank" rel="noreferrer">
+                            <img src={RedFacebook} alt="Facebook Icon" />
+                        </a>
+                        <a className="img-google" href="https://www.google.com/maps/place/Titocci+Metalcostruzioni+SAGL/@46.2040504,8.7647245,17z/data=!3m1!4b1!4m5!3m4!1s0x4785b75776b14f6b:0x1a856f78a38373de!8m2!3d46.2040504!4d8.7669132" target="_blank" rel="noreferrer">
+                            <img src={RedGoogleMaps} alt="Google Maps Icon" />
+                        </a>
+                    </div>
                 </div>
 
                 <div className="info-row">
@@ -103,16 +127,53 @@ function Home() {
                 </div>
             </header>
 
+            {/* Slider & Navbar Container */}
             <div style={{ maxWidth: '800px', margin: '20px auto', textAlign: 'center' }}>
                 <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
+
+                    {/* HIER INTEGRIERT: Die Navbar exakt über die volle Breite des Bildes */}
+                    <nav style={{
+                        position: 'absolute',
+                        top: 0,
+
+
+                        width: '100%',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        padding: '15px 25px',
+                        boxSizing: 'border-box',
+                        zIndex: 20
+                    }}>
+                        {/* Logo links im Bild */}
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <img src={Icon} alt="Logo" style={{ width: '45px', height: '45px', objectFit: 'contain', borderRadius: '4px' }} />
+                        </div>
+
+                        {/* Menüpunkte rechts im Bild */}
+                        <ul style={{
+                            display: 'flex',
+                            listStyle: 'none',
+                            gap: '25px',
+                            margin: 0,
+                            padding: 0
+                        }}>
+                            <li><Link to="/" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '2px solid #e62b2b', paddingBottom: '3px' }}>Home</Link></li>
+                            <li><Link to="/chi-siamo" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>Chi siamo</Link></li>
+                            <li><Link to="/servizi" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>Servizi</Link></li>
+                            <li><Link to="/galleria" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>Galleria</Link></li>
+                            <li><Link to="/contatti" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>Contatti</Link></li>
+                        </ul>
+                    </nav>
+
                     <button onClick={prevImage} style={{ ...navButtonStyle, left: '10px' }}>◀</button>
 
                     <img
                         src={IMAGES[currentIndex].url}
                         alt={IMAGES[currentIndex].title}
                         style={{
-                            width: '100%',
-                            height: '380px',
+                            width: '100vw',
+                            height: '550px',
                             objectFit: 'cover',
                             borderRadius: '8px',
                             display: 'block',
@@ -148,23 +209,13 @@ function Home() {
                             padding: '10px 24px',
                             textDecoration: 'none',
                             fontWeight: 'bold',
-                            borderRadius: '4px',
+                            borderRadius: '1px',
                             fontSize: '0.95rem',
                             pointerEvents: 'auto',
                             boxShadow: '0 2px 6px rgba(0,0,0,0.4)'
                         }}>
                             Contattaci
                         </Link>
-
-                        <img
-                            className="icon-img"
-                            src={NavIcon}
-                            alt="Icon Header"
-                            style={{ width: '40px', height: '40px', marginBottom: '15px' , float: 'left' ,position:'absolute', marginTop:'15px',   top: '0',
-                                left: '0'
-                            }}
-                        />
-
                     </div>
 
                     <p style={imageCaptionStyle}>
@@ -219,15 +270,15 @@ function Home() {
             </div>
 
             <div className="orange-div">
-                <h2 className="person-img">I NOSTRI PUNTI DI FORZA</h2>
+                <span><h2 className="person-img">I NOSTRI PUNTI DI FORZA</h2></span>
                 <img className="person-img" src={Diplom} alt="Diplom" />
-                <p><b>Personale qualificato</b></p>
+                <p className="text-black"><b>Personale qualificato</b></p>
 
                 <img className="person-img" src={Person} alt="Person" />
-                <p><b>Tantissimi clienti soddisfatti</b></p>
+                <p className="text-black"><b>Tantissimi clienti soddisfatti</b></p>
 
                 <img className="person-img" src={Werkstattbild} alt="Werkstatt" />
-                <p><b>Officina ultra attrezzata</b></p>
+                <p className="text-black"><b>Officina ultra attrezzata</b></p>
             </div>
 
             <div className="white-div">
@@ -249,39 +300,9 @@ function Home() {
             <footer className="footer-div">
                 <section>
                     <h1 className="text-footer">CHI SIAMO</h1>
-                    <p className="white-footer">Dal 1973 creiamo cancelli per giardino, cancellate in ferro, parapetti, ringhiere, e tutti i servizi di fabbro per i nostri clienti ad Avegno e zone limitrofe.</p>
-                </section>
-
-                <section>
-                    <p className="white-footer">SERVIZI</p>
-                    <p className="text-column">Progettazione</p>
-                    <p className="text-column">Costruzione</p>
-                    <p className="text-column">Montaggio</p>
-                    <p className="text-column">Assistenza</p>
-                    <p className="text-column">Aree</p>
-                    <p className="links-row">Locarno</p>
-                    <p className="links-row">Avegno</p>
-                </section>
-
-                <section>
-                    <h1 className="text-footer">CONTATTI</h1>
-                    <p className="text-column">In di Salécc 2, 6670 Avegno</p>
-
-                    <a className="highlight-red" href="mailto:info@titocci.ch">info@titocci.ch</a>
-                    <a className="highlight-red" href="tel:+41917962369">Tel. +41 91 796 23 69</a>
-
-                    <img  src={Verifizierung}   alt="Verifizierung" /></img>
-
-                    <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d11043.906817275687!2d8.742987830688485!3d46.21091841923832!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4785b75776b14f6b%3A0x1a856f78a38373de!2sTitocci%20Metalcostruzioni%20SAGL!5e0!3m2!1sde!2sus!4v1792586980608!5m2!1sde!2sus"
-                        width="300"
-                        height="400"
-                        style={{ border: 0 }}
-                        allowFullScreen=""
-                        loading="lazy"
-                        referrerPolicy="strict-origin-when-cross-origin"
-                        title="Google Maps Standort"
-                    ></iframe>
+                    <p className="white-footer">
+                        Dal 1973 creiamo cancelli per giardino, cancellate in ferro, parapetti, ringhiere, e tutti i servizi di fabbro per i nostri clienti ad Avegno e zone limitrofe.
+                    </p>
 
                     <div className="footer-social-icons">
                         <a className="img-facebook" href="https://www.facebook.com/people/Titocci-Metalcostruzioni-Sagl/100063745770320/#" target="_blank" rel="noreferrer">
@@ -291,6 +312,41 @@ function Home() {
                             <img src={Google} alt="Google Maps Icon" />
                         </a>
                     </div>
+                </section>
+
+                <section>
+                    <p className="white-footer">SERVIZI</p>
+                    <p className="text-column">Progettazione</p>
+                    <p className="text-column">Costruzione</p>
+                    <p className="text-column">Montaggio</p>
+                    <p className="text-column">Assistenza</p>
+                </section>
+
+                <p className="text-column"><b>Aree</b></p>
+                <div className="links-container">
+                    <span className="links-row">Locarno</span>
+                    <span className="links-row">Avegno</span>
+                </div>
+
+                <section>
+                    <h1 className="text-footer">CONTATTI</h1>
+                    <p className="text-column">In di Salécc 2, 6670 Avegno</p>
+
+                    <a className="highlight-red" href="mailto:info@titocci.ch">info@titocci.ch</a>
+                    <a className="highlight-red" href="tel:+41917962369">Tel. +41 91 796 23 69</a>
+
+                    <img src={Verifizierung} className="verification-img" alt="Verifizierung" />
+
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d11043.906817275687!2d8.742987830688485!3d46.21091841923832!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4785b75776b14f6b%3A0x1a856f78a38373de!2sTitocci+Metalcostruzioni+SAGL!5e0!3m2!1sde!2sus!4v1792586980608!5m2!1sde!2sus"
+                        width="300"
+                        height="400"
+                        style={{ border: 0 }}
+                        allowFullScreen=""
+                        loading="lazy"
+                        referrerPolicy="strict-origin-when-cross-origin"
+                        title="Google Maps Standort"
+                    ></iframe>
                 </section>
             </footer>
         </>

@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Home from "./pages/Home.jsx";
 import Navbar from "./pages/Navbar.jsx";
 import Dropdown from "./assets/Dropdown.png";
+import ChiSiamo from "./pages/Chi Siamo.jsx";
 import './Styles/App.css';
 
 function App() {
@@ -49,6 +50,7 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/home" element={<Home />} />
+                        <Route path="/chisiamo" element={<ChiSiamo />  } />
                         <Route path="*" element={<Navigate to="/" replace />} />
                     </Routes>
                 </div>

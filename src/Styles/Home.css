@@ -23,14 +23,10 @@
     margin-top: 20px;
 }
 
-.img-facebook,
-.img-google {
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    object-fit: contain;
+.info-row p {
+    color: #000000 !important;
+    font-size: 15px;
+    margin: 0;
 }
 
 .img-facebook img,
@@ -41,11 +37,27 @@
     object-fit: contain;
 }
 
+
+
+/* Der Container bringt die Kinder nebeneinander */
+
+/* Styling für die einzelnen Orte */
+.links-row {
+    margin: 0;
+    white-space: nowrap;  /* Verhindert ungewollten Zeilenumbruch */
+    color: #ffffff;
+}
 .links-row {
     display: flex;
-    color: white;
+    margin: 0;
     flex-direction: row;
+    margin-top: 10px;
+
     text-wrap: nowrap;
+    gap: 15px;
+
+    grid-template-columns: 1fr 1fr; /* Zwei gleich große Spalten */
+
 }
 
 .footer-div {
@@ -64,6 +76,7 @@
 
 p {
     color: black;
+    font-weight: bold;
     font-size: 16px;
 }
 
@@ -75,6 +88,15 @@ p {
     color: orange;
     font-weight: bold;
 }
+
+.verification-img {
+    width: 70px;
+    height: 70px;
+    align-items: center;
+    justify-content: center;
+    object-fit: contain;
+}
+
 
 .wirtschaft-img {
     width: 70px;
@@ -117,6 +139,7 @@ p {
 .orange-div {
     background-color: orange !important;
     color: black;
+
     width: 100%;
     text-align: center;
     box-sizing: border-box;
@@ -126,15 +149,11 @@ p {
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 30px;
 }
 
-h1 {
-    text-align: center;
-    color: white;
-    font-size: 20px;
-}
+
 
 .diplom-img {
     display: flex;
@@ -208,13 +227,22 @@ h2 {
     align-items: center;
 }
 
+
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden; /* Verhindert horizontales Scrollen bei 100vw */
+}
 .section-img {
     width: 100%;
     height: 110px;
     object-fit: cover;
     border-radius: 2px;
 }
-
+.text-black {
+    color: black;
+}
 .text-column {
     display: flex;
     flex-direction: column;

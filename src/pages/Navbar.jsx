@@ -1,30 +1,25 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
+import Logo from '../assets/Navicon.png';
 import '../Styles/Navbar.css';
+import Facebook from "../assets/Facebook.png";
+import Google from "../assets/Google.png";
+import RedFacebook from "../assets/Redfacebook.jfif";
 
 function Navbar() {
     return (
-        <nav className="navbar">
+        <nav className="navbar-overlay">
             <div className="navbar-container">
-                <h1 className="logo">MySite</h1>
+               <header className="main-header">
+                   <img src={Logo} className="logo" alt="Logo" />
 
-                <ul className="nav-menu">
-                    <li className="nav-item">
-                        <Link to="/" className="nav-links">Home</Link>
-                    </li>
-                    <li className="nav-item">
-                        <Link to="/servizi" className="nav-links">Servizi</Link>
-                    </li>
-                    <li className="nav-item">
-                        <Link to="/lavori" className="nav-links">Lavori</Link>
-                    </li>
-                    <li className="nav-item">
-                        <Link to="/contatti" className="nav-links">Contatti</Link>
-                    </li>
-                </ul>
+
+               </header>
+
+
             </div>
         </nav>
+
     );
 }
 

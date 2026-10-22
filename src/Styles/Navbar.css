@@ -1,24 +1,78 @@
-.nav-links {
-    display: flex;
-    gap:20px;
-    flex-direction: row;
-
+.nav-menu :hover {
+    background-color: white;
 }
 
 /* Der Container, der alle Navigations-Links umschliesst */
 .nav-menu {
     display: flex;
     flex-direction: row;
-    gap: 20px;
-    list-style: none; /* Entfernt allfällige Aufzählungspunkte */
+    gap: 30px;
+    list-style: none;
     align-items: center;
-    margin: 10;
-    padding: 10;
+    margin: 0;
+    padding: 0;
+    /* position: fixed und float: right entfernen! */
 }
 
-/* Die einzelnen Links selbst bleiben normal inline-block oder flexfrei */
+.navbar {
+    position: absolute;   /* Platziert die Navbar über das Hero-Bild */
+    top: 20px;            /* Abstand von oben */
+    left: 0;
+    right: 0;
+
+    width: 100%;
+    display: flex;
+    justify-content: flex-end; /* Logo ganz links, Menü ganz rechts */
+    align-items: center;
+    padding: 0 40px;      /* Abstand nach links und rechts */
+    box-sizing: border-box;
+    z-index: 10;          /* Liegt über dem Bild */
+}
+
+.logo {
+    width: 70px;
+    height: 50px;
+    margin-right: 10px;
+    object-fit: contain;
+    position: sticky !important;
+    float:left;
+    align-items: center;
+    text-align: left;
+    justify-content: flex-start;
+    gap: 10px;
+
+}
+
+
+
 .nav-links {
+    color: #ffffff;
     text-decoration: none;
-    color: black;
     font-weight: bold;
+    font-size: 0.95rem;
+    text-align: right;
+    position: relative;
+    padding-bottom: 5px;
+    transition: color 0.2s ease;
+}
+
+.nav-links:hover {
+    color: #e62b2b;
+}
+
+/* Rote Unterstreichung für den aktiven Link (wie auf dem Screenshot) */
+.nav-links.active::after,
+.nav-links:hover::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #e62b2b; /* Titocci Rot */
+}
+
+.hero-image-wrapper {
+    position: relative;
+    width: 100%;
 }
