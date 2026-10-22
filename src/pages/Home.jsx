@@ -146,9 +146,7 @@ function Home() {
                         zIndex: 20
                     }}>
                         {/* Logo links im Bild */}
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <img src={Icon} alt="Logo" style={{ width: '45px', height: '45px', objectFit: 'contain', borderRadius: '4px' }} />
-                        </div>
+
 
                         {/* Menüpunkte rechts im Bild */}
                         <ul style={{
@@ -158,11 +156,11 @@ function Home() {
                             margin: 0,
                             padding: 0
                         }}>
-                            <li><Link to="/" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '2px solid #e62b2b', paddingBottom: '3px' }}>Home</Link></li>
-                            <li><Link to="/chi-siamo" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>Chi siamo</Link></li>
-                            <li><Link to="/servizi" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>Servizi</Link></li>
-                            <li><Link to="/galleria" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>Galleria</Link></li>
-                            <li><Link to="/contatti" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>Contatti</Link></li>
+                            <li><Link to="/" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold', borderBottom: '2px solid #e62b2b', paddingBottom: '3px' }}>Home</Link></li>
+                            <li><Link to="/chi-siamo" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Chi siamo</Link></li>
+                            <li><Link to="/servizi" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Servizi</Link></li>
+                            <li><Link to="/galleria" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Galleria</Link></li>
+                            <li><Link to="/contatti" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Contatti</Link></li>
                         </ul>
                     </nav>
 
@@ -196,8 +194,7 @@ function Home() {
                             fontSize: '1.8rem',
                             fontWeight: 'bold',
                             margin: '0 0 18px 0',
-                            color: '#ffffff',
-                            textShadow: '1px 1px 4px rgba(0,0,0,0.8)',
+                            color: '#ffffff', textShadow: '1px 1px 4px rgba(0,0,0,0.8)',
                         }}>
                             Preventivi e <span style={{ color: '#e62b2b' }}>consulenze</span>
                         </h2>
@@ -320,9 +317,9 @@ function Home() {
                     <p className="text-column">Costruzione</p>
                     <p className="text-column">Montaggio</p>
                     <p className="text-column">Assistenza</p>
+                    <p className="text-column">Aree</p>
                 </section>
 
-                <p className="text-column"><b>Aree</b></p>
                 <div className="links-container">
                     <span className="links-row">Locarno</span>
                     <span className="links-row">Avegno</span>
@@ -330,7 +327,7 @@ function Home() {
 
                 <section>
                     <h1 className="text-footer">CONTATTI</h1>
-                    <p className="text-column">In di Salécc 2, 6670 Avegno</p>
+                   <span><p className="text-column">In di Salécc 2, 6670 Avegno</p></span>
 
                     <a className="highlight-red" href="mailto:info@titocci.ch">info@titocci.ch</a>
                     <a className="highlight-red" href="tel:+41917962369">Tel. +41 91 796 23 69</a>

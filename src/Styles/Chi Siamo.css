@@ -1,1 +1,57 @@
-.red-text
+/* Gelbe Karten/Blöcke */
+.timeline-card {
+    background-color: #ffb703; /* Gelber Farbton */
+    color: #333;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    max-width: 450px;
+}
+
+
+
+
+.card-title {
+    color: #d62828; /* Roter Titel */
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 1.4rem;
+    font-weight: bold;
+}
+
+.card-logo{
+    width:70px;
+    height:70px;
+}
+
+.card-text {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color:gray;
+}
+
+/* Gelber Kreis-Dot auf der Zeitachse */
+.timeline-dot-yellow {
+    background-color: #ffb703 !important;
+    width: 24px;
+    height: 24px;
+    border: none;
+}
+
+/* Graues Jahr-Badge (1973, 1982) */
+.timeline-badge-year {
+    background-color: #555e65 !important;
+    color: #fff !important;
+    font-weight: bold;
+    font-size: 1.1rem !important;
+    padding: 8px 16px !important;
+    border-radius: 20px !important;
+}
+
+/* Linker Text-Titel */
+.timeline-title-left {
+    font-weight: bold;
+    color: #333;
+    align-self: center;
+}

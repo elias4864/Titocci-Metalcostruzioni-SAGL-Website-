@@ -50,7 +50,7 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/home" element={<Home />} />
-                        <Route path="/chisiamo" element={<ChiSiamo />  } />
+                        <Route path="/chi-siamo" element={<ChiSiamo />  } />
                         <Route path="*" element={<Navigate to="/" replace />} />
                     </Routes>
                 </div>
