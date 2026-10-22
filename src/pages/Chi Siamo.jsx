@@ -10,6 +10,7 @@ import '../Styles/Chi Siamo.css';
 import NavIcon from '../assets/Navicon.png';
 import Schleifen from '../assets/Schleifbild.jpg';
 import { Link } from "react-router-dom";
+import Schleifbild from '../assets/Schleifen.jpg';
 
 /**
  * Timeline Section Function
@@ -126,6 +127,8 @@ export const TimelineSection = () => {
                     <span>Il <b>maestro</b> <p className="highlight-red">fabbro</p>  è un esperto nella lavorazione di vari metalli come ferro battuto, acciaio inox e alluminio, è il cuore pulsante di creazioni uniche e funzionali. La ditta <b>Titocci Metalcostruzioni</b>incarna questa tradizione, offrendo una gamma completa di servizi su misura per la lavorazione e creazione di opere in metallo di ringhiere di ogni tipo, scale, serramenti, cancelli manuali o automatizzati, porte garage, cassette postali, recinzioni, ecc. Eseguiamo anche riparazioni, lavorazione di lamiere, taglio, piegatura, saldatura di acciaio inox e alluminio, verniciatura semplice, ecc. Visita la pagina CONTATTI per ottenere ulteriori informazioni e per richiedere un preventivo senza impegno. </span>
                 </div>
             </section>
+
+            <img className="schleifen-img" src={Schleifbild}></img>
         </div>
 
 

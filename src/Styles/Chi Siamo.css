@@ -37,6 +37,15 @@
 }
 
 
+.schleifen-img{
+    width: 400px;
+    height: 450px;
+    object-fit: cover;
+    margin: 0 auto; /* Zentriert das Bild automatisch, falls der Container breiter ist */;
+    display: block;
+
+
+}
 .highlight-red{
     color: red;
 }

@@ -9,6 +9,7 @@ import Facebook from "./assets/Facebook.png";
 import Google from "./assets/Google.png";
 import Verifizierung from "./assets/Verifizierung.gif";
 
+
 function App() {
     // Cookie State für das Ein-/Ausblenden
     const [showBanner, setShowBanner] = useState(false);
