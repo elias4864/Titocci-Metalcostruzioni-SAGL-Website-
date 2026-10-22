@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, Routes, Route } from 'react-router-dom';
 import Home from "./pages/Home.jsx";
 import Dropdown from "./assets/Dropdown.png";
-import './App.css';
+import './Styles/App.css';
 
 function App() {
 
@@ -42,7 +42,7 @@ function App() {
                         <Link to="/privacy" className="hover">Privacy</Link>
                     </div>
                     <div className="copyright-right">
-                        Web Design by <a href="https://marketingmaster.ch" target="_blank" rel="noopener noreferrer"><p className="hover-red">marketingmaster.ch</p></a> with love
+                        Web Design by <a   ref="https://marketingmaster.ch" target="_blank" rel="noopener noreferrer"><p className="marketingmaster">marketingmaster.ch</p></a> with love
                     </div>
 
 

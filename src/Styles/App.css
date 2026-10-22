@@ -243,7 +243,7 @@
     border: 5px solid transparent;
   }
 
-  marketingmaster{
+  .marketingmaster{
     position: absolute;
     color: red;
     text-decoration: underline;
