@@ -25,5 +25,5 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          push: false
+          load: true # Lädt das Image lokal in Docker (wichtig beim docker-container Driver)
           tags: titocci-website:latest
