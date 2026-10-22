@@ -1,87 +1,88 @@
-.App-header{
+.App-header {
     background-color: white;
     display: flex;
-    gap:15px;
+    gap: 15px;
     align-items: center;
     justify-content: space-between;
     text-align: left;
-
-}
-
-person-img {
-    display: flex; /* Richtet die Kinder horizontal aus */
-    flex-direction: row; /* Standard, sorgt für das "Nebeneinander" */
-    gap: 10px;
 }
 
 .highlight-red {
-    color: #e62b2b;              /* Gut lesbares Rot */
-    text-decoration: underline;  /* Unterstrichen */
-    font-weight: bold;           /* Hervorhebung */
-    display: inline-block;       /* Ermöglicht Abstände/Positionierung */
+    color: #e62b2b;
+    font-weight: bold;
+    display: block;
     margin-top: 5px;
 }
 
+/* Footer Social Icons - Jetzt fest im Layout (nicht mehr schwebend) */
+.footer-social-icons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.img-facebook,
 .img-google {
-    width: 40px;
+    width: 50px;
     height: 50px;
     display: flex;
     align-items: center;
-    margin-right: 10px;
-    justify-content: flex-start;
-    float: left;
+    justify-content: center;
+    object-fit: contain;
 }
 
+.img-facebook img,
+.img-google img {
+    width: 50px;
 
-.links-row{
+    height: 50px;
+    object-fit: contain;
+}
+
+.links-row {
     display: flex;
     color: white;
     flex-direction: row;
     text-wrap: nowrap;
 }
-.img-facebook {
-    width: 10px;
-    height: 15px;
-    display: flex;
-    align-items: baseline;
-    float: left;
-    margin-right: 10px;
-    justify-content: flex-start;
 
-    object-fit: contain;
-}
-.footer-div{
+.footer-div {
     box-sizing: border-box;
     display: flex;
     background-color: black;
+    justify-content: space-between;
+    padding: 40px 20px;
 }
-.header-img{
+
+.header-img {
     width: 70px;
     height: 70px;
     align-items: flex-start;
-}p{
+}
+
+p {
     color: black;
- }
+    font-size: 16px;
+}
 
- .white-div{
-     background-color: white;
- }
+.white-div {
+    background-color: white;
+}
 
- .text-white{
-     color: orange;
-     font-weight: bold;
- }
+.text-white {
+    color: orange;
+    font-weight: bold;
+}
 
-
-.wirtschaft-img{
+.wirtschaft-img {
     width: 70px;
     height: 70px;
     justify-content: flex-start;
     align-items: center;
     object-fit: contain;
-
 }
-
 
 .banner-stats {
     display: flex;
@@ -91,31 +92,29 @@ person-img {
     flex-wrap: wrap;
 }
 
-/* Einzelner Block (Zahl + Text) */
 .stat-item {
     display: flex;
     flex-direction: column;
-    align-items: flex-start; /* Linksbündig ausgerichtet */
+    align-items: flex-start;
     text-align: left;
 }
 
-/* Die roten großen Zahlen */
 .stat-number {
-    color: #e62b2b; /* Rote Farbe */
+    color: #e62b2b;
     font-size: 3rem;
     font-weight: bold;
     line-height: 1;
     margin-bottom: 5px;
 }
 
-/* Der Text unter der Zahl */
 .stat-text {
     color: gray;
     font-size: 0.95rem;
     line-height: 1.2;
     font-weight: 500;
 }
-.orange-div{
+
+.orange-div {
     background-color: orange !important;
     color: black;
     width: 100%;
@@ -123,130 +122,91 @@ person-img {
     box-sizing: border-box;
     padding: 40px 20px;
     margin: 30px auto;
-
-    /* NEU: Macht den Container zur Flexbox für die Elemente nebeneinander */
     display: flex;
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
-    flex-wrap: wrap; /* Falls der Bildschirm zu klein wird, bricht es automatisch um */
+    flex-wrap: wrap;
     gap: 30px;
 }
 
-
-h1{
+h1 {
     text-align: center;
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
     color: white;
-flex-wrap: wrap;
     font-size: 20px;
 }
 
-p{
-    color: black;
+.diplom-img {
+    display: flex;
+    align-items: center;
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
+.person-img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
+.orange-section {
+    background-color: orange !important;
+    border-radius: 0.5px;
+    padding: 55px;
+    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    font-size: 20px;
-
+    gap: 15px;
+    box-sizing: border-box;
 }
 
-
-
-.diplom-img{
-flex-direction: column;
-
+.grey-section {
+    background-color: rgb(166 162 162 / 0.89) !important;
+    border-radius: 0.5px;
+    padding: 20px;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    flex-wrap: nowrap;
-    width: 60px;
-    height: 60px;
-    object-fit: contain;
-    margin-bottom: 10px;
+    justify-content: flex-start;
+    gap: 15px;
+    box-sizing: border-box;
 }
-
-.person-img{
-    width: 60px;
-    height: 60px;
-    object-fit: contain;
-    margin-bottom: 10px;
-
-}
- .orange-section{
-     background-color: orange!important; /* Oder z. B. #ffeb3b / gold für ein schöneres Gelb */
-     border-radius: 0.5px;
-     padding: 55px;
-
-     /* Flexbox sorgt dafür, dass Inhalt nebeneinander liegt */
-     display: flex;
-     flex-direction: column;
-     align-items: center;
-     justify-content: flex-start;
-     gap: 15px;
-
-     box-sizing: border-box;
-
-
-     /* Falls der Inhalt nicht abgeschnitten werden soll, Breite/Höhe anpassen: */
-
- }
-
- .grey-section{
-
-     background-color: rgb(166 162 162 / 0.89) !important; /* Oder z. B. #ffeb3b / gold für ein schöneres Gelb */
-     border-radius:0.5px;
-     padding: 20px;
-
-     /* Flexbox sorgt dafür, dass Inhalt nebeneinander liegt */
-     display: flex;
-     flex-direction: column;
-     align-items: center;
-     justify-content: flex-start;
-     gap: 15px;
-
-     box-sizing: border-box;
-
- }
-
 
 .section-title {
-    color: #e62b2b; /* Rote Schrift wie auf dem Bild */
+    color: #e62b2b;
     font-weight: bold;
     margin: 0;
     font-size: 1rem;
-    text-align:left;
+    text-align: left;
 }
 
- .div-white {
-     display: flex;
-     flex-direction: row;      /* Richtet die Boxen nebeneinander aus */
-     justify-content: center;  /* Zentriert die Elemente horizontal */
-     align-items: center;      /* Zentriert die Elemente vertikal */
-     gap: 20px;                /* Abstand zwischen den Boxen */
-     flex-wrap: nowrap;          /* Verhindert Überlappungen */
-     margin: 40px auto;
-     width: 100%;
+.div-white {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: nowrap;
+    margin: 40px auto;
+    width: 100%;
+}
 
- }
- h2{
-     font-family: 'Montserrat', sans-serif;
-     font-size: 40px;
-     color: red;
-     align-items: flex-start /* Zentriert Bild und Text horizontal (optional) */
+h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 40px;
+    color: red;
+}
 
- }
-
- .werkstatt-img{
-
-     flex-direction: column;
-     width: 50px;
-     height: 50px;
-     display: flex;
-     align-items: center;
-     flex-wrap: nowrap;
- }
+.werkstatt-img {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+}
 
 .section-img {
     width: 100%;
@@ -255,29 +215,21 @@ flex-direction: column;
     border-radius: 2px;
 }
 
-.text-column{
+.text-column {
     display: flex;
     flex-direction: column;
-    text-wrap: wrap;
-    font-size: 20px;
+    font-size: 16px;
     color: white;
-    gap: 10px;
+    gap: 5px;
 }
-.icon-img{
+
+.icon-img {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
 }
-.white-footer{
+
+.white-footer {
     color: white;
     font-size: 15px;
-    gap: 5px;
-
-}
-
-.highlight-red{
-    color: red;
-}
-p .text-column{
-    font-size: 10px;
 }

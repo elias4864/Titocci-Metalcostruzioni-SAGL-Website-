@@ -29,6 +29,58 @@
   line-height: 1.4;
 }
 
+.scroll-to-top {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: #ffffff;
+  border: 2px solid #e62b2b;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+/* Hover-Effekt: Leichter Zoom und farbiger Hintergrund */
+.scroll-to-top:hover {
+  background-color: #e62b2b;
+  transform: scale(1.1);
+}
+
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  background-color: #000000;
+  color: #ffffff;
+  font-size: 0.9rem;
+  border-top: 1px solid #222;
+}
+
+
+.footer-red-link {
+  color: #e62b2b !important;
+  text-decoration: none;
+  font-weight: normal;
+  transition: color 0.2s ease;
+}
+
+.footer-red-link:hover {
+  color: #ff4d4d !important;
+  text-decoration: underline;
+}
+p{
+  color:white;
+}
+
 
 .footer-bottom.copyright-container {
   display: flex;
@@ -114,6 +166,11 @@
     transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg)
       scale(0.8);
   }
+}
+
+.copyright-right {
+
+  color:red;
 }
 
 #center {
@@ -218,6 +275,23 @@
   }
 }
 
+.social-bottom-left {
+  position: fixed;   /* Bleibt fest unten links auf dem Bildschirm stehen */
+  bottom: 15px;      /* Abstand von unten */
+  left: 15px;        /* Abstand von links */
+  display: flex;     /* Richtet die Elemente nebeneinander aus */
+  flex-direction: row;
+  gap: 10px;         /* Abstand zwischen den zwei Icons */
+  z-index: 1000;     /* Sorgt dafür, dass die Icons über anderen Elementen liegen */
+}
+
+/* Optional: Bildgröße anpassen, falls nötig */
+.social-bottom-left img {
+  width: 32px;       /* Wähle hier deine gewünschte Breite */
+  height: auto;
+  display: block;
+}
+
 
 .dropdown-img{
   width: 30px;
@@ -273,7 +347,6 @@
   text-decoration: none;      /* Standardmäßig KEINE Unterstreichung */
   font-weight: bold;
   padding: 5px 10px;
-  transition: color 0.2s ease, text-decoration 0.2s ease; /* Weicher Übergang beim Drüberfahren */
 }
 
 /* Hover-Effekt: Beim Drüberfahren wird das Rot intensiver/dunkler */
@@ -319,16 +392,20 @@ p  {
   border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
+  border-color: red;
 }
 
 #cookieAccept {
   background: red;
   color: #fff;
+  border-radius: 10%;
+  border-color:red;
 }
 
 #cookieDecline {
   background: #636e72;
-  color:grey;
+  background-color:grey;
+  color:black;
 }
 #cookiePreference {
   background: grey;

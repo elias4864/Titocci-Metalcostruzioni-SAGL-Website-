@@ -2,11 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Icon from '../assets/Icon.jpg';
 import Zeit from '../assets/Zeit.png';
-
-import NavIcon  from '../assets/Navicon.png';
-
-
-import StatCard    from '../pages/StatCard';
+import NavIcon from '../assets/Navicon.png';
+import StatCard from '../pages/StatCard';
 import Email from '../assets/Email.png';
 import PC from '../assets/PC.png';
 import Facebook from '../assets/Facebook.png';
@@ -99,7 +96,7 @@ function Home() {
 
                 <div className="info-row">
                     <img src={Email} alt="Kontakt" className="header-img" />
-                    <p><b>
+                    <p className="contact"><b>
                         Contatti: info@titocci.ch<br />
                         Tel. +41 91 796 23 69
                     </b></p>
@@ -264,19 +261,16 @@ function Home() {
                     <p className="text-column">Aree</p>
                     <p className="links-row">Locarno</p>
                     <p className="links-row">Avegno</p>
-
                 </section>
-
-
 
                 <section>
                     <h1 className="text-footer">CONTATTI</h1>
                     <p className="text-column">In di Salécc 2, 6670 Avegno</p>
 
-                    <a  className="highlight-red" href="mailto:info@titocci.ch">info@titocci.ch</a>
+                    <a className="highlight-red" href="mailto:info@titocci.ch">info@titocci.ch</a>
                     <a className="highlight-red" href="tel:+41917962369">Tel. +41 91 796 23 69</a>
 
-                    <img src={Verifizierung} alt="Verifizierung" />
+                    <img  src={Verifizierung}   alt="Verifizierung" /></img>
 
                     <iframe
                         src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d11043.906817275687!2d8.742987830688485!3d46.21091841923832!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4785b75776b14f6b%3A0x1a856f78a38373de!2sTitocci%20Metalcostruzioni%20SAGL!5e0!3m2!1sde!2sus!4v1792586980608!5m2!1sde!2sus"
@@ -289,8 +283,14 @@ function Home() {
                         title="Google Maps Standort"
                     ></iframe>
 
-                   <a className="img-facebook" href="https://www.facebook.com/people/Titocci-Metalcostruzioni-Sagl/100063745770320/#"> <img src={Facebook} alt="Facebook Icon" ></img></a>
-                    <a className="img-google" href="https://www.google.com/maps/place/Titocci+Metalcostruzioni+SAGL/@46.2040504,8.7647245,17z/data=!3m1!4b1!4m5!3m4!1s0x4785b75776b14f6b:0x1a856f78a38373de!8m2!3d46.2040504!4d8.7669132"><img src={Google}></img></a>
+                    <div className="footer-social-icons">
+                        <a className="img-facebook" href="https://www.facebook.com/people/Titocci-Metalcostruzioni-Sagl/100063745770320/#" target="_blank" rel="noreferrer">
+                            <img src={Facebook} alt="Facebook Icon" />
+                        </a>
+                        <a className="img-google" href="https://www.google.com/maps/place/Titocci+Metalcostruzioni+SAGL/@46.2040504,8.7647245,17z/data=!3m1!4b1!4m5!3m4!1s0x4785b75776b14f6b:0x1a856f78a38373de!8m2!3d46.2040504!4d8.7669132" target="_blank" rel="noreferrer">
+                            <img src={Google} alt="Google Maps Icon" />
+                        </a>
+                    </div>
                 </section>
             </footer>
         </>
