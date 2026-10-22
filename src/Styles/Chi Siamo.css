@@ -9,6 +9,53 @@
 }
 
 
+.image-container {
+    position: relative;
+    display: inline-block; /* oder width: 100% je nach Layout */
+    width: 100%;
+    max-width: 600px;
+}
+
+.image-container img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.text-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: red;
+    padding: 10px 20px;
+    font-weight: bold;
+    text-align: center;
+    font-size: 60px;
+    gap:20px;
+    line-height: 1.4; /* Steuert den Zeilenabstand */
+}
+
+
+.highlight-red{
+    color: red;
+}
+.label{
+    display: flex;
+    float: left;
+    border-top: 20px;
+    justify-content: flex-start;
+    position: absolute;
+    top: 15px;
+    z-index: 10;
+}
+
+.schleifen-img{
+    max-width: 100%;
+    object-fit: contain;
+    boxSizing: 'border-box',
+
+}
 
 
 .card-title {
@@ -17,11 +64,20 @@
     margin-bottom: 12px;
     font-size: 1.4rem;
     font-weight: bold;
+    border-bottom: 2px solid #ffb703;
+}
+
+.header-text{
+       border-bottom: 2px solid #ffb703;
+       color:#ffb703;
+       padding-bottom: 90px;
+
 }
 
 .card-logo{
-    width:70px;
-    height:70px;
+    width:140px;
+    height:140px;
+
 }
 
 .card-text {
