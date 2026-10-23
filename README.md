@@ -2,7 +2,7 @@
 
 # Titocci Metalcostruzioni SAGL - Website
 
-Offizielle Website für den Schweizer Metallbau- und Schlosserbetrieb Titocci Metalcostruzioni SAGL (titocci.ch). Das Projekt verwendet ein modernes Frontend-Setup basierend auf React 19 und Vite, gekapselt in einer Docker-Umgebung für konsistente Deployments sowie automatisiert über GitHub Actions mit DevOps-Praktiken.
+Offizielle Website für den Schweizer Metallbau- und Schlosserbetrieb Titocci Metalcostruzioni SAGL (titocci.ch) möglichst genau rebuilded. Das Projekt verwendet ein modernes Frontend-Setup basierend auf React 19 und Vite, gekapselt in einer Docker-Umgebung für konsistente Deployments sowie automatisiert über GitHub Actions für  DevOps-Praktiken.
 
 ---
 
@@ -13,7 +13,8 @@ Offizielle Website für den Schweizer Metallbau- und Schlosserbetrieb Titocci Me
 - **Build-Tool:** Vite (v8) und Npm
 - **Styling:** CSS3 (Responsive Design, Custom Properties)
 - **Deployment:** Docker und Docker-Compose Node.js Runtime
--  **Automatisierung:**  GitHub Actions
+-  **Automatisierung:**  GitHub Actions(CI/CD) 
+
 
 ---
 
