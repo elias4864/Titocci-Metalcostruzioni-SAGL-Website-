@@ -38,11 +38,13 @@
 
 
 .schleifen-img{
-    width: 400px;
-    height: 450px;
-    object-fit: cover;
     margin: 0 auto; /* Zentriert das Bild automatisch, falls der Container breiter ist */;
+    width: 100vw;
+    height: 550px;
+    objectFit: 'cover';
+    borderRadius: '8px';
     display: block;
+    filter: 'brightness(0.7)';
 
 
 }
