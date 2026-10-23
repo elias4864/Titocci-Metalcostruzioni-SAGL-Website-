@@ -13,6 +13,7 @@ import Bauplan from '../assets/Bauplan.jfif';
 import Diplom from '../assets/Diplom.jfif';
 import Person from '../assets/Person.jfif';
 import Werkstattbild from '../assets/Werkstatt.jfif';
+import Redfacebook from "../assets/Redfacebook.jfif";
 import Kreislauf from '../assets/Statistiken.jfif';
 import Google from '../assets/Google.png';
 import RedGoogleMaps from '../assets/RedGoogleMaps.jfif';
@@ -110,7 +111,7 @@ function Home() {
 
                     <div className="footer-social-icons">
                         <a className="img-facebook" href="https://www.facebook.com/people/Titocci-Metalcostruzioni-Sagl/100063745770320/#" target="_blank" rel="noreferrer">
-                            <img src={RedFacebook} alt="Facebook Icon" />
+                            <img src={Redfacebook} alt="Facebook Icon" />
                         </a>
                         <a className="img-google" href="https://www.google.com/maps/place/Titocci+Metalcostruzioni+SAGL/@46.2040504,8.7647245,17z/data=!3m1!4b1!4m5!3m4!1s0x4785b75776b14f6b:0x1a856f78a38373de!8m2!3d46.2040504!4d8.7669132" target="_blank" rel="noreferrer">
                             <img src={RedGoogleMaps} alt="Google Maps Icon" />
@@ -167,7 +168,7 @@ function Home() {
                             <li><Link to="/" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px' }}>Home</Link></li>
                             <li><Link to="/chi-siamo" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>Chi siamo</Link></li>
                             <li><Link to="/servizi" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>Servizi</Link></li>
-                            <li><Link to="/galleria" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>Galleria</Link></li>
+                            <li><Link to="/galeria" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>Galleria</Link></li>
                             <li><Link to="/kontakte" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>Contatti</Link></li>
                         </ul>
                     </nav>

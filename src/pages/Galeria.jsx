@@ -4,9 +4,7 @@ import { Link } from "react-router-dom";
 import Galeriebild from "../assets/Galeria.jfif";
 import Icon from "../assets/Icon.jpg";
 
-import '../Styles/Servici.css';
 import '../Styles/Galeria.css';
-import '../Styles/TimeLineSection.css';
 
 const heroOverlayStyle = {
     position: 'absolute',
@@ -56,7 +54,6 @@ function Galeria() {
                         background: 'linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)'
                     }}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <img src={Icon} alt="Logo" style={{ width: '50px', height: '50px', objectFit: 'contain', borderRadius: '4px' }} />
                         </div>
 
                         <ul style={{
@@ -74,6 +71,7 @@ function Galeria() {
                         </ul>
                     </nav>
 
+                    {/* Scharfes Bild */}
                     <img
                         src={Galeriebild}
                         alt="Galleria"
@@ -81,11 +79,22 @@ function Galeria() {
                             width: '100vw',
                             height: '450px',
                             objectFit: 'cover',
-                            display: 'block',
-                            filter: 'brightness(0.6)'
+                            display: 'block'
                         }}
                     />
 
+                    {/* Dunkler Layer */}
+                    <div style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                        zIndex: 2
+                    }} />
+
+                    {/* Text Overlay */}
                     <div style={heroOverlayStyle}>
                         <h1 style={{
                             color: '#e62b2b',
@@ -101,10 +110,9 @@ function Galeria() {
             </div>
 
             {/* Sektion Unten */}
-            <div style={{ maxWidth: '1000px', margin: '60px auto', padding: '0 20px', textAlign: 'center' }}>
-                <h1 className="yellow-text" style={{ fontSize: '2rem', color: '#f59e0b', fontWeight: 'bold' }}>
+            <div style={{ maxWidth: '1000px', margin: '60px auto', textAlign: 'center' }}>
+                <h1 className="yellow-text" >
                     Alcuni dei nostri lavori
-
                 </h1>
             </div>
         </div>

@@ -9,12 +9,28 @@
     font-size: 20px;
 }
 
+.h1 {
+font-size: 10px;
+}
+
+.highlight-red p  {
+
+    color: red;
+}
+
 .red-title {
     color: red;
     font-size: 20px;
     letter-spacing: 2px;
     text-align: center;
     width: 100%;
+}
+
+.box-logo  {
+
+    position: sticky;
+    top: 0;
+
 }
 
 .custom-timeline::before {
@@ -73,17 +89,19 @@ p {
 
 }
 .timeline-year {
-    margin: 35px 0 20px 0; /* Sorgt für klaren Abstand vor jeder Jahreszahl */
+    margin: 35px 0 20px 0;
+    float:right;
+    border-radius: 20px;
+    position: relative;
+    align-content: flex-end;
+    /* Sorgt für klaren Abstand vor jeder Jahreszahl */
 }
 
 .timeline-item {
     margin: 25px 0; /* Abstand zwischen den einzelnen Textkacheln */
 }
 
-.yellow-text {
-    color:yellow;
-    font-size: 50px;
-}
+
 
 h1 {
     font-size: 60px;
@@ -91,7 +109,6 @@ h1 {
 }
 
 .gelbe-border {
-    border-bottom: 3px solid yellow;
     padding-bottom: 2px; /* Abstand zwischen Text und Linie */
 }
 

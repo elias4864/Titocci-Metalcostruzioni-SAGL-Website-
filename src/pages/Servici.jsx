@@ -320,7 +320,7 @@ function Servizi() {
                             ))}
                         </div>
 
-                        <Link to="/galleria" style={redButtonStyle}>
+                        <Link to="/galeria" style={redButtonStyle}>
                             Scopri di più
                         </Link>
                     </div>
@@ -386,7 +386,7 @@ function Servizi() {
                             ))}
                         </div>
 
-                        <Link to="/galleria" style={redButtonStyle}>
+                        <Link to="/galeria" style={redButtonStyle}>
                             Scopri di più
                         </Link>
                     </div>
