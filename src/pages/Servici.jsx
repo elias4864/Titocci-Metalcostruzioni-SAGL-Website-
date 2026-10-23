@@ -9,9 +9,7 @@ import Gitter from '../assets/Gitter.jfif';
 import Bauplan from '../assets/Bauplan.jfif';
 import Eingang from '../assets/Eingang.jfif';
 import PC from '../assets/PC.jpg';
-
 import Briefkasten from '../assets/Briefkasten.png';
-
 import Locarno from '../assets/Locarno.jfif';
 import Gitter2 from '../assets/Gitter2.jfif';
 import Weiss from '../assets/Weiss.png';
@@ -116,13 +114,19 @@ function Servizi() {
     const [isOpen, setIsOpen] = useState(false);
     const [indexParapetti, setIndexParapetti] = useState(0);
     const [indexCancelli, setIndexCancelli] = useState(0);
-    const [bottomSliderIndex, setBottomSliderIndex] = useState(0);
+
+    // States für die beiden unteren Slider getrennt steuerbar
+    const [sliderIndex1, setSliderIndex1] = useState(0);
+    const [sliderIndex2, setSliderIndex2] = useState(0);
 
     const navigate = useNavigate();
 
     const imagesParapetti = [Gitter, Wand];
     const imagesCancelli = [Fenster, Eingang];
-    const bottomImages = [Wand, Fenster]; // Bilder für den unteren Slider
+
+    // Bilder-Arrays für die beiden unteren Slider
+    const bottomImages1 = [Wand, Fenster, Gitter2];
+    const bottomImages2 = [Briefkasten, Locarno, Weiss];
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -248,21 +252,7 @@ function Servizi() {
                             Fabbro artigiano
                         </h1>
 
-                        <Link to="/contatti" style={{
-                            display: 'inline-block',
-                            backgroundColor: '#e62b2b',
-                            color: 'white',
-                            padding: '12px 28px',
-                            textDecoration: 'none',
-                            fontWeight: 'bold',
-                            borderRadius: '4px',
-                            fontSize: '1rem',
-                            pointerEvents: 'auto',
-                            boxShadow: '0 3px 8px rgba(0,0,0,0.5)',
-                            margin: '0 auto'
-                        }}>
-                            Contattaci
-                        </Link>
+
                     </div>
 
                     <p style={imageCaptionStyle}>
@@ -589,17 +579,26 @@ function Servizi() {
                 <h2 style={{fontSize: '1.8rem', marginBottom: '30px', color: '#f59e0b'}}>
                     Lavorazione di svariati tipi di metalli
                 </h2>
-                <div className="img-container">
-                <img src={Gitter2} />
-                <img src={Weiss} />
-                    <img src={Briefkasten} />
+
+                {/* 3 Bilder mit mehr Abstand (.metal-images-container) */}
+                <div className="metal-images-container" style={{ display: 'flex', justifyContent: 'center', gap: '30px', flexWrap: 'wrap', marginBottom: '60px' }}>
+                    <div className="img-container" style={{ width: '300px', height: '210px', overflow: 'hidden', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                        <img src={Gitter} alt="Metalli 1" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </div>
+                    <div className="img-container" style={{ width: '300px', height: '210px', overflow: 'hidden', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                        <img src={Wand} alt="Metalli 2" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
+                    <div className="img-container" style={{ width: '300px', height: '210px', overflow: 'hidden', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                        <img src={Weiss} alt="Metalli 3" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
+                </div>
 
+                {/* --- UNTERER BILDER-SLIDER MIT VOLLSTÄNDIGEN STEUERUNGSPFEILEN --- */}
+                <div style={{maxWidth: '1000px', margin: '0 auto 40px auto', position: 'relative'}}>
+                    <div style={{display: 'flex', gap: '30px', justifyContent: 'center', flexWrap: 'wrap'}}>
 
-                {/* --- UNTERER BILDER-SLIDER (WIE AUF DEM LETZTEN BILD) --- */}
-                <div style={{maxWidth: '900px', margin: '0 auto 40px auto', position: 'relative'}}>
-                    <div style={{display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap'}}>
-                        <div style={{flex: '1 1 400px', textAlign: 'center'}}>
+                        {/* Slider 1 */}
+                        <div style={{flex: '1 1 450px', textAlign: 'center'}}>
                             <p style={{
                                 fontSize: '0.95rem',
                                 fontWeight: 'bold',
@@ -607,8 +606,7 @@ function Servizi() {
                                 marginBottom: '15px',
                                 minHeight: '40px'
                             }}>
-                                Costruzione e montaggio di ringhiere di ogni tipo, scale, serramenti, cancelli manuali o
-                                automatizzati, porte garage, bucalettere, recinzioni, ecc ....
+                                Costruzione e montaggio di ringhiere di ogni tipo, scale, serramenti, cancelli manuali o automatizzati, porte garage, bucalettere, recinzioni, ecc ....
                             </p>
                             <div style={{
                                 position: 'relative',
@@ -616,12 +614,43 @@ function Servizi() {
                                 borderRadius: '8px',
                                 boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                             }}>
-                                <img src={bottomImages[bottomSliderIndex]} alt="Lavorazione metalli 1"
+                                <button
+                                    onClick={() => setSliderIndex1((prev) => (prev > 0 ? prev - 1 : bottomImages1.length - 1))}
+                                    style={arrowButtonStyle('left')}
+                                >
+                                    ‹
+                                </button>
+
+                                <img src={bottomImages1[sliderIndex1]} alt="Slider 1"
                                      style={{width: '100%', height: '260px', objectFit: 'cover', display: 'block'}}/>
+
+                                <button
+                                    onClick={() => setSliderIndex1((prev) => (prev + 1) % bottomImages1.length)}
+                                    style={arrowButtonStyle('right')}
+                                >
+                                    ›
+                                </button>
+                            </div>
+
+                            {/* Indikator Punkte Slider 1 */}
+                            <div style={{display: 'flex', justifyContent: 'center', gap: '6px', margin: '12px 0 0 0'}}>
+                                {bottomImages1.map((_, i) => (
+                                    <span
+                                        key={i}
+                                        style={{
+                                            width: '6px',
+                                            height: '6px',
+                                            borderRadius: '50%',
+                                            backgroundColor: i === sliderIndex1 ? '#000' : '#ccc',
+                                            display: 'inline-block'
+                                        }}
+                                    />
+                                ))}
                             </div>
                         </div>
 
-                        <div style={{flex: '1 1 400px', textAlign: 'center'}}>
+                        {/* Slider 2 */}
+                        <div style={{flex: '1 1 450px', textAlign: 'center'}}>
                             <p style={{
                                 fontSize: '0.95rem',
                                 fontWeight: 'bold',
@@ -629,8 +658,7 @@ function Servizi() {
                                 marginBottom: '15px',
                                 minHeight: '40px'
                             }}>
-                                Eseguiamo anche riparazioni, semplice lavorazione lamiere, taglio, piegatura, saldatura
-                                di acciaio Inox e alluminio, verniciatura semplice, ecc .....
+                                Eseguiamo anche riparazioni, semplice lavorazione lamiere, taglio, piegatura, saldatura di acciaio Inox e alluminio, verniciatura semplice, ecc .....
                             </p>
                             <div style={{
                                 position: 'relative',
@@ -638,16 +666,46 @@ function Servizi() {
                                 borderRadius: '8px',
                                 boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                             }}>
-                                <img src={bottomImages[(bottomSliderIndex + 1) % bottomImages.length]}
-                                     alt="Lavorazione metalli 2"
+                                <button
+                                    onClick={() => setSliderIndex2((prev) => (prev > 0 ? prev - 1 : bottomImages2.length - 1))}
+                                    style={arrowButtonStyle('left')}
+                                >
+                                    ‹
+                                </button>
+
+                                <img src={bottomImages2[sliderIndex2]} alt="Slider 2"
                                      style={{width: '100%', height: '260px', objectFit: 'cover', display: 'block'}}/>
+
+                                <button
+                                    onClick={() => setSliderIndex2((prev) => (prev + 1) % bottomImages2.length)}
+                                    style={arrowButtonStyle('right')}
+                                >
+                                    ›
+                                </button>
+                            </div>
+
+                            {/* Indikator Punkte Slider 2 */}
+                            <div style={{display: 'flex', justifyContent: 'center', gap: '6px', margin: '12px 0 0 0'}}>
+                                {bottomImages2.map((_, i) => (
+                                    <span
+                                        key={i}
+                                        style={{
+                                            width: '6px',
+                                            height: '6px',
+                                            borderRadius: '50%',
+                                            backgroundColor: i === sliderIndex2 ? '#000' : '#ccc',
+                                            display: 'inline-block'
+                                        }}
+                                    />
+                                ))}
                             </div>
                         </div>
+
                     </div>
                 </div>
 
                 {/* Link zu Contatti am Ende */}
-                <p style={{fontSize: '1rem', color: '#555', marginTop: '40px'}}>
+                <p style={{fontSize: '1rem', color: '#555', marginTop: '50px'}}>
                     Visitate la nostra pagina dei <Link to="/contatti" style={{
                     color: '#e62b2b',
                     fontWeight: 'bold',
@@ -685,16 +743,22 @@ const redButtonStyle = {
 const arrowButtonStyle = (direction) => ({
     position: 'absolute',
     top: '50%',
-    [direction]: '5px',
+    [direction]: '10px',
     transform: 'translateY(-50%)',
-    backgroundColor: 'transparent',
+    backgroundColor: 'rgba(0,0,0,0.5)',
     color: '#ffffff',
     border: 'none',
-    fontSize: '2rem',
+    borderRadius: '4px',
+    width: '35px',
+    height: '35px',
+    fontSize: '1.5rem',
     fontWeight: 'bold',
     cursor: 'pointer',
     zIndex: 5,
-    textShadow: '0 0 5px rgba(0,0,0,0.8)'
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    transition: 'background-color 0.2s ease'
 });
 
 export default Servizi;

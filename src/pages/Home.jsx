@@ -18,7 +18,6 @@ import Google from '../assets/Google.png';
 import RedGoogleMaps from '../assets/RedGoogleMaps.jfif';
 import Verifizierung from '../assets/Verifizierung.gif';
 import '../Styles/Home.css';
-import RedFacebook from "../assets/Redfacebook.jfif";
 
 const IMAGES = [
     { id: 1, url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFVirl6neqny0T2cnyJFMtcaUhsAXd1M7DOrKlXOmUmA&s=10', title: 'Holzkonstrukt' },
@@ -156,7 +155,6 @@ function Home() {
                         background: 'linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)'
                     }}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <img src={Icon} alt="Logo" style={{ width: '50px', height: '50px', objectFit: 'contain', borderRadius: '4px' }} />
                         </div>
 
                         <ul style={{
@@ -170,7 +168,7 @@ function Home() {
                             <li><Link to="/chi-siamo" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>Chi siamo</Link></li>
                             <li><Link to="/servizi" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>Servizi</Link></li>
                             <li><Link to="/galleria" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>Galleria</Link></li>
-                            <li><Link to="/contatti" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>Contatti</Link></li>
+                            <li><Link to="/kontakte" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>Contatti</Link></li>
                         </ul>
                     </nav>
 

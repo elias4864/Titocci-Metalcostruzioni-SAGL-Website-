@@ -1,17 +1,114 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
+import Galeriebild from "../assets/Galeria.jfif";
+import Icon from "../assets/Icon.jpg";
 
-function Home() {
+import '../Styles/Servici.css';
+import '../Styles/Galeria.css';
+import '../Styles/TimeLineSection.css';
 
+const heroOverlayStyle = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxSizing: 'border-box',
+    textAlign: 'center',
+    color: 'white',
+    zIndex: 5,
+    pointerEvents: 'none'
+};
+
+function Galeria() {
     return (
+        <div className="rot">
+            {/* Hero Banner Section */}
+            <div style={{
+                width: '100vw',
+                position: 'relative',
+                left: '50%',
+                right: '50%',
+                marginLeft: '-50vw',
+                marginRight: '-50vw',
+                overflow: 'hidden',
+                marginTop: '0px'
+            }}>
+                <div style={{ position: 'relative', width: '100%' }}>
 
-        <div style={{ maxWidth: '800px', margin: '40px auto', textAlign: 'center' }}>
-            <h1 className="yellow-text">Presentazione</h1>
+                    {/* Navbar */}
+                    <nav style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        padding: '20px 50px',
+                        boxSizing: 'border-box',
+                        zIndex: 20,
+                        background: 'linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <img src={Icon} alt="Logo" style={{ width: '50px', height: '50px', objectFit: 'contain', borderRadius: '4px' }} />
+                        </div>
 
+                        <ul style={{
+                            display: 'flex',
+                            listStyle: 'none',
+                            gap: '35px',
+                            margin: 0,
+                            padding: 0
+                        }}>
+                            <li><Link to="/" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}>Home</Link></li>
+                            <li><Link to="/chi-siamo" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}>Chi siamo</Link></li>
+                            <li><Link to="/servizi" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}>Servizi</Link></li>
+                            <li><Link to="/galleria" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px', fontSize: '14px' }}>Galleria</Link></li>
+                            <li><Link to="/contatti" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}>Contatti</Link></li>
+                        </ul>
+                    </nav>
 
+                    <img
+                        src={Galeriebild}
+                        alt="Galleria"
+                        style={{
+                            width: '100vw',
+                            height: '450px',
+                            objectFit: 'cover',
+                            display: 'block',
+                            filter: 'brightness(0.6)'
+                        }}
+                    />
 
-    )
+                    <div style={heroOverlayStyle}>
+                        <h1 style={{
+                            color: '#e62b2b',
+                            fontSize: '4.5rem',
+                            fontWeight: 'bold',
+                            margin: 0,
+                            textShadow: '2px 2px 8px rgba(0,0,0,0.9)'
+                        }}>
+                            Galleria
+                        </h1>
+                    </div>
+                </div>
+            </div>
 
+            {/* Sektion Unten */}
+            <div style={{ maxWidth: '1000px', margin: '60px auto', padding: '0 20px', textAlign: 'center' }}>
+                <h1 className="yellow-text" style={{ fontSize: '2rem', color: '#f59e0b', fontWeight: 'bold' }}>
+                    Alcuni dei nostri lavori
+
+                </h1>
+            </div>
+        </div>
+    );
 }
 
-export default Home;
+export default Galeria;
