@@ -42,16 +42,18 @@
 /* Der Container bringt die Kinder nebeneinander */
 
 /* Styling für die einzelnen Orte */
-.links-row {
-    margin: 0;
-    white-space: nowrap;  /* Verhindert ungewollten Zeilenumbruch */
-    color: #ffffff;
+.links-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
 }
 .links-row {
     display: flex;
     margin: 0;
     flex-direction: row;
     margin-top: 10px;
+    color:#ffffff !important;
 
     text-wrap: nowrap;
     gap: 15px;
