@@ -1,0 +1,70 @@
+.custom-timeline {
+    position: relative;
+    margin: 30px auto;
+    padding: 20px 0;
+}
+
+.custom-timeline::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    background-color: #ccc;
+    transform: translateX(-50%);
+}
+
+.timeline-year-badge {
+    background-color: #e62b2b;
+    color: white;
+    font-weight: bold;
+    padding: 8px 16px;
+    border-radius: 50%;
+
+    display: inline-block;
+    margin: 20px 0;
+    position: relative;
+    z-index: 2;
+}
+
+.timeline-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px 0;
+    position: relative;
+}
+
+.timeline-dot {
+    width: 40px;
+    height: 40px;
+    background-color: #fbc02d;
+    border-radius: 50%;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+}
+
+.timeline-card {
+    background: yellow;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    width: 42%;
+}
+
+.timeline-item.left .timeline-card {
+    margin-left: auto;
+}
+
+.timeline-item.right .timeline-card {
+    margin-right: auto;
+}
+
+.timeline-badge-title {
+    width: 42%;
+    font-weight: bold;
+    color: #333;
+}
