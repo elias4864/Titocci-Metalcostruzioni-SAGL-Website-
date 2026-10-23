@@ -1,70 +1,175 @@
-.custom-timeline {
+.timeline-container {
     position: relative;
-    margin: 30px auto;
+    max-width: 900px;
+    margin: 40px auto;
     padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: Arial, sans-serif;
 }
 
-.custom-timeline::before {
-    content: '';
+/* Vertikale graue Linie in der Mitte */
+.timeline-line {
     position: absolute;
     top: 0;
     bottom: 0;
     left: 50%;
-    width: 2px;
-    background-color: #ccc;
+    width: 4px;
+    background-color: #d3d3d3;
     transform: translateX(-50%);
+    z-index: 1;
 }
 
-.timeline-year-badge {
-    background-color: #e62b2b;
-    color: white;
-    font-weight: bold;
-    padding: 8px 16px;
-    border-radius: 50%;
 
+
+.yellow-text, .header-text {
+    position: relative;
     display: inline-block;
+    color: #333; /* Oder deine gewünschte Textfarbe */
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+/* Gelber Unterstrich */
+.yellow-text::after, .header-text::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -8px; /* Abstand zum Text */
+    transform: translateX(-50%);
+    width: 80px; /* Breite des Unterstrichs */
+    height: 4px; /* Dicke des Unterstrichs */
+    background-color: #ffb703; /* Gelb der Zeitachse */
+    border-radius: 2px;
+}
+
+/* Dunkelgrauer Jahres-Kreis (1973, 1982) */
+.timeline-year {
+    position: relative;
+    z-index: 3;
+    width: 70px;
+    height: 70px;
+    background-color: #55595c;
+    border: 4px solid #e0e0e0;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 20px;
     margin: 20px 0;
+}
+
+/* Timeline Element-Zeile */
+.timeline-item {
     position: relative;
     z-index: 2;
-}
-
-.timeline-item {
     display: flex;
-    justify-content: space-between;
+    width: 100%;
+    margin: 15px 0;
     align-items: center;
-    margin: 20px 0;
-    position: relative;
 }
 
+/* Gelber Kreis-Punkt in der Mitte */
 .timeline-dot {
-    width: 40px;
-    height: 40px;
-    background-color: #fbc02d;
+    width: 32px;
+    height: 32px;
+    background-color: #ffb703;
+    border: 3px solid #f2f2f2;
     border-radius: 50%;
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 2;
+    z-index: 3;
 }
 
-.timeline-card {
-    background: yellow;
-    padding: 20px;
+/* Linke und rechte Container-Hälften */
+.timeline-content-left,
+.timeline-content-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.timeline-content-left {
+    justify-content: flex-end;
+    padding-right: 35px;
+}
+
+.timeline-content-right {
+    justify-content: flex-start;
+    padding-left: 35px;
+}
+
+.left-label {
+    color: #666666;
+    font-size: 15px;
+}
+
+/* Gelbe Kachel */
+.timeline-box {
+    position: relative;
+    background-color: #ffb703;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    width: 42%;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    width: calc(50% - 50px);
+    box-sizing: border-box;
 }
 
-.timeline-item.left .timeline-card {
+.timeline-item.right .timeline-box {
     margin-left: auto;
 }
 
-.timeline-item.right .timeline-card {
+.timeline-item.left .timeline-box {
     margin-right: auto;
+    text-align: right;
 }
 
-.timeline-badge-title {
-    width: 42%;
+/* Dreieckige Pfeile an der Kachel */
+.box-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+}
+
+.left-arrow {
+    left: -10px;
+    border-right: 10px solid #ffb703;
+}
+
+.right-arrow {
+    right: -10px;
+    border-left: 10px solid #ffb703;
+}
+
+/* Inhalte innerhalb der Kachel */
+.box-title {
+    color: #e60000;
+    font-size: 22px;
+    margin: 0 0 15px 0;
     font-weight: bold;
-    color: #333;
+    text-align: left;
+}
+
+.box-logo {
+    max-width: 80%;
+    height: auto;
+    display: block;
+    margin: 0 auto 15px auto;
+}
+
+.box-text {
+    color: #333333;
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0;
+    text-align: left;
 }
