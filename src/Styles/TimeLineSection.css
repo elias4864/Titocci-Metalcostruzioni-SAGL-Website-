@@ -1,169 +1,159 @@
-/* Container & Überschrift */
-.timeline-container {
-    max-width: 950px;
-    margin: 40px auto;
-    padding: 0 20px;
-    font-family: Arial, sans-serif;
-}
-
-.yellow-title {
-    color: #f59e0b;
-    font-size: 2rem;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.yellow-divider {
-    width: 100%;
-    height: 2px;
-    background-color: #f59e0b;
-    margin-bottom: 40px;
-}
-
-/* Zeitlinien Wrapper */
+/* Haupt-Container der Timeline */
 .timeline-wrapper {
     position: relative;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
     padding: 20px 0;
 }
 
-/* Graue Linie in der Mitte */
+/* Die graue vertikale Linie exakt in der Mitte */
 .timeline-line {
     position: absolute;
+    left: 50%;
     top: 0;
     bottom: 0;
-    left: 50%;
-    width: 2px;
-    background-color: #d1d5db;
+    width: 4px;
+    background-color: #e5e7eb;
     transform: translateX(-50%);
     z-index: 1;
 }
 
-/* Graue Kreise mit den Jahreszahlen */
+/* Jahreszahlen-Badge (z.B. 1973, 1982) */
 .timeline-year {
     position: relative;
-    z-index: 2;
-    text-align: center;
-    margin: 35px 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 40px 0;
+    z-index: 3;
 }
 
 .timeline-year span {
-    background-color: #4b5563;
+    background-color: #4b5563; /* Dunkelgrauer Hintergrund */
     color: #ffffff;
-    font-weight: bold;
-    font-size: 1.1rem;
-    padding: 10px 16px;
     border-radius: 50%;
-    display: inline-block;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    min-width: 30px;
-    line-height: 30px;
-}
-
-/* Rechten & Linken Items */
-.timeline-item {
+    width: 64px;
+    height: 64px;
     display: flex;
     align-items: center;
-    position: relative;
-    margin-bottom: 40px;
-    z-index: 2;
-    width: 100%;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+    border: 5px solid #e5e7eb; /* Hellgrauer Ring außen herum */
+    box-sizing: border-box;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    /* Garantierte horizontale Zentrierung */
+    margin: 0 auto;
+    flex-shrink: 0;
 }
 
+/* Timeline Row (Item) */
+.timeline-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin: 35px 0;
+    z-index: 2;
+}
+
+/* Beide Hälften teilen sich exakt 50% der Breite */
 .timeline-content-left,
 .timeline-content-right {
     flex: 1;
-    padding: 0 20px;
+    width: 50%;
+    box-sizing: border-box;
 }
 
 .timeline-content-left {
     text-align: right;
+    padding-right: 35px;
 }
 
 .timeline-content-right {
     text-align: left;
+    padding-left: 35px;
 }
 
-.left-label {
-    font-size: 0.9rem;
-    color: #4b5563;
-    font-weight: 600;
-}
-
-/* Gelber Punkt auf der Linie */
+/* Der gelbe Punkt – exakt absolut auf der grauen Linie zentriert */
 .timeline-dot {
     position: absolute;
     left: 50%;
-    width: 28px;
-    height: 28px;
-    background-color: #f59e0b;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 24px;
+    height: 24px;
+    background-color: #ffb703;
     border-radius: 50%;
-    transform: translateX(-50%);
-    z-index: 3;
-    box-shadow: 0 0 0 4px #ffffff;
+    z-index: 4;
+    box-shadow: 0 0 0 3px #ffffff;
 }
 
-/* Gelbe Kacheln */
+/* Die gelben Info-Boxen */
 .timeline-box {
-    flex: 1;
-    max-width: 420px;
-    background-color: #f59e0b;
+    position: relative;
+    background-color: #ffb703;
     color: #1f2937;
     padding: 20px;
-    border-radius: 8px;
-    text-align: left;
-    position: relative;
+    border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    display: inline-block;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: left;
 }
 
-.timeline-item.right {
-    justify-content: flex-end;
-}
-
-.timeline-item.left {
-    justify-content: flex-start;
-}
-
-/* Kachel Pfeile */
-.box-arrow {
+/* Pfeil an der Box nach links (wenn Box rechts ist) */
+.timeline-item.right .timeline-box::before {
+    content: '';
     position: absolute;
+    left: -10px;
     top: 50%;
     transform: translateY(-50%);
-    width: 0;
-    height: 0;
     border-top: 10px solid transparent;
     border-bottom: 10px solid transparent;
+    border-right: 10px solid #ffb703;
 }
 
-.left-arrow {
-    left: -10px;
-    border-right: 10px solid #f59e0b;
-}
-
-.right-arrow {
+/* Pfeil an der Box nach rechts (wenn Box links ist) */
+.timeline-item.left .timeline-box::before {
+    position: absolute;
     right: -10px;
-    border-left: 10px solid #f59e0b;
+    top: 50%;
+    transform: translateY(-50%);
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 10px solid #ffb703;
 }
 
-/* Text in den Gelben Boxen */
+/* Inhalte in der Box */
 .box-title {
-    color: #e62b2b;
-    font-size: 1.3rem;
+    color: red;
+    font-size: 1.6rem;
     font-weight: bold;
     margin-top: 0;
     margin-bottom: 10px;
 }
 
-.box-text {
-    font-size: 0.92rem;
-    line-height: 1.5;
-    margin: 0;
-    color: #1f2937;
-}
-
 .box-logo {
     max-width: 100%;
     height: auto;
-    margin: 15px 0;
+    margin: 10px 0 15px 0;
     display: block;
+}
+
+.box-text {
+    margin: 0;
+    line-height: 1.5;
+    font-size: 0.95rem;
+    color: #374151;
+}
+
+.left-label {
+    font-size: 1rem;
+    color: #4b5563;
+    font-weight: 500;
 }
