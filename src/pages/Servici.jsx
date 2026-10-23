@@ -1,18 +1,65 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 // Asset Imports
 import Schleifbild from '../assets/Schleifen.jpg';
+import Wand from '../assets/Wand.jfif';
+import Fenster from '../assets/Fenster.jfif';
+import Gitter from '../assets/Gitter.jfif';
 import Bauplan from '../assets/Bauplan.jfif';
+import Eingang from '../assets/Eingang.jfif';
 import PC from '../assets/PC.jpg';
+
+import Briefkasten from '../assets/Briefkasten.png';
+
+import Locarno from '../assets/Locarno.jfif';
+import Gitter2 from '../assets/Gitter2.jfif';
+import Weiss from '../assets/Weiss.png';
+
 import Icon from "../assets/Icon.jpg";
 
+import '../Styles/Servici.css';
 import '../Styles/TimeLineSection.css';
 
 const IMAGES = [
-    { id: 1, url: Schleifbild, title: 'Schleifarbeiten' },
-    { id: 2, url: Bauplan, title: 'Werkstatt' },
-    { id: 3, url: PC, title: 'PC' },
+    { id: 1, url: Schleifbild, title: 'Schleifarbeiten', description: 'Lavorazione e finitura di alta precisione.' },
+    { id: 2, url: Bauplan, title: 'Werkstatt', description: 'Progettazione e produzione artigianale.' },
+    { id: 3, url: PC, title: 'PC & Design', description: 'Pianificazione CAD e modellazione 3D.' },
+];
+
+const SERVICE_CARDS = [
+    {
+        id: 'cancellate-giardino',
+        titleLocarno: 'Cancellate per giardino a Locarno',
+        titleAvegno: 'Cancellate per giardino ad Avegno',
+        image: Gitter,
+        textLocarno: 'Proteggi la tua casa e il tuo giardino con stile installando le cancellate per giardino. Potrai limitare l’accesso degli estranei e tenere al sicuro la tua famiglia e i tuoi animali domestici.',
+        textAvegno: 'Proteggi la tua casa e il tuo giardino con stile installando le cancellate per giardino ad Avegno. Potrai limitare l’accesso degli estranei e tenere al sicuro la tua famiglia e i tuoi animali domestici.'
+    },
+    {
+        id: 'cancellate-ferro',
+        titleLocarno: 'Cancellate in ferro a Locarno',
+        titleAvegno: 'Cancellate in ferro ad Avegno',
+        image: Fenster,
+        textLocarno: 'Le migliori soluzioni per le tue cancellate in ferro sono quelle che uniscono funzionalità e design. Scegli una soluzione personalizzata, creata su misura per la tua proprietà.',
+        textAvegno: 'Le migliori soluzioni per le tue cancellate in ferro ad Avegno sono quelle che uniscono funzionalità e design. Scegli una soluzione personalizzata, creata su misura per la tua proprietà.'
+    },
+    {
+        id: 'ringhiere',
+        titleLocarno: 'Ringhiere a Locarno',
+        titleAvegno: 'Ringhiere ad Avegno',
+        image: Wand,
+        textLocarno: 'Le ringhiere sono sistemi di protezione che si trovano nella maggioranza degli edifici. Oltre ad essere componenti importanti per la sicurezza, le ringhiere diventano parte integrante dell’architettura.',
+        textAvegno: 'Le ringhiere sono sistemi di protezione che si trovano nella maggioranza degli edifici. Oltre ad essere componenti importanti per la sicurezza, le ringhiere diventano parte integrante dell’architettura.'
+    },
+    {
+        id: 'parapetti',
+        titleLocarno: 'Parapetti a Locarno',
+        titleAvegno: 'Parapetti ad Avegno',
+        image: Locarno,
+        textLocarno: 'I parapetti sono componenti architettonici essenziali che conferiscono un tocco di stile agli edifici, definiscono gli spazi e creano un’estetica piacevole.',
+        textAvegno: 'I parapetti sono componenti architettonici essenziali che conferiscono un tocco di stile agli edifici, definiscono gli spazi e creano un’estetica piacevole.'
+    }
 ];
 
 const navButtonStyle = {
@@ -67,6 +114,15 @@ const heroOverlayStyle = {
 function Servizi() {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
+    const [indexParapetti, setIndexParapetti] = useState(0);
+    const [indexCancelli, setIndexCancelli] = useState(0);
+    const [bottomSliderIndex, setBottomSliderIndex] = useState(0);
+
+    const navigate = useNavigate();
+
+    const imagesParapetti = [Gitter, Wand];
+    const imagesCancelli = [Fenster, Eingang];
+    const bottomImages = [Wand, Fenster]; // Bilder für den unteren Slider
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -85,8 +141,13 @@ function Servizi() {
 
     if (!isOpen) return null;
 
+    const handleClick = () => {
+        window.location.href = 'https://titocci.ch/a/locarno/cancellate-per-giardino-a-locarno/';
+    };
+
     return (
         <div className="rot">
+            {/* Hero Slider Section */}
             <div style={{
                 width: '100vw',
                 position: 'relative',
@@ -97,9 +158,9 @@ function Servizi() {
                 overflow: 'hidden',
                 marginTop: '0px'
             }}>
-                <div style={{ position: 'relative', width: '100%' }}>
+                <div style={{position: 'relative', width: '100%'}}>
 
-                    {/* Navbar über die volle Breite */}
+                    {/* Navbar */}
                     <nav style={{
                         position: 'absolute',
                         top: 0,
@@ -113,8 +174,9 @@ function Servizi() {
                         zIndex: 20,
                         background: 'linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)'
                     }}>
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <img src={Icon} alt="Logo" style={{ width: '50px', height: '50px', objectFit: 'contain', borderRadius: '4px' }} />
+                        <div style={{display: 'flex', alignItems: 'center'}}>
+                            <img src={Icon} alt="Logo"
+                                 style={{width: '50px', height: '50px', objectFit: 'contain', borderRadius: '4px'}}/>
                         </div>
 
                         <ul style={{
@@ -124,18 +186,43 @@ function Servizi() {
                             margin: 0,
                             padding: 0
                         }}>
-                            <li><Link to="/" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px', fontSize: '14px' }}>Home</Link></li>
-                            <li><Link to="/chi-siamo" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}>Chi siamo</Link></li>
-                            <li><Link to="/servizi" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}>Servizi</Link></li>
-                            <li><Link to="/galleria" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}>Galleria</Link></li>
-                            <li><Link to="/contatti" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}>Contatti</Link></li>
+                            <li><Link to="/" style={{
+                                color: 'white',
+                                textDecoration: 'none',
+                                fontWeight: 'bold',
+                                fontSize: '14px'
+                            }}>Home</Link></li>
+                            <li><Link to="/chi-siamo" style={{
+                                color: 'white',
+                                textDecoration: 'none',
+                                fontWeight: 'bold',
+                                fontSize: '14px'
+                            }}>Chi siamo</Link></li>
+                            <li><Link to="/servizi" style={{
+                                color: 'white',
+                                textDecoration: 'none',
+                                fontWeight: 'bold',
+                                borderBottom: '3px solid #e62b2b',
+                                paddingBottom: '4px',
+                                fontSize: '14px'
+                            }}>Servizi</Link></li>
+                            <li><Link to="/galleria" style={{
+                                color: 'white',
+                                textDecoration: 'none',
+                                fontWeight: 'bold',
+                                fontSize: '14px'
+                            }}>Galleria</Link></li>
+                            <li><Link to="/contatti" style={{
+                                color: 'white',
+                                textDecoration: 'none',
+                                fontWeight: 'bold',
+                                fontSize: '14px'
+                            }}>Contatti</Link></li>
                         </ul>
                     </nav>
 
-                    {/* Navigation Button Links */}
-                    <button onClick={prevImage} style={{ ...navButtonStyle, left: '25px' }}>◀</button>
+                    <button onClick={prevImage} style={{...navButtonStyle, left: '25px'}}>◀</button>
 
-                    {/* Bild */}
                     <img
                         src={IMAGES[currentIndex].url}
                         alt={IMAGES[currentIndex].title}
@@ -148,7 +235,6 @@ function Servizi() {
                         }}
                     />
 
-                    {/* Hero Text & Button Overlay */}
                     <div style={heroOverlayStyle}>
                         <h1 style={{
                             color: '#e62b2b',
@@ -158,7 +244,7 @@ function Servizi() {
                             zIndex: 10,
                             textShadow: '2px 2px 6px rgba(0,0,0,0.8)'
                         }}>
-                            Servizi<br />
+                            Servizi<br/>
                             Fabbro artigiano
                         </h1>
 
@@ -179,17 +265,436 @@ function Servizi() {
                         </Link>
                     </div>
 
-                    {/* Bildunterschrift */}
                     <p style={imageCaptionStyle}>
                         {IMAGES[currentIndex].title}
                     </p>
 
-                    {/* Navigation Button Rechts */}
-                    <button onClick={nextImage} style={{ ...navButtonStyle, right: '25px' }}>▶</button>
+                    <button onClick={nextImage} style={{...navButtonStyle, right: '25px'}}>▶</button>
                 </div>
             </div>
+
+            {/* --- KATEGORIEN-SLIDER SECTION (PARAPETTI & CANCELLI) --- */}
+            <div style={{
+                maxWidth: '1100px',
+                margin: '50px auto 40px auto',
+                padding: '0 20px',
+                fontFamily: 'Arial, sans-serif'
+            }}>
+                <div style={{display: 'flex', gap: '40px', justifyContent: 'center', flexWrap: 'wrap'}}>
+
+                    {/* KARTE 1: Parapetti e ringhiere */}
+                    <div style={{flex: '1 1 450px', maxWidth: '500px', textAlign: 'center'}}>
+                        <h3 style={{color: '#4a5568', fontSize: '1.25rem', marginBottom: '20px', fontWeight: '600'}}>
+                            Parapetti e ringhiere
+                        </h3>
+
+                        <div style={{
+                            position: 'relative',
+                            display: 'flex',
+                            gap: '5px',
+                            overflow: 'hidden',
+                            borderRadius: '2px'
+                        }}>
+                            <button
+                                onClick={() => setIndexParapetti((prev) => (prev > 0 ? prev - 1 : imagesParapetti.length - 1))}
+                                style={arrowButtonStyle('left')}
+                            >
+                                ‹
+                            </button>
+
+                            <img src={imagesParapetti[indexParapetti]} alt="Parapetti 1" style={cardImageStyle}/>
+                            <img src={imagesParapetti[(indexParapetti + 1) % imagesParapetti.length]} alt="Parapetti 2"
+                                 style={cardImageStyle}/>
+
+                            <button
+                                onClick={() => setIndexParapetti((prev) => (prev + 1) % imagesParapetti.length)}
+                                style={arrowButtonStyle('right')}
+                            >
+                                ›
+                            </button>
+                        </div>
+
+                        {/* Indikator Punkte */}
+                        <div style={{display: 'flex', justifyContent: 'center', gap: '6px', margin: '15px 0 20px 0'}}>
+                            {[0, 1, 2, 3, 4, 5, 6].map((_, i) => (
+                                <span
+                                    key={i}
+                                    style={{
+                                        width: '6px',
+                                        height: '6px',
+                                        borderRadius: '50%',
+                                        backgroundColor: i === indexParapetti ? '#000' : '#ccc',
+                                        display: 'inline-block'
+                                    }}
+                                />
+                            ))}
+                        </div>
+
+                        <Link to="/galleria" style={redButtonStyle}>
+                            Scopri di più
+                        </Link>
+                    </div>
+
+                    {/* KARTE 2: Cancellate in ferro e Cancelli per giardino */}
+                    <div style={{flex: '1 1 450px', maxWidth: '500px', textAlign: 'center'}}>
+                        <h3 style={{marginBottom: '20px'}}>
+                            <button
+                                onClick={handleClick}
+                                style={{
+                                    color: '#4a5568',
+                                    fontSize: '1.25rem',
+                                    fontWeight: '600',
+                                    border: 'none',
+                                    background: 'none',
+                                    cursor: 'pointer',
+                                    padding: 0
+                                }}
+                            >
+                                Cancellate in ferro e Cancelli per giardino
+                            </button>
+                        </h3>
+
+                        <div style={{
+                            position: 'relative',
+                            display: 'flex',
+                            gap: '5px',
+                            overflow: 'hidden',
+                            borderRadius: '2px'
+                        }}>
+                            <button
+                                onClick={() => setIndexCancelli((prev) => (prev > 0 ? prev - 1 : imagesCancelli.length - 1))}
+                                style={arrowButtonStyle('left')}
+                            >
+                                ‹
+                            </button>
+
+                            <img src={imagesCancelli[indexCancelli]} alt="Cancelli 1" style={cardImageStyle}/>
+                            <img src={imagesCancelli[(indexCancelli + 1) % imagesCancelli.length]} alt="Cancelli 2"
+                                 style={cardImageStyle}/>
+
+                            <button
+                                onClick={() => setIndexCancelli((prev) => (prev + 1) % imagesCancelli.length)}
+                                style={arrowButtonStyle('right')}
+                            >
+                                ›
+                            </button>
+                        </div>
+
+                        {/* Indikator Punkte */}
+                        <div style={{display: 'flex', justifyContent: 'center', gap: '6px', margin: '15px 0 20px 0'}}>
+                            {[0, 1, 2, 3].map((_, i) => (
+                                <span
+                                    key={i}
+                                    style={{
+                                        width: '6px',
+                                        height: '6px',
+                                        borderRadius: '50%',
+                                        backgroundColor: i === indexCancelli ? '#000' : '#ccc',
+                                        display: 'inline-block'
+                                    }}
+                                />
+                            ))}
+                        </div>
+
+                        <Link to="/galleria" style={redButtonStyle}>
+                            Scopri di più
+                        </Link>
+                    </div>
+
+                </div>
+            </div>
+
+            {/* --- LOCARNO & AVEGNO SERVICE CARDS GRID --- */}
+            <div style={{
+                maxWidth: '1000px',
+                margin: '60px auto',
+                padding: '0 20px',
+                fontFamily: 'Arial, sans-serif'
+            }}>
+                <div style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '30px',
+                    justifyContent: 'center'
+                }}>
+                    {SERVICE_CARDS.map((section) => (
+                        <React.Fragment key={section.id}>
+                            {/* Locarno Karte */}
+                            <div style={{
+                                flex: '1 1 420px',
+                                maxWidth: '460px',
+                                backgroundColor: '#ffffff',
+                                borderRadius: '12px',
+                                boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
+                                overflow: 'hidden',
+                                display: 'flex',
+                                flexDirection: 'column'
+                            }}>
+                                <div style={{height: '240px', width: '100%', overflow: 'hidden'}}>
+                                    <img
+                                        src={section.image}
+                                        alt={section.titleLocarno}
+                                        style={{width: '100%', height: '100%', objectFit: 'cover', display: 'block'}}
+                                    />
+                                </div>
+                                <div style={{
+                                    padding: '25px',
+                                    textAlign: 'center',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    flexGrow: 1
+                                }}>
+                                    <h3 style={{
+                                        color: '#f59e0b',
+                                        fontSize: '1.35rem',
+                                        fontWeight: 'bold',
+                                        marginTop: 0,
+                                        marginBottom: '15px'
+                                    }}>
+                                        {section.titleLocarno}
+                                    </h3>
+                                    <p style={{color: '#6b7280', fontSize: '0.92rem', lineHeight: '1.5', margin: 0}}>
+                                        {section.textLocarno}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Avegno Karte */}
+                            <div style={{
+                                flex: '1 1 420px',
+                                maxWidth: '460px',
+                                backgroundColor: '#ffffff',
+                                borderRadius: '12px',
+                                boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
+                                overflow: 'hidden',
+                                display: 'flex',
+                                flexDirection: 'column'
+                            }}>
+                                <div style={{height: '240px', width: '100%', overflow: 'hidden'}}>
+                                    <img
+                                        src={section.image}
+                                        alt={section.titleAvegno}
+                                        style={{width: '100%', height: '100%', objectFit: 'cover', display: 'block'}}
+                                    />
+                                </div>
+                                <div style={{
+                                    padding: '25px',
+                                    textAlign: 'center',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    flexGrow: 1
+                                }}>
+                                    <h3 style={{
+                                        color: '#f59e0b',
+                                        fontSize: '1.35rem',
+                                        fontWeight: 'bold',
+                                        marginTop: 0,
+                                        marginBottom: '15px'
+                                    }}>
+                                        {section.titleAvegno}
+                                    </h3>
+                                    <p style={{color: '#6b7280', fontSize: '0.92rem', lineHeight: '1.5', margin: 0}}>
+                                        {section.textAvegno}
+                                    </p>
+                                </div>
+                            </div>
+                        </React.Fragment>
+                    ))}
+                </div>
+            </div>
+
+            {/* --- TEXTSEKTION AM ENDE --- */}
+            <section style={{maxWidth: '900px', margin: '60px auto', padding: '0 20px', textAlign: 'center'}}>
+                <h1 className="yellow-text"
+                    style={{fontSize: '2rem', marginBottom: '20px', color: '#f59e0b', fontWeight: 'bold'}}>
+                    Fabbro artigiano: mestiere e arte
+                </h1>
+                <p style={{lineHeight: '1.6', fontSize: '1.05rem', color: '#333', marginBottom: '40px'}}>
+                    Un <b>fabbro artigiano</b> è una figura professionale che ha le sue radici nei secoli passati,
+                    risudando i ferri caldi nella lavorazione dei metalli ma fondamentale per la sopravvivenza della
+                    comunità. Questo mestiere affascinante e versatile, ancora oggi di grande importanza, combina
+                    abilità artigianali con l'innovazione tecnologica per creare elementi unici, funzionali e altamente
+                    personalizzati.
+                </p>
+
+                <h2 style={{fontSize: '1.8rem', marginBottom: '20px', color: '#f59e0b'}}>
+                    Il mestiere del fabbro artigiano
+                </h2>
+                <p style={{lineHeight: '1.6', fontSize: '1.05rem', marginBottom: '40px', color: '#333'}}>
+                    Il fabbro artigiano è un esperto specializzato nella lavorazione dei metalli. Attraverso l’uso di
+                    varie tecniche come la forgia, la saldatura e la cesellatura, il fabbro trasforma il metallo grezzo
+                    in oggetti funzionali ma allo stesso tempo estetici, che danno un valore aggiunto alla proprietà.
+                    Questo mestiere richiede un’eccezionale abilità manuale, creatività e una profonda comprensione dei
+                    materiali. Che si tratti di cancelli, ringhiere, pergolati, lampioni, scale o qualsiasi altro
+                    elemento, il fabbro dà vita al metallo, plasmando la materia con maestria.
+                </p>
+
+                <h2 style={{fontSize: '1.8rem', marginBottom: '20px', color: '#f59e0b'}}>
+                    I tipi di metallo
+                </h2>
+                <p style={{lineHeight: '1.6', fontSize: '1.05rem', marginBottom: '30px', color: '#333'}}>
+                    I diversi tipi di metallo utilizzati dai fabbri artigiani dipendono dalla lega e dalla destinazione
+                    d’uso.
+                </p>
+
+                {/* 3 Spalten für Metall-Typen */}
+                <div style={{
+                    display: 'flex',
+                    gap: '20px',
+                    justifyContent: 'center',
+                    flexWrap: 'wrap',
+                    marginBottom: '50px',
+                    textAlign: 'left'
+                }}>
+                    <div style={{
+                        flex: '1 1 250px',
+                        background: '#fff',
+                        padding: '20px',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+                    }}>
+                        <h3 style={{color: '#f59e0b', fontSize: '1.2rem', marginBottom: '10px'}}>L’acciaio al
+                            carbonio</h3>
+                        <p style={{fontSize: '0.95rem', color: '#666', lineHeight: '1.5', margin: 0}}>L’acciaio al
+                            carbonio è comunemente utilizzato dai fabbri perché forte e resistente.</p>
+                    </div>
+                    <div style={{
+                        flex: '1 1 250px',
+                        background: '#fff',
+                        padding: '20px',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+                    }}>
+                        <h3 style={{color: '#f59e0b', fontSize: '1.2rem', marginBottom: '10px'}}>L’acciaio
+                            inossidabile</h3>
+                        <p style={{fontSize: '0.95rem', color: '#666', lineHeight: '1.5', margin: 0}}>L’acciaio
+                            inossidabile (o acciaio inox) è una lega a base di ferro, carbonio e altri elementi, tra cui
+                            cromo, nichel, titanio, ecc. È proprio la presenza di questi elementi che rende questo tipo
+                            di acciaio molto resistente alla corrosione.</p>
+                    </div>
+                    <div style={{
+                        flex: '1 1 250px',
+                        background: '#fff',
+                        padding: '20px',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+                    }}>
+                        <h3 style={{color: '#f59e0b', fontSize: '1.2rem', marginBottom: '10px'}}>L’alluminio</h3>
+                        <p style={{fontSize: '0.95rem', color: '#666', lineHeight: '1.5', margin: 0}}>L’alluminio è un
+                            metallo più leggero dell’acciaio ma durevole e resistente alla corrosione. È
+                            riciclabile.</p>
+                    </div>
+                </div>
+
+                <h2 style={{fontSize: '1.8rem', marginBottom: '30px', color: '#f59e0b'}}>
+                    Lavorazione di svariati tipi di metalli
+                </h2>
+                <div className="img-container">
+                <img src={Gitter2} />
+                <img src={Weiss} />
+                    <img src={Briefkasten} />
+                    </div>
+
+
+                {/* --- UNTERER BILDER-SLIDER (WIE AUF DEM LETZTEN BILD) --- */}
+                <div style={{maxWidth: '900px', margin: '0 auto 40px auto', position: 'relative'}}>
+                    <div style={{display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap'}}>
+                        <div style={{flex: '1 1 400px', textAlign: 'center'}}>
+                            <p style={{
+                                fontSize: '0.95rem',
+                                fontWeight: 'bold',
+                                color: '#333',
+                                marginBottom: '15px',
+                                minHeight: '40px'
+                            }}>
+                                Costruzione e montaggio di ringhiere di ogni tipo, scale, serramenti, cancelli manuali o
+                                automatizzati, porte garage, bucalettere, recinzioni, ecc ....
+                            </p>
+                            <div style={{
+                                position: 'relative',
+                                overflow: 'hidden',
+                                borderRadius: '8px',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                            }}>
+                                <img src={bottomImages[bottomSliderIndex]} alt="Lavorazione metalli 1"
+                                     style={{width: '100%', height: '260px', objectFit: 'cover', display: 'block'}}/>
+                            </div>
+                        </div>
+
+                        <div style={{flex: '1 1 400px', textAlign: 'center'}}>
+                            <p style={{
+                                fontSize: '0.95rem',
+                                fontWeight: 'bold',
+                                color: '#333',
+                                marginBottom: '15px',
+                                minHeight: '40px'
+                            }}>
+                                Eseguiamo anche riparazioni, semplice lavorazione lamiere, taglio, piegatura, saldatura
+                                di acciaio Inox e alluminio, verniciatura semplice, ecc .....
+                            </p>
+                            <div style={{
+                                position: 'relative',
+                                overflow: 'hidden',
+                                borderRadius: '8px',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                            }}>
+                                <img src={bottomImages[(bottomSliderIndex + 1) % bottomImages.length]}
+                                     alt="Lavorazione metalli 2"
+                                     style={{width: '100%', height: '260px', objectFit: 'cover', display: 'block'}}/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Link zu Contatti am Ende */}
+                <p style={{fontSize: '1rem', color: '#555', marginTop: '40px'}}>
+                    Visitate la nostra pagina dei <Link to="/contatti" style={{
+                    color: '#e62b2b',
+                    fontWeight: 'bold',
+                    textDecoration: 'underline'
+                }}>contatti</Link> per ottenere ulteriori informazioni
+                </p>
+            </section>
+            <hr className="yellow-line"/>
+
         </div>
     );
 }
+
+// --- Hilfs-Styles ---
+const cardImageStyle = {
+    width: '50%',
+    height: '200px',
+    objectFit: 'cover',
+    display: 'block'
+};
+
+const redButtonStyle = {
+    display: 'inline-block',
+    backgroundColor: '#e52e2e',
+    color: '#ffffff',
+    padding: '10px 24px',
+    borderRadius: '4px',
+    textDecoration: 'none',
+    fontWeight: 'bold',
+    fontSize: '0.9rem',
+    boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+    transition: 'background-color 0.2s ease'
+};
+
+const arrowButtonStyle = (direction) => ({
+    position: 'absolute',
+    top: '50%',
+    [direction]: '5px',
+    transform: 'translateY(-50%)',
+    backgroundColor: 'transparent',
+    color: '#ffffff',
+    border: 'none',
+    fontSize: '2rem',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    zIndex: 5,
+    textShadow: '0 0 5px rgba(0,0,0,0.8)'
+});
 
 export default Servizi;
