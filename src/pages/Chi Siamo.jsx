@@ -97,7 +97,7 @@ export const TimelineSection = () => {
                         <div className="box-arrow left-arrow"></div>
                         <p className="box-text">
                             Dopo quattro anni di apprendistato e ulteriori 13 anni di esperienza come dipendente...
-                        </p>
+                        </p>a
                     </div>
                 </div>
 
@@ -137,7 +137,17 @@ export const TimelineSection = () => {
                 <p><b>La storia del fabbro</b> si intreccia con le leggende e i miti dell’antichità. L’immagine di Efesto, il fabbro divino della mitologia greca, incarna il connubio tra l’arte del fuoco e la lavorazione dei metalli. Le prime menti creative adottarono il fuoco come loro compagno, imparando a fondere e modellare i metalli per creare utensili e oggetti che avrebbero rivoluzionato il modo in cui l’umanità viveva e lavorava. Da allora, la figura del fabbro si è evoluta, integrando tecniche avanzate e materiali innovativi, diventando un pilastro dell’industria metallurgica moderna.
                 </p>
 
-                <h1>Funzionalità e personalizzazione</h1>
+
+
+                <div>
+                    <h1 style={{ color: '#f59e0b', fontSize: '2rem', fontWeight: 'bold', marginBottom: '20px' }}>
+                        Funzionalità e personalizzazione
+                    </h1>
+                    <p style={{ lineHeight: '1.6', fontSize: '1.05rem', color: '#333' }}>
+                        Un <b>fabbro moderno è un artista</b>, un artigiano e un tecnico. Grazie alla vasta esperienza e a un’ampia gamma di strumenti specializzati, come fucine, incudini e martelli, trasforma materie prime in elementi funzionali. L’abilità di forgiare, saldare e rifinire il metallo è solo il punto di partenza. La vera magia risiede nella creazione di pezzi unici che coniugano estetica e utilità. Ogni cancellata, ogni ringhiera, ogni scala, o qualsiasi altro prodotto realizzato da Titocci Metalcostruzioni, è un elemento personalizzato in base alle tue richieste ed esigenze, un elemento unico che porta la firma distintiva del maestro fabbro.
+                    </p>
+                </div>
+                <p>L'Arte del Ferro Battuto</p>
 
             </section>
         </div>
