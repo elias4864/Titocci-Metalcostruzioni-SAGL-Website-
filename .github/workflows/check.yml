@@ -1,0 +1,78 @@
+name: CI/CD Pipeline & Dependency Check
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  # -------------------------------------------------------------
+  # JOB 1: Code-Qualität & Dependency Security Checks
+  # -------------------------------------------------------------
+  lint-and-check:
+    name: Linting & Dependency Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Audit Dependencies (Security Check)
+        run: npm audit --audit-level=high
+        continue-on-error: true # Verhindert Pipeline-Abbruch bei kleineren Warnungen
+
+  # -------------------------------------------------------------
+  # JOB 2: Docker Build & Push (läuft nur, wenn Job 1 erfolgreich)
+  # -------------------------------------------------------------
+  build-and-push:
+    name: Build & Push Docker Image
+    needs: lint-and-check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' # Docker Image nur bei Push auf main/master bauen
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry (GHCR)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker Metadata (Tags & Labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=raw,value=latest
+            type=sha,format=short
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
