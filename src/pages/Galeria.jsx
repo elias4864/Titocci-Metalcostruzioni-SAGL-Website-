@@ -2,7 +2,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 import Galeriebild from "../assets/Galeria.jfif";
-import Icon from "../assets/Icon.jpg";
 
 import '../Styles/Galeria.css';
 
@@ -71,7 +70,7 @@ function Galeria() {
                         </ul>
                     </nav>
 
-                    {/* Scharfes Bild */}
+                    {/* Bild */}
                     <img
                         src={Galeriebild}
                         alt="Galleria"
@@ -109,9 +108,14 @@ function Galeria() {
                 </div>
             </div>
 
-            {/* Sektion Unten */}
-            <div style={{ maxWidth: '1000px', margin: '60px auto', textAlign: 'center' }}>
-                <h1 className="yellow-text" >
+            {/* Sektion Unten - Korrekt zentriert und positioniert */}
+            <div style={{ maxWidth: '1000px', margin: '60px auto 40px auto', padding: '0 20px', textAlign: 'center' }}>
+                <h1 style={{
+                    fontSize: '2rem',
+                    color: '#f59e0b',
+                    fontWeight: 'bold',
+                    margin: 0
+                }}>
                     Alcuni dei nostri lavori
                 </h1>
             </div>
