@@ -2,9 +2,9 @@ name: Frontend CI
 
 on:
   push:
-    branches: ["main", "dev"]
+    branches: ["dev"]
   pull_request:
-    branches: ["main", "dev"]
+    branches: ["dev"]
 
 jobs:
   frontend-check:
@@ -23,7 +23,7 @@ jobs:
             echo "package.json gefunden. Frontend-Build wird gestartet."
           else
             echo "exists=false" >> "$GITHUB_OUTPUT"
-            echo "Keine package.json gefunden. Job wird übersprungen, da im Repository noch kein Frontend-Projekt vorhanden ist."
+            echo "Keine package.json gefunden. Der Workflow läuft nur auf dem dev-Branch mit dem Frontend-Projekt."
           fi
 
       - name: Node.js einrichten
