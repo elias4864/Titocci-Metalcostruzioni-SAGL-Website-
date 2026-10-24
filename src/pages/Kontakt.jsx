@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link } from "react-router-dom";
 
 // Asset Imports
-import Icon from "../assets/Icon.jpg";
 import ContactBg from "../assets/Schleifen.jpg";
 import "../Styles/Kontakt.css";
 
@@ -28,11 +27,6 @@ const heroOverlayStyle = {
     pointerEvents: 'none'
 };
 
-const handleSubmit = (e) => {
-    e.preventDefault();
-
-}
-
 function Contatti() {
     const [formData, setFormData] = useState({
         nome: '',
@@ -40,8 +34,6 @@ function Contatti() {
         messaggio: '',
         privacy: false
     });
-
-
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -51,9 +43,15 @@ function Contatti() {
         });
     };
 
+
+    /**
+     * Handle Submit FUnktion for COntact Formular Button
+     * @param e
+     */
     const handleSubmit = (e) => {
         e.preventDefault();
-        alert('Messaggio inviato con successo!');
+        alert('Nachricht wurde erfolgreich gesendet!');
+        console.log(formData);
     };
 
     return (
@@ -172,6 +170,14 @@ function Contatti() {
                                 required
                                 onChange={handleChange}
                                 className="custom-input"
+                                style={{
+                                    width: '100%',
+                                    padding: '10px 12px',
+                                    border: '1px solid #ccc',
+                                    borderRadius: '4px',
+                                    fontSize: '1rem',
+                                    boxSizing: 'border-box'
+                                }}
                             />
                         </div>
 
@@ -187,11 +193,9 @@ function Contatti() {
                                     padding: '10px 12px',
                                     border: '1px solid #ccc',
                                     borderRadius: '4px',
-
                                     fontSize: '1rem',
                                     boxSizing: 'border-box',
                                     resize: 'vertical'
-
                                 }}
                             />
                         </div>
@@ -226,6 +230,8 @@ function Contatti() {
                         >
                             INVIO
                         </button>
+
+
                     </form>
                 </div>
 
@@ -251,7 +257,10 @@ function Contatti() {
                             alignItems: 'center',
                             gap: '8px'
                         }}>
-                            <span style={{ color: '#e62b2b' }}>📞</span> Tel. +41 91 796 23 69
+                            <span style={{ color: '#e62b2b' }}>📞</span>
+                            <a href="tel:+41917962369" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>
+                                Tel. +41 91 796 23 69
+                            </a>
                         </p>
                         <p style={{
                             margin: '5px 0',
@@ -261,7 +270,8 @@ function Contatti() {
                             alignItems: 'center',
                             gap: '8px'
                         }}>
-                            <span style={{ color: '#e62b2b' }}>✉️</span> info@titocci.ch
+                            <span style={{ color: '#e62b2b' }}>✉️</span>
+                            <a href="mailto:info@titocci.ch" style={{ color: '#e62b2b', textDecoration: 'none' }}>info@titocci.ch</a>
                         </p>
                     </div>
 
@@ -281,13 +291,16 @@ function Contatti() {
                             margin: '5px 0',
                             fontSize: '0.95rem',
                             color: '#444',
-                            lineHeight: '1.5'
+                            lineHeight: '1.5',
+                            float:'left',
+                            textAlign: 'left'
                         }}>
                             In di Salécc 2,<br />
                             6670 Avegno
                         </p>
                     </div>
 
+                    {/* Social Icons */}
                     <div className="footer-social-icons" style={{ display: 'flex', gap: '15px' }}>
                         <a className="img-facebook"
                            href="https://www.facebook.com/people/Titocci-Metalcostruzioni-Sagl/100063745770320/#"
@@ -301,17 +314,21 @@ function Contatti() {
                         </a>
                     </div>
 
+                    {/* Google Maps Karte platziert sich nun ganz unten in der Spalte */}
                     <iframe
                         className="maps-full"
                         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2760.964782838872!2d8.740326876315036!3d46.211155571096!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4785b75776b14f6b%3A0x1a856f78a38373de!2sTitocci%20Metalcostruzioni%20SAGL!5e0!3m2!1sde!2sch!4v1792763434793!5m2!1sde!2sch"
-                        width="100%"
-                        height="300"
-                        style={{ border: 0 }}
                         allowFullScreen=""
                         loading="lazy"
                         referrerPolicy="strict-origin-when-cross-origin"
                     ></iframe>
                 </div>
+
+
+
+
+
+
             </div>
         </div>
     );

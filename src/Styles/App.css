@@ -72,7 +72,18 @@
   align-items: flex-start;
   gap: 30px;
 }
-
+.footer-copyright{
+  display: flex;
+  float:left;
+  align-items: baseline;
+  justify-content: flex-start; /* Richtet den Inhalt links aus */
+  margin-left: 30px; /* Ersetzt 'left: 30px', da 'left' bei normalem Flexbox nicht greift */
+  box-sizing: border-box;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 
 
 .footer-red-link {

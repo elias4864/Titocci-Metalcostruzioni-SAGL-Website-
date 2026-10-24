@@ -163,7 +163,7 @@ function App() {
                     <a href="/privacy" className="footer-links">Privacy</a>
                 </p>
 
-                <p>
+                <p className="footer-copyright">
                     Web Design by{' '}
                     <a href="https://marketingmaster.ch" target="_blank" rel="noreferrer" className="footer-links">
                         marketingmaster.ch
