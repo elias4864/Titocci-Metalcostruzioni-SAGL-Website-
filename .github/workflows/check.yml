@@ -1,4 +1,4 @@
-name: CI/CD Pipeline & Dependency Check
+name: CI/CD Pipeline & Dependency Audit
 
 on:
   push:
@@ -25,23 +25,24 @@ jobs:
           cache: 'npm'
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm ci # (oder 'npm install', falls keine package-lock.json vorhanden ist)
 
       - name: Run ESLint
         run: npm run lint
 
-      - name: Audit Dependencies (Security Check)
+      # Integrierter Dependency & Vulnerability Check
+      - name: Run Dependency Audit
         run: npm audit --audit-level=high
-        continue-on-error: true # Verhindert Pipeline-Abbruch bei kleineren Warnungen
+        continue-on-error: true # Setze auf 'false', falls die Pipeline bei Sicherheitslücken abbrechen soll
 
   # -------------------------------------------------------------
-  # JOB 2: Docker Build & Push (läuft nur, wenn Job 1 erfolgreich)
+  # JOB 2: Docker Build & Push (läuft nach erfolgreichem Job 1)
   # -------------------------------------------------------------
   build-and-push:
     name: Build & Push Docker Image
     needs: lint-and-check
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' # Docker Image nur bei Push auf main/master bauen
+    if: github.event_name == 'push'
 
     steps:
       - name: Checkout Code
@@ -57,7 +58,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract Docker Metadata (Tags & Labels)
+      - name: Extract Docker Metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
