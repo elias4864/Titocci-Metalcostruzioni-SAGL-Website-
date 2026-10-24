@@ -28,6 +28,11 @@ const heroOverlayStyle = {
     pointerEvents: 'none'
 };
 
+const handleSubmit = (e) => {
+    e.preventDefault();
+
+}
+
 function Contatti() {
     const [formData, setFormData] = useState({
         nome: '',
@@ -35,6 +40,8 @@ function Contatti() {
         messaggio: '',
         privacy: false
     });
+
+
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -141,6 +148,7 @@ function Contatti() {
                             <input
                                 type="text"
                                 name="nome"
+                                required={true}
                                 value={formData.nome}
                                 onChange={handleChange}
                                 style={{
@@ -153,22 +161,17 @@ function Contatti() {
                                 }}
                             />
                         </div>
-
                         <div>
-                            <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '5px' }}>Email</label>
+                            <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '5px' }}>
+                                Email
+                            </label>
                             <input
                                 type="email"
                                 name="email"
                                 value={formData.email}
+                                required
                                 onChange={handleChange}
-                                style={{
-                                    width: '100%',
-                                    padding: '10px 12px',
-                                    border: '1px solid #ccc',
-                                    borderRadius: '4px',
-                                    fontSize: '1rem',
-                                    boxSizing: 'border-box'
-                                }}
+                                className="custom-input"
                             />
                         </div>
 
@@ -184,9 +187,11 @@ function Contatti() {
                                     padding: '10px 12px',
                                     border: '1px solid #ccc',
                                     borderRadius: '4px',
+
                                     fontSize: '1rem',
                                     boxSizing: 'border-box',
                                     resize: 'vertical'
+
                                 }}
                             />
                         </div>

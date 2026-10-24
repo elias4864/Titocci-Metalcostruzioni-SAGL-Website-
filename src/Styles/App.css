@@ -57,13 +57,22 @@
 .footer-bottom {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 20px 40px;
   background-color: #000000;
   color: #ffffff;
   font-size: 0.9rem;
   border-top: 1px solid #222;
+  width: 100vw;               /* Occupa tutta la larghezza dello schermo */
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;         /* Annulla i margini dei contenitori genitori */
+  margin-right: -50vw;
+  padding: 40px 60px;
+  box-sizing: border-box;
+  align-items: flex-start;
+  gap: 30px;
 }
+
 
 
 .footer-red-link {
@@ -471,14 +480,21 @@ p  {
 }
 
 
+/* Rendiamo il contenitore principale a larghezza piena */
 .footer-div {
   background-color: #000000;
   color: #ffffff;
+  width: 100vw;               /* Occupa tutta la larghezza dello schermo */
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;         /* Annulla i margini dei contenitori genitori */
+  margin-right: -50vw;
+  padding: 40px 60px;
+  box-sizing: border-box;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 40px 60px;
-  box-sizing: border-box;
   gap: 30px;
 }
 
