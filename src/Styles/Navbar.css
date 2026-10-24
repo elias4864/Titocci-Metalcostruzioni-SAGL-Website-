@@ -37,6 +37,11 @@
 .navbar-logo {
     display: flex;
     align-items: center;
+    float:left;
+    left:20%;
+
+    justify-content:flex-start;
+
 }
 
 .red-facebook{
@@ -54,6 +59,7 @@
     height: 50px;
     object-fit: contain;
     border-radius: 4px;
+    position: sticky;
     /* float entfernen – flexbox regelt das Layout */
 }
 

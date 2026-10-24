@@ -75,13 +75,13 @@ const heroOverlayStyle = {
 
 function Home() {
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            setIsOpen(true);
-        }, 2000);
-        return () => clearTimeout(timer);
+        const interval = setInterval(() => {
+            setCurrentIndex((prevIndex) => (prevIndex + 1) % IMAGES.length);
+        }, 3000);
+
+        return () => clearInterval(interval);
     }, []);
 
     const nextImage = () => {
@@ -92,41 +92,10 @@ function Home() {
         setCurrentIndex((prevIndex) => (prevIndex - 1 + IMAGES.length) % IMAGES.length);
     };
 
-    if (!isOpen) return null;
 
     return (
         <>
-            <header className="App-header">
-                <div className="info-row">
-                    <img src={Icon} alt="Standort" className="header-img" />
-                    <p><b>In di Salécc 2, 6670 Avegno</b></p>
-                </div>
 
-                <div className="info-row">
-                    <img src={Zeit} alt="Öffnungszeiten" className="header-img" />
-                    <p><b>
-                        Lunedì - Venerdì: 7:30 - 12:00 / 13:15 - 17:00;<br />
-                        Sabato / Domenica: Chiuso
-                    </b></p>
-
-                    <div className="footer-social-icons">
-                        <a className="img-facebook" href="https://www.facebook.com/people/Titocci-Metalcostruzioni-Sagl/100063745770320/#" target="_blank" rel="noreferrer">
-                            <img src={Redfacebook} alt="Facebook Icon" />
-                        </a>
-                        <a className="img-google" href="https://www.google.com/maps/place/Titocci+Metalcostruzioni+SAGL/@46.2040504,8.7647245,17z/data=!3m1!4b1!4m5!3m4!1s0x4785b75776b14f6b:0x1a856f78a38373de!8m2!3d46.2040504!4d8.7669132" target="_blank" rel="noreferrer">
-                            <img src={RedGoogleMaps} alt="Google Maps Icon" />
-                        </a>
-                    </div>
-                </div>
-
-                <div className="info-row">
-                    <img src={Email} alt="Kontakt" className="header-img" />
-                    <p className="contact"><b>
-                        Contatti: info@titocci.ch<br />
-                        Tel. +41 91 796 23 69
-                    </b></p>
-                </div>
-            </header>
 
             {/* Hero Slider Container über die volle Displaybreite */}
             <div style={{

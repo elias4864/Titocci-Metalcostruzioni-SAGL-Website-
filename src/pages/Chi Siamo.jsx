@@ -29,7 +29,7 @@ export const TimelineSection = () => {
                 <img
                     src={Schleifbild}
                     alt="Schleifbild"
-                    style={{ width: '100%', height: '450px', objectFit: 'cover', display: 'block' }}
+                    style={{ boxSizing:'border-box', display: 'block' , objectFit: 'cover'}}
                 />
                 <div style={textOverlayStyle}>
                     <h1 style={{
@@ -41,6 +41,7 @@ export const TimelineSection = () => {
                         borderRadius: '5px',
                         padding: '10px',
                         gap: '20px',
+                        lineHeight: '1.5'
                     }}>
                         Il Fabbro: <br />
                         creazioni personalizzate

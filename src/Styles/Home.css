@@ -5,6 +5,9 @@
     align-items: center;
     justify-content: space-between;
     text-align: left;
+    width: 100%;
+    border-bottom: 1px solid #eee;
+    padding: 15px 0;
 }
 
 .highlight-red {
@@ -24,9 +27,18 @@
 }
 
 .info-row p {
-    color: #000000 !important;
+    color: black !important;
     font-size: 15px;
     margin: 0;
+    line-height: 1.4;
+}
+/* Einzelne Info-Spalte (Icon + Text) */
+
+/* Icon und Standorttext nebeneinander */
+.info-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
 .img-facebook img,
@@ -70,10 +82,12 @@
     padding: 40px 20px;
 }
 
-.header-img {
-    width: 70px;
-    height: 70px;
-    align-items: flex-start;
+
+.header-social-icons .img-facebook img,
+.header-social-icons .img-google img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
 }
 
 p {

@@ -11,6 +11,11 @@ import './Styles/App.css';
 import Facebook from "./assets/Facebook.png";
 import Google from "./assets/Google.png";
 import Verifizierungbild from "./assets/Verifizierung.gif";
+import Icon from "./assets/Icon.jpg";
+import Zeit from "./assets/Zeit.png";
+import Email from "./assets/Email.png";
+import Redfacebook from "./assets/Redfacebook.jfif";
+import RedGoogleMaps from "./assets/RedGoogleMaps.jfif";
 
 function App() {
     // Cookie State für das Ein-/Ausblenden
@@ -48,8 +53,60 @@ function App() {
 
     return (
         <>
-            {/* Navbar wird geladen */}
-            <Navbar />
+
+
+                {/* Navbar links */}
+            <div className="top-bar">
+
+                {/* Info-Leiste links */}
+                <header className="App-header">
+                    <div className="header-container">
+
+                        {/* Adresse */}
+                        <div className="info-row">
+                            <img src={Icon} alt="Standort" className="header-img" />
+                            <p><b>In di Salécc 2, 6670 Avegno</b></p>
+                        </div>
+
+                        {/* Öffnungszeiten */}
+                        <div className="info-row">
+                            <img src={Zeit} alt="Öffnungszeiten" className="header-img" />
+                            <p><b>
+                                Lunedì - Venerdì: 7:30 - 12:00 / 13:15 - 17:00;<br />
+                                Sabato / Domenica: Chiuso
+                            </b></p>
+                        </div>
+
+                        {/* Kontakt */}
+                        <div className="info-row">
+                            <img src={Email} alt="Kontakt" className="header-img" />
+                            <p className="contact"><b>
+                                Contatti: <a href="mailto:info@titocci.ch">info@titocci.ch</a><br />
+                                Tel. <a href="tel:+41917962369">+41 91 796 23 69</a>
+                            </b></p>
+                        </div>
+
+                        {/* Social Icons */}
+
+
+                    </div>
+                </header>
+
+                {/* Navbar rechts */}
+                <div className="navbar-right">
+                    <Navbar />
+                </div>
+
+            </div>
+
+
+
+                        {/* Social Icons */}
+
+
+
+
+
 
             <main className="hero-image-wrapper">
                 <div className="content">
@@ -158,9 +215,9 @@ function App() {
                 <p>
                     © 2026 <a href="/home" className="footer-links">Titocci Metalcostruzioni SAGL</a>{' '}
                     <span>|</span>{' '}
-                    <a href="/impressum" className="footer-links">Impressum</a>{' '}
+                    <a href="https://titocci.ch/impressum/"  className="footer-links">Impressum</a>{' '}
                     <span>|</span>{' '}
-                    <a href="/privacy" className="footer-links">Privacy</a>
+                    <a href="/https://titocci.ch/privacy/" className="footer-links">Privacy</a>
                 </p>
 
                 <p className="footer-copyright">
