@@ -67,7 +67,15 @@
 
 
 .footer-red-link {
-  color: #e62b2b !important;
+  color: white;
+  text-decoration: none;
+  font-weight: normal;
+  transition: color 0.2s ease;
+}
+
+
+.footer-links {
+  color: red;
   text-decoration: none;
   font-weight: normal;
   transition: color 0.2s ease;
@@ -275,6 +283,17 @@ p{
   }
 }
 
+
+h1{
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  color: white;
+  flex-wrap: wrap;
+  font-size: 20px;
+}
+
 .social-bottom-left {
   position: fixed;   /* Bleibt fest unten links auf dem Bildschirm stehen */
   bottom: 15px;      /* Abstand von unten */
@@ -305,6 +324,35 @@ p{
   }
 }
 
+
+
+.highlight-red {
+  color: #e62b2b;              /* Gut lesbares Rot */
+  text-decoration: underline;  /* Unterstrichen */
+  font-weight: bold;           /* Hervorhebung */
+  display: inline-block;       /* Ermöglicht Abstände/Positionierung */
+  margin-top: 5px;
+}
+
+.img-google {
+  width: 40px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+  justify-content: flex-start;
+  float: left;
+}
+
+.img-facebook {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+  justify-content: flex-start;
+  float: left;
+}
 .ticks {
   position: relative;
   width: 100%;
@@ -420,4 +468,124 @@ p  {
     flex-direction: column;
     align-items: flex-start;
   }
+}
+
+
+.footer-div {
+  background-color: #000000;
+  color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 40px 60px;
+  box-sizing: border-box;
+  gap: 30px;
+}
+
+.footer-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.section-center {
+  align-items: center;
+  text-align: center;
+}
+
+.text-footer {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+}
+
+.white-footer {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  max-width: 280px;
+  margin-bottom: 25px;
+}
+
+/* Icone Social sotto Chi Siamo */
+.social-icons {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.footer-red-link {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  position: relative;
+  display: inline-block;
+  padding-bottom: 2px;
+  transition: color 0.2s ease;
+}
+
+/* Rote Unterstreichung beim Hover */
+.footer-red-link:hover {
+  color: #ff4d4d !important;
+  text-decoration: underline;
+}
+
+.social-icons img {
+  width: 22px;
+  height: 22px;
+}
+
+/* Servizi */
+.text-column {
+  font-size: 0.95rem;
+  margin: 6px 0;
+}
+
+.title-aree {
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.aree-row {
+  display: flex;
+  gap: 25px;
+  font-weight: bold;
+  font-size: 0.95rem;
+  margin-top: 10px;
+}
+
+/* Contatti e Link */
+.highlight-red {
+  color: #e62b2b;
+  text-decoration: none;
+  font-size: 0.95rem;
+  margin: 8px 0;
+  font-weight: 500;
+}
+
+.highlight-red:hover {
+  text-decoration: underline;
+}
+
+.badge-container {
+  margin-top: 20px;
+}
+
+.badge-img {
+  width: 140px;
+  height: auto;
+}
+
+/* Mappa */
+.map-section {
+  flex: 1.2;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.map-iframe {
+  width: 243px;
+  max-width: 320px;
+  height: 370px;
+  border: 0;
 }

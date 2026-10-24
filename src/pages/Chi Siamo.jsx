@@ -39,9 +39,11 @@ export const TimelineSection = () => {
                         margin: 0,
                         textShadow: '2px 2px 6px rgba(0,0,0,0.8)',
                         borderRadius: '5px',
-                        padding: '10px'
+                        padding: '10px',
+                        gap: '20px',
                     }}>
-                        Il Fabbro: creazioni personalizzate
+                        Il Fabbro: <br />
+                        creazioni personalizzate
                     </h1>
                 </div>
             </div>
@@ -200,7 +202,7 @@ export const TimelineSection = () => {
                             Funzionalità e personalizzazione
                         </h2>
                         <p style={{ lineHeight: '1.6', fontSize: '1.05rem', color: '#333' }}>
-                            Un <b>fabbro moderno è un artista</b>, un artigiano e un tecnico. Grazie alla vasta esperienza e a un’ampia gamma di strumenti specializzati, come fucine, incudini e martelli, trasforma materie prime in elementi funzionali. L’abilità di forgiare, saldare e rifinire il metallo è solo il punto di partenza. La vera magia risiede nella creazione di pezzi unici che coniugano estetica e utilità. Ogni cancellata, ogni ringhiera, ogni scala, o qualsiasi altro prodotto realizzato da Titocci Metalcostruzioni, è un elemento personalizzato in base alle tue richieste ed esigenze, un elemento unico che porta la firma distintiva del maestro fabbro.
+                            Un <b>fabbro moderno è un artista</b>,  un <p style={{color:'red'}}>artigiano </p> e un tecnico. Grazie alla vasta esperienza e a un’ampia gamma di strumenti specializzati, come fucine, incudini e martelli, trasforma materie prime in elementi funzionali. L’abilità di forgiare, saldare e rifinire il metallo è solo il punto di partenza. La vera magia risiede nella creazione di pezzi unici che coniugano estetica e utilità. Ogni cancellata, ogni ringhiera, ogni scala, o qualsiasi altro prodotto realizzato da Titocci Metalcostruzioni, è un elemento personalizzato in base alle tue richieste ed esigenze, un elemento unico che porta la firma distintiva del maestro fabbro.
                         </p>
                     </div>
 
