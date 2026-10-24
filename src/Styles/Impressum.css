@@ -1,0 +1,52 @@
+/* Hauptüberschrift (Titocci Metalcostruzioni Sagl) */
+h1 {
+    color: gold;
+    font-weight: bold;
+    font-size: 30px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Zwischenüberschriften (PERSONE AUTORIZZATE, CONTATTI, etc.) */
+h2 {
+    color: grey;
+    font-weight: bold;
+    font-size: 14px;
+    margin-top: 15px;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+/* Schwarzer Text (z.B. Namen / Adressen) */
+.black-text {
+    font-weight: bold;
+    font-size: 16px;
+    color: black;
+    margin: 4px 0;
+    text-align: center;
+}
+
+/* Rote Links (E-Mail & Telefon) untereinander */
+.highlight-red {
+    display: block; /* Stellt sicher, dass E-Mail und Telefon untereinander stehen */
+    color: red;
+    text-decoration: underline;
+    font-weight: bold;
+    font-size: 16px;
+    margin-top: 6px;
+    text-align: center;
+}
+
+.highlight-red:hover {
+    color: darkred;
+    text-decoration: underline;
+}
+
+/* Normaler Text (Disclaimer / Rechtliches) */
+p {
+    font-weight: normal;
+    font-size: 14px;
+    color: gray;
+    line-height: 1.5;
+    margin-bottom: 12px;
+}

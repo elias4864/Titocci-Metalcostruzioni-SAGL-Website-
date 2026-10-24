@@ -13,6 +13,7 @@ import Google from "./assets/Google.png";
 import Verifizierungbild from "./assets/Verifizierung.gif";
 import Icon from "./assets/Icon.jpg";
 import Zeit from "./assets/Zeit.png";
+import Impressumpage from "./pages/Impressum.jsx";
 import Email from "./assets/Email.png";
 import Redfacebook from "./assets/Redfacebook.jfif";
 import RedGoogleMaps from "./assets/RedGoogleMaps.jfif";
@@ -117,6 +118,7 @@ function App() {
                         <Route path="/chi-siamo" element={<ChiSiamo />  } />
                         <Route path="/galeria" element={<Galeria />} />
                         <Route path="/kontakte" element={<Kontakte />} />
+                        <Route path="/impressum" element={<Impressumpage/>} />
                         <Route path="*" element={<Navigate to="/" replace />} />
                     </Routes>
                 </div>
@@ -215,7 +217,7 @@ function App() {
                 <p>
                     © 2026 <a href="/home" className="footer-links">Titocci Metalcostruzioni SAGL</a>{' '}
                     <span>|</span>{' '}
-                    <a href="https://titocci.ch/impressum/"  className="footer-links">Impressum</a>{' '}
+                    <a href="/impressum"  className="footer-links">Impressum</a>{' '}
                     <span>|</span>{' '}
                     <a href="/https://titocci.ch/privacy/" className="footer-links">Privacy</a>
                 </p>
