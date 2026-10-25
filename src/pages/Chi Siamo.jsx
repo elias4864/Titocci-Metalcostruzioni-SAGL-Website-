@@ -41,7 +41,9 @@ export const TimelineSection = () => {
                         borderRadius: '5px',
                         padding: '10px',
                         gap: '20px',
-                        lineHeight: '1.5'
+                        lineHeight: '1.5',
+                        display: 'flex',
+                        textAlign: 'right',
                     }}>
                         Il Fabbro: <br />
                         creazioni personalizzate
@@ -179,12 +181,12 @@ export const TimelineSection = () => {
                     Il <b>maestro</b> <span style={{ color: '#e62b2b' }}>fabbro</span> è un esperto nella lavorazione di vari metalli come ferro battuto, acciaio inox e alluminio, è il cuore pulsante di creazioni uniche e funzionali. La ditta <b>Titocci Metalcostruzioni</b> incarna questa tradizione, offrendo una gamma completa di servizi su misura per la lavorazione e creazione di opere in metallo di ringhiere di ogni tipo, scale, serramenti, cancelli manuali o automatizzati, porte garage, cassette postali, recinzioni, ecc. Eseguiamo anche riparazioni, lavorazione di lamiere, taglio, piegatura, saldatura di acciaio inox e alluminio, verniciatura semplice, ecc. Visita la pagina CONTATTI per ottenere ulteriori informazioni e per richiedere un preventivo senza impegno.
                 </div>
 
-                {/* Unteres Bild */}
-                <div style={{ marginTop: '40px', textAlign: 'center' }}>
+                {/* Unteres Bild mit voller Breite */}
+                <div style={{ marginTop: '40px', width: '100%', overflow: 'hidden' }}>
                     <img
                         src={Schleifen}
                         alt="Lavorazione"
-                        style={{ width: '100%', maxWidth: '700px', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+
                     />
                 </div>
 

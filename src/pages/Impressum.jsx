@@ -179,6 +179,8 @@ function Impressum (){
                 <a href="tel:+41917962369" className="highlight-red">Tel. +41 91 796 23 69</a>
             </div>
 
+            <br></br>
+
             <section>
                 <h2 className="black-text">Esclusione di responsabilità</h2>
                 <p>Il gestore del sito web non si assume alcuna responsabilità per la correttezza, accuratezza,

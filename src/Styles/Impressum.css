@@ -23,7 +23,7 @@ h2 {
     font-size: 16px;
     color: black;
     margin: 4px 0;
-    text-align: center;
+
 }
 
 /* Rote Links (E-Mail & Telefon) untereinander */
@@ -49,4 +49,5 @@ p {
     color: gray;
     line-height: 1.5;
     margin-bottom: 12px;
+
 }

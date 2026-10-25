@@ -9,6 +9,7 @@ import Servizi from "./pages/Servici.jsx";
 import Kontakte from "./pages/Kontakt.jsx";
 import './Styles/App.css';
 import Facebook from "./assets/Facebook.png";
+import Privacy from "./pages/Privacy.jsx";
 import Google from "./assets/Google.png";
 import Verifizierungbild from "./assets/Verifizierung.gif";
 import Icon from "./assets/Icon.jpg";
@@ -119,6 +120,7 @@ function App() {
                         <Route path="/galeria" element={<Galeria />} />
                         <Route path="/kontakte" element={<Kontakte />} />
                         <Route path="/impressum" element={<Impressumpage/>} />
+                        <Route path="privacy" element={<Privacy />}/>
                         <Route path="*" element={<Navigate to="/" replace />} />
                     </Routes>
                 </div>
@@ -219,7 +221,7 @@ function App() {
                     <span>|</span>{' '}
                     <a href="/impressum"  className="footer-links">Impressum</a>{' '}
                     <span>|</span>{' '}
-                    <a href="/https://titocci.ch/privacy/" className="footer-links">Privacy</a>
+                    <a href="/privacy" className="footer-links">Privacy</a>
                 </p>
 
                 <p className="footer-copyright">
