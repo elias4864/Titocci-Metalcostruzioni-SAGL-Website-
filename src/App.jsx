@@ -1,13 +1,14 @@
 import React, {useState, useEffect,useContext} from 'react';
-import {Routes, Route, Navigate} from 'react-router-dom';
+import {Routes, Route, Navigate, Link} from 'react-router-dom';
 import Home from "./pages/Home.jsx";
 import Navbar from "./pages/Navbar.jsx";
 import Dropdown from "./assets/Dropdown.png";
-import ChiSiamo from "./pages/Chi Siamo.jsx";
+import ChisiamoPage from "./pages/Chi Siamo.jsx";
 import Galeria from "./pages/Galeria.jsx";
 import Servizi from "./pages/Servici.jsx";
 import Kontakte from "./pages/Kontakt.jsx";
 import './Styles/App.css';
+
 import Facebook from "./assets/Facebook.png";
 import Privacy from "./pages/Privacy.jsx";
 import Google from "./assets/Google.png";
@@ -112,7 +113,7 @@ function App() {
                         <Route path="/" element={<Home />} />
                         <Route path="/home" element={<Home />} />
                         <Route path="/servizi" element={<Servizi />}/>
-                        <Route path="/chi-siamo" element={<ChiSiamo />  } />
+                        <Route path="/chi-siamo" element={<ChisiamoPage/>  } />
                         <Route path="/galeria" element={<Galeria />} />
                         <Route path="/kontakte" element={<Kontakte />} />
                         <Route path="/impressum" element={<Impressumpage/>} />

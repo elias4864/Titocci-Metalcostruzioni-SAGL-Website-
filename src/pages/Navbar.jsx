@@ -6,11 +6,12 @@ import Googlemapsimg from '../assets/RedGoogleMaps.jfif';
 
 import '../Styles/Navbar.css';
 
-
 function Navbar() {
     return (
         <nav className="navbar-overlay">
             <div className="navbar-container" style={{
+                position: 'relative',
+                zIndex: 100, // Stellt sicher, dass Klicks nicht von Overlays blockiert werden
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
@@ -20,11 +21,13 @@ function Navbar() {
             }}>
                 {/* Logo links */}
                 <div className="navbar-logo">
-                    <img
-                        src={Logo}
-                        className="logo"
-                        alt="Logo"
-                    />
+                    <Link to="/">
+                        <img
+                            src={Logo}
+                            className="logo"
+                            alt="Logo"
+                        />
+                    </Link>
                 </div>
 
                 {/* Menüpunkte rechts */}
@@ -33,17 +36,29 @@ function Navbar() {
                     listStyle: 'none',
                     gap: '35px',
                     margin: 0,
-                    padding: 0
+                    padding: 0,
+                    alignItems: 'center',
+                    textDecoration: 'underline',
+
                 }}>
-                    <li><Link to="/" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px' }}>Home</Link></li>
-                    <li><Link to="/chi-siamo" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px' }}>Chi siamo</Link></li>
-                    <li><Link to="/servizi" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold',borderBottom: '3px solid #e62b2b', paddingBottom: '4px' }}>Servizi</Link></li>
-                    <li><Link to="/galeria" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' ,borderBottom: '3px solid #e62b2b', paddingBottom: '4px'}}>Galleria</Link></li>
-                    <li><Link to="/kontakte" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold',borderBottom: '3px solid #e62b2b', paddingBottom: '4px' }}>Contatti</Link></li>
-                    <li><img  className="red-facebook" src={Redfacebook} /></li>
-                    <li><img className="red-google" src={Googlemapsimg}/> </li>
+                    <li className="nav-item"><Link to="/" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Home</Link></li>
+                    <li className="nav-item"><Link to="/chi-siamo" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Chi siamo</Link></li>
+                    <li className="nav-item"><Link to="/servizi" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Servizi</Link></li>
+                    <li className="nav-item"><Link to="/galeria" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Galleria</Link></li>
+                    <li className="nav-item"><Link to="/kontakte" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' ,  transition: 'backgroundColor 0.3s ease'
+                    }}>Contatti</Link></li>
 
-
+                    {/* Social Icons */}
+                    <li>
+                        <a href="https://facebook.com" target="_blank" rel="noreferrer">
+                            <img className="red-facebook" src={Redfacebook} alt="Facebook" style={{ width: '24px', height: '24px' }} />
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://maps.google.com" target="_blank" rel="noreferrer">
+                            <img className="red-google" src={Googlemapsimg} alt="Google Maps" style={{ width: '24px', height: '24px' }} />
+                        </a>
+                    </li>
                 </ul>
             </div>
         </nav>

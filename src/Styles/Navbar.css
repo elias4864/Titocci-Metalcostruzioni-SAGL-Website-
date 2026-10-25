@@ -27,7 +27,6 @@
 
     padding: 20px 50px;      /* Abstand nach außen */
     box-sizing: border-box;
-    z-index: 1000;           /* Bleibt immer über den Bildern/Hero-Content */
 
     /* Optional: leicht abgedunkelter Hintergrund, damit man die Links beim Scrollen sieht */
     background-color: rgba(0, 0, 0, 0.3);
@@ -52,6 +51,21 @@
     width:30px;
     height:40px;
 
+}
+
+.nav-item {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s ease, transform 0.2s ease;
+    cursor: pointer;
+    text-wrap: nowrap;
+}
+
+/* Hover-Effekt */
+.nav-item:hover {
+    color: red; /* Farbe bei Hover */
+    text-decoration: underline; /* Unterstreichung beim Drüberfahren */
+    transform: translateY(-2px); /* Leichte Anhebung */
 }
 
 .logo {
