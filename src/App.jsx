@@ -58,49 +58,45 @@ function App() {
 
 
                 {/* Navbar links */}
-            <div className="top-bar">
+                    <div className="top-bar">
 
-                {/* Info-Leiste links */}
-                <header className="App-header">
-                    <div className="header-container">
+                        {/* Info-Leiste links */}
+                        <header className="App-header">
+                            <div className="header-container">
 
-                        {/* Adresse */}
-                        <div className="info-row">
-                            <img src={Icon} alt="Standort" className="header-img" />
-                            <p><b>In di Salécc 2, 6670 Avegno</b></p>
+                                {/* Adresse */}
+                                <div className="info-row">
+                                    <img src={Icon} alt="Standort" className="header-img" />
+                                    <p><b>In di Salécc 2, 6670 Avegno</b></p>
+                                </div>
+
+                                {/* Öffnungszeiten */}
+                                <div className="info-row">
+                                    <img src={Zeit} alt="Öffnungszeiten" className="header-img" />
+                                    <p><b>
+                                        Lunedì - Venerdì: 7:30 - 12:00 / 13:15 - 17:00;<br />
+                                        Sabato / Domenica: Chiuso
+                                    </b></p>
+                                </div>
+
+                                {/* Kontakt */}
+                                <div className="info-row">
+                                    <img src={Email} alt="Kontakt" className="header-img" />
+                                    <p className="contact"><b>
+                                        Contatti: <a href="mailto:info@titocci.ch">info@titocci.ch</a><br />
+                                        Tel. <a href="tel:+41917962369">+41 91 796 23 69</a>
+                                    </b></p>
+                                </div>
+
+                            </div>
+                        </header>
+
+                        {/* Navbar rechts */}
+                        <div className="navbar-right">
+                            <Navbar />
                         </div>
-
-                        {/* Öffnungszeiten */}
-                        <div className="info-row">
-                            <img src={Zeit} alt="Öffnungszeiten" className="header-img" />
-                            <p><b>
-                                Lunedì - Venerdì: 7:30 - 12:00 / 13:15 - 17:00;<br />
-                                Sabato / Domenica: Chiuso
-                            </b></p>
-                        </div>
-
-                        {/* Kontakt */}
-                        <div className="info-row">
-                            <img src={Email} alt="Kontakt" className="header-img" />
-                            <p className="contact"><b>
-                                Contatti: <a href="mailto:info@titocci.ch">info@titocci.ch</a><br />
-                                Tel. <a href="tel:+41917962369">+41 91 796 23 69</a>
-                            </b></p>
-                        </div>
-
-                        {/* Social Icons */}
-
 
                     </div>
-                </header>
-
-                {/* Navbar rechts */}
-                <div className="navbar-right">
-                    <Navbar />
-                </div>
-
-            </div>
-
 
 
                         {/* Social Icons */}

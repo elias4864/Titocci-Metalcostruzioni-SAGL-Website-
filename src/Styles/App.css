@@ -1,917 +1,100 @@
-.counter {
-  font-size: 16px;
-  padding: 5px 10px;
-  border-radius: 5px;
-  color: var(--accent);
-  background: var(--accent-bg);
-  border: 2px solid transparent;
-  transition: border-color 0.3s;
-  margin-bottom: 24px;
+/* ==========================================
+   TOP HEADER & INFO BAR (BEREINIGT)
+   ========================================== */
 
-  &:hover {
-    border-color: var(--accent-border);
-  }
-  &:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
-}
-
-
-.seo-text {
+/* Haupt-Container oben */
+.top-header {
   width: 100%;
-  max-width: 1200px;
-  margin: 20px 0 0 0;
-  padding: 0;
-  box-sizing: border-box;
-  color: gray;
-  text-align: left;
-  line-height: 1.4;
-}
-
-.scroll-to-top {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
   background-color: #ffffff;
-  border: 2px solid #e62b2b;
-  border-radius: 50%;
-  width: 45px;
-  height: 45px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  z-index: 1000;
-  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
-/* Hover-Effekt: Leichter Zoom und farbiger Hintergrund */
-.scroll-to-top:hover {
-  background-color: #e62b2b;
-  transform: scale(1.1);
-}
-
-
-.footer-bottom {
-  display: flex;
-  justify-content: space-between;
-  background-color: #000000;
-  color: #ffffff;
-  font-size: 0.9rem;
-  border-top: 1px solid #222;
-  width: 100vw;               /* Occupa tutta la larghezza dello schermo */
-  position: relative;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;         /* Annulla i margini dei contenitori genitori */
-  margin-right: -50vw;
-  padding: 40px 60px;
-  box-sizing: border-box;
-  align-items: flex-start;
-  gap: 30px;
-}
-.footer-copyright{
-  display: flex;
-  float:left;
-  align-items: baseline;
-  justify-content: flex-start; /* Richtet den Inhalt links aus */
-  margin-left: 30px; /* Ersetzt 'left: 30px', da 'left' bei normalem Flexbox nicht greift */
-  box-sizing: border-box;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.top-header {
-  width: 100%;
-  background-color: white;
-}
-
-.navbar-wrapper {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-
-.footer-red-link {
-  color: white;
-  text-decoration: none;
-  font-weight: normal;
-  transition: color 0.2s ease;
-}
-
-
-.footer-links {
-  color: red;
-  text-decoration: none;
-  font-weight: normal;
-  transition: color 0.2s ease;
-}
-
-.footer-red-link:hover {
-  color: #ff4d4d !important;
-  text-decoration: underline;
-}
-p{
-  color:black;
-}
-
-
-.footer-bottom.copyright-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  max-width: 1200px;
-  margin: 25px auto 0 auto;
-  padding: 0 20px;
-  font-size: 12px;
-  color: gray;
-  box-sizing: border-box;
-  white-space: nowrap;
-}
-.copyright-text {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  max-width: 1200px;
-  margin: 25px auto 0 auto;
-  padding: 0 20px;
-  gap:8px;
-
-  font-size: 12px;
-  color: gray;
-  box-sizing: border-box;
-  white-space: nowrap; /* Verhindert, dass der Text unabsichtlich umbricht */
-
-  /* Linker und rechter Container sollen flexibel reagieren */
-  > div {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-
-  a {
-    color: #ff3333;
-    text-decoration: none;
-
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-
-.hero {
-  position: relative;
-
-}
-
-  .base,
-  .framework,
-  .vite {
-    inset-inline: 0;
-    margin: 0 auto;
-  }
-
-  .base {
-    width: 170px;
-    position: relative;
-    z-index: 0;
-  }
-
-  .framework,
-  .vite {
-    position: absolute;
-  }
-
-  .framework {
-    z-index: 1;
-    top: 34px;
-    height: 28px;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg)
-      scale(1.4);
-  }
-
-  .vite {
-    z-index: 0;
-    top: 107px;
-    height: 26px;
-    width: auto;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg)
-      scale(0.8);
-  }
-}
-
-.copyright-right {
-
-  color:red;
-}
-
-#center {
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-  place-content: center;
-  place-items: center;
-  flex-grow: 1;
-
-  @media (max-width: 1024px) {
-    padding: 32px 20px 24px;
-    gap: 18px;
-  }
-}
-
-#next-steps {
-  display: flex;
-  border-top: 1px solid var(--border);
-  text-align: left;
-
-  & > div {
-    flex: 1 1 0;
-    padding: 32px;
-    @media (max-width: 1024px) {
-      padding: 24px 20px;
-    }
-  }
-
-  .icon {
-    margin-bottom: 16px;
-    width: 22px;
-    height: 22px;
-  }
-
-  @media (max-width: 1024px) {
-    flex-direction: column;
-    text-align: center;
-  }
-}
-
-#docs {
-  border-right: 1px solid var(--border);
-
-  @media (max-width: 1024px) {
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-  }
-}
-
-#next-steps ul {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  gap: 8px;
-  margin: 32px 0 0;
-
-  .logo {
-    height: 18px;
-  }
-
-  a {
-    color: var(--text-h);
-    font-size: 16px;
-    border-radius: 6px;
-    background: var(--social-bg);
-    display: flex;
-    padding: 6px 12px;
-    align-items: center;
-    gap: 8px;
-    text-decoration: none;
-    transition: box-shadow 0.3s;
-
-    &:hover {
-      box-shadow: var(--shadow);
-    }
-    .button-icon {
-      height: 18px;
-      width: 18px;
-    }
-  }
-
- p  .red-text{
-    background-color: red;
-    color: red;
-  }
-
-  @media (max-width: 1024px) {
-    margin-top: 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-
-    li {
-      flex: 1 1 calc(50% - 8px);
-    }
-
-    a {
-      width: 100%;
-      justify-content: center;
-      box-sizing: border-box;
-    }
-  }
-}
-
-
-h1{
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-  color: white;
-  flex-wrap: wrap;
-  font-size: 20px;
-}
-
-.social-bottom-left {
-  position: fixed;   /* Bleibt fest unten links auf dem Bildschirm stehen */
-  bottom: 15px;      /* Abstand von unten */
-  left: 15px;        /* Abstand von links */
-  display: flex;     /* Richtet die Elemente nebeneinander aus */
-  flex-direction: row;
-  gap: 10px;         /* Abstand zwischen den zwei Icons */
-  z-index: 1000;     /* Sorgt dafür, dass die Icons über anderen Elementen liegen */
-}
-
-/* Optional: Bildgröße anpassen, falls nötig */
-.social-bottom-left img {
-  width: 32px;       /* Wähle hier deine gewünschte Breite */
-  height: auto;
-  display: block;
-}
-
-
-.dropdown-img{
-  width: 30px;
-  height: 50px;
-}
-#spacer {
-  height: 88px;
-  border-top: 1px solid var(--border);
-  @media (max-width: 1024px) {
-    height: 48px;
-  }
-}
-
-
-
-.highlight-red {
-  color: #e62b2b;              /* Gut lesbares Rot */
-  text-decoration: underline;  /* Unterstrichen */
-  font-weight: bold;           /* Hervorhebung */
-  display: inline-block;       /* Ermöglicht Abstände/Positionierung */
-  margin-top: 5px;
-}
-
-.img-google {
-  width: 40px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  margin-right: 10px;
-  justify-content: flex-start;
-  float: left;
-}
-
-.img-facebook {
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  margin-right: 10px;
-  justify-content: flex-start;
-  float: left;
-}
-.ticks {
-  position: relative;
-  width: 100%;
-
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    top: -4.5px;
-    border: 5px solid transparent;
-  }
-
-  .marketingmaster{
-    position: absolute;
-    color: red;
-    text-decoration: underline;
-    background-color: red;
-  }
-
-  .seo-text  {
-    color: red;
-    text-decoration: underline;
-  }
-  .marketingmaster:hover {
-    text-decoration: underline;
-    color: brown;
-  }
-  &::before {
-    left: 0;
-    border-left-color: var(--border);
-  }
-  &::after {
-    right: 0;
-    border-right-color: var(--border);
-  }
-}
-.navbar a {
-  display: flex;
-  color: white;           /* Rote Textfarbe */
-  text-decoration: none;      /* Standardmäßig KEINE Unterstreichung */
-  font-weight: bold;
-  padding: 5px 10px;
-}
-
-/* Hover-Effekt: Beim Drüberfahren wird das Rot intensiver/dunkler */
-.navbar a:hover {
-  color: red;        /* Kräftiges/Dunkleres Rot beim Hover */
-  text-decoration: underline;
-}
-.cookie-banner {
-  background-color: white;
-}
-p  {
-  font-size: 15px !important;
-}
- .cookie-banner {
-   position: fixed;
-   left: 20px;
-   right: 20px;
-   bottom: 20px;
-   background: white;
-   color: #fff;
-   padding: 20px;
-   border-radius: 12px;
-   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-   z-index: 9999;
- }
-
-.cookie-banner-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
-.cookie-banner-buttons {
-  display: flex;
-  gap: 10px;
-}
-
-.cookie-banner button {
-  border: none;
-  padding: 10px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  border-color: red;
-}
-
-#cookieAccept {
-  background: red;
-  color: #fff;
-  border-radius: 10%;
-  border-color:red;
-}
-
-#cookieDecline {
-  background: #636e72;
-  background-color:grey;
-  color:black;
-}
-#cookiePreference {
-  background: grey;
-}
-
-.cookie-banner.hidden {
-  display: none;
-}
-
-@media (max-width: 768px) {
-  .cookie-banner-content {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
-
-
-/* Rendiamo il contenitore principale a larghezza piena */
-.footer-div {
-  background-color: #000000;
-  color: #ffffff;
-  width: 100vw;               /* Occupa tutta la larghezza dello schermo */
-  position: relative;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;         /* Annulla i margini dei contenitori genitori */
-  margin-right: -50vw;
-  padding: 40px 60px;
-  box-sizing: border-box;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 30px;
-}
-
-.footer-section {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.section-center {
-  align-items: center;
-  text-align: center;
-}
-
-.text-footer {
-  font-size: 1.1rem;
-  font-weight: bold;
-  margin-bottom: 20px;
-  letter-spacing: 1px;
-}
-
-.white-footer {
-  font-size: 0.9rem;
-  line-height: 1.5;
-  max-width: 280px;
-  margin-bottom: 25px;
-}
-
-/* Icone Social sotto Chi Siamo */
-.social-icons {
-  display: flex;
-  gap: 15px;
-  align-items: center;
-}
-
-.footer-red-link {
-  color: white;
-  text-decoration: none;
-  font-weight: bold;
-  position: relative;
-  display: inline-block;
-  padding-bottom: 2px;
-  transition: color 0.2s ease;
-}
-
-/* Rote Unterstreichung beim Hover */
-.footer-red-link:hover {
-  color: #ff4d4d !important;
-  text-decoration: underline;
-}
-
-.social-icons img {
-  width: 22px;
-  height: 22px;
-}
-
-/* Servizi */
-.text-column {
-  font-size: 0.95rem;
-  margin: 6px 0;
-}
-
-.title-aree {
-  font-weight: bold;
-  margin-top: 20px;
-}
-
-.aree-row {
-  display: flex;
-  gap: 25px;
-  font-weight: bold;
-  font-size: 0.95rem;
-  margin-top: 10px;
-}
-
-/* Contatti e Link */
-.highlight-red {
-  color: #e62b2b;
-  text-decoration: none;
-  font-size: 0.95rem;
-  margin: 8px 0;
-  font-weight: 500;
-}
-
-.highlight-red:hover {
-  text-decoration: underline;
-}
-
-.badge-container {
-  margin-top: 20px;
-}
-
-.badge-img {
-  width: 140px;
-  height: auto;
-}
-
-/* Mappa */
-.map-section {
-  flex: 1.2;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.map-iframe {
-  width: 243px;
-  max-width: 320px;
-  height: 370px;
-  border: 0;
-}
-
-
-/* Gesamter oberer Bereich */
-.top-header {
-  width: 100%;
-  background-color: white;
-}
-
-/* Navbar oben */
-.navbar-wrapper {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* Info-Leiste unter der Navbar */
-.App-header {
-  width: 100%;
-  background-color: white;
-  border-bottom: 1px solid #eee;
-  padding: 12px 0;
-  box-sizing: border-box;
-}
-
-/* Info-Elemente ganz rechts nebeneinander */
-.header-container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-  box-sizing: border-box;
-
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  align-items: center;
-  flex-wrap: nowrap;
-  gap: 25px;
-}
-
-/* Icon und Text pro Info-Block */
-.info-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.info-row p {
-  margin: 0;
-  font-size: 12px;
-  line-height: 1.4;
-  color: black !important;
-}
-
-
-/* Gesamte Kopfzeile: Navbar links, Infos rechts */
-
-/* Navbar links */
-.navbar-left {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-}
-
-/* Info-Bereich rechts */
-
-/* Info-Elemente in einer Zeile */
+/* Äussere Leiste mit Aussenabstand */
 .top-bar {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  column-gap: 32px;
-  width: 100%;
-  padding: 10px 30px;
-  box-sizing: border-box;
-  background: white;
-}
-.top-bar .App-header {
-  min-width: 0;
-  width: auto;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  background: transparent;
-}
-
-.top-bar .header-container {
   display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
+  justify-content: space-between;
   align-items: center;
-  justify-content: flex-start;
-  gap: 20px;
   width: 100%;
-  max-width: none;
-  margin: 0;
-  padding: 0;
+  padding: 15px 60px; /* Grosser Abstand links und rechts */
   box-sizing: border-box;
 }
 
-/* Einzelne Info-Blöcke */
-.top-bar .info-row {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  flex: 0 1 auto;
-  min-width: 0;
-}
-
-.top-bar .info-row p {
-  margin: 0;
-  font-size: 12px;
-  line-height: 1.4;
-  color: black;
-}
-
-
-.top-bar .header-img {
-  width: 18px;
-  height: 18px;
-  object-fit: contain;
-  flex: 0 0 18px;
-}
-
-.top-bar .header-social-icons {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex: 0 0 auto;
-}
-
-
-.top-bar .navbar-right {
-  position: static;
-  justify-self: end;
-  width: max-content;
-  max-width: 100%;
-  min-width: 0;
-  margin: 0;
-  padding: 0;
-}
-
-.top-bar .navbar-right .navbar {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-
-
-.top-bar .navbar-right .navbar a {
-  white-space: nowrap;
-}
-
-
-/* Info-Leiste links */
-
-
-
-.header-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-  flex-wrap: nowrap;
-  gap: 18px;
-  width: 100%;
-  padding: 0;
-  margin: 0;
-}
-
-/* Icons und Texte */
-.info-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-
-
-.top-bar .info-row {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  flex: 0 1 auto;
-  min-width: 0;
-}
-
-.top-bar .info-row p {
-  margin: 0;
-  font-size: 12px;
-  line-height: 1.4;
-  color: black;
-  overflow-wrap: break-word;
-}
-
-
-
-.header-social-icons {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.header-social-icons img {
-  width: 22px;
-  height: 22px;
-  object-fit: contain;
-}
-
-/* Kontaktlinks */
-.contact a {
-  color: black;
-  text-decoration: none;
-}
-
-
-
-
-.navbar-right .navbar a {
-  white-space: nowrap;
-}
-/* Handy: Navbar und Infos dürfen umbrechen */
-
-/* Ganze obere Leiste: Infos links, Navbar rechts */
-
-/* Info-Bereich links */
+/* Transparenter Wrapper für App-Header */
 .App-header {
-  background-color: white;
-  border-bottom: 1px solid #eee;
-  flex: 1;
-  min-width: 0;
+  width: 100%;
+  background: transparent;
+  border: none;
   padding: 0;
+  margin: 0;
 }
 
-/* Adresse, Öffnungszeiten und Kontakt */
+/* Container, der die 3 Infoblöcke perfekt über die Breite verteilt */
 .header-container {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: flex-start;
-  flex-wrap: wrap;
-  gap: 25px;
+  justify-content: space-between !important; /* Verteilt Standort links, Zeiten Mitte, Kontakt rechts */
   width: 100%;
-  max-width: none;
+  max-width: 100%;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  gap: 20px;
 }
 
-/* Einzelne Info mit Icon */
+/* Einzelner Block (Icon + Text) */
 .info-row {
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
+  align-items: flex-start; /* Icons oben bündig mit Textzeile */
+  gap: 10px;               /* Abstand zwischen Icon und Text */
+  flex-shrink: 0;
 }
 
+
+
+/* Texte in der Info-Zeile */
 .info-row p {
   margin: 0;
   font-size: 13px;
   line-height: 1.4;
-  overflow-wrap: break-word;
+  color: #000000 !important;
 }
 
-/* Icons */
+/* Icons (Standort, Uhr, Mail) */
+.header-img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
 
+/* Links im Kontaktbereich */
+.contact a {
+  color: #000000;
+  text-decoration: none;
+}
 
-/* Kleine Bildschirme */
-@media (max-width: 900px) {
+.contact a:hover {
+  text-decoration: underline;
+}
+
+/* Right Navbar Container */
+.navbar-right {
+  display: flex;
+  align-items: center;
+}
+
+/* Responsive für Tablets und Mobilgeräte */
+@media (max-width: 1024px) {
   .top-bar {
+    padding: 15px 20px;
+  }
+}
+
+@media (max-width: 850px) {
+  .header-container {
     flex-direction: column;
-    align-items: stretch;
+    align-items: flex-start;
     gap: 15px;
   }
-
-
-
 }
