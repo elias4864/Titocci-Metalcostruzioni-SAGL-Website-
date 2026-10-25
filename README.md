@@ -2,18 +2,31 @@
 
 # Titocci Metalcostruzioni SAGL - Website
 
-Offizielle Website für den Schweizer Metallbau- und Schlosserbetrieb Titocci Metalcostruzioni SAGL (titocci.ch) möglichst genau rebuilded. Das Projekt verwendet ein modernes Frontend-Setup basierend auf React 19 und Vite, gekapselt in einer Docker-Umgebung für konsistente Deployments sowie automatisiert über GitHub Actions für  DevOps-Praktiken.
+Offizielle Website für den Schweizer Metallbau- und Schlosserbetrieb Titocci Metalcostruzioni SAGL (titocci.ch) möglichst genau rebuilded. Das Projekt verwendet ein modernes Frontend-Setup basierend auf React 19 und Vite, gekapselt in einer Docker-Umgebung(Docker-Compose) für konsistente Deployments sowie automatisiert über GitHub Actions für   DevOps-Praktiken(CI/CD)
 
 ---
 
 ## 🚀 Technologie-Stack
 
 - **Frontend:** React (v19), React Router DOM(19.3.1), React-Intersection-observer(9.5.3)  und  react-countup(6.5.3)
-- **UI & Animationen:** React CountUp, React Intersection Observer
+- **UI & Animationen:** React CountUp, React Intersection Observer,
+- - **UI Component Library:** Material UI (`@mui/lab`, `@mui/material`)
 - **Build-Tool:** Vite (v8) und Npm
-- **Styling:** CSS3 (Responsive Design, Custom Properties)
+- **Styling:** CSS3,Emotion (`@emotion/react`, `@emotion/styled`) (Responsive Design, Custom Properties)
 - **Deployment:** Docker und Docker-Compose Node.js Runtime
--  **Automatisierung:**  GitHub Actions(CI/CD) 
+-  **Automatisierung:**  GitHub Actions(Github Worfklow-Pipeline)
+
+
+
+
+Die Website  umfasst folgende Routes+Pages
+
+- **`/` bzw. `/home`**: Hauptstartseite(Übersicht+Dienstleistungen)
+- **`/chi-siamo`**: Über das Unternehmen
+- **`/servizi`**: Detaillierte Übersicht aller Dienstleistungen (*Progettazione, Costruzione, Montaggio, Assistenza*)
+- **`/kontakte`**: Kontaktinformationen, Anfahrtskarte & Kontaktformular
+- **`/impressum`**: Impressum nach DSGVO
+- **`/privacy`**: Datenschutzbestimmungen (Privacy Policy) gemäss DSG
 
 
 ---
@@ -25,24 +38,23 @@ Stelle sicher, dass **Node.js** auf deinem System installiert ist. Führe die fo
 ### 1. Bei jedem Deployment Dependencies removen und neu  installieren 
 # Ins Root Directory wechseln des Vite-Projekts wechseln
 1. cd my-react-app und danach cd Titocci-Metalcostruzioni-SAGL-Website
-2. # Alte Abhängigkeiten/Lock-Dateien bereinigen (optional, falls erforderlich) und Node-Directory removen
-rm -rf node_modules package-lock.json
-3. # Neue Dependencies des package.json neu installieren mit node_modules Ordner
-4. npm install
-5. # NPM-Viteserver lokal  PC deployen  auf Default Port 5173
-6. npm run dev (Option A)
-7.Über Docker Compose automatisiert(Option B)
+ # Alte Abhängigkeiten/Lock-Dateien bereinigen (optional, falls erforderlich) und Node-Directory removen
+2. rm -rf node_modules package-lock.json
+ # Neue Dependencies des package.json neu installieren mit node_modules Ordner
+3. npm install
+ #  Entwicklungsserver) NPM-Viteserver lokal  PC deployen  auf Default Port 5173 oder wenn besetzt anderer Port redirected
+4. npm run dev (Option A)
+# Über Docker Compose automatisiert(Option B) deployen
 
-# Docker-Container im Hintergrund starten
-docker compose up -d
-8. Überprüfen ob Viteserver in Browser auf Port  http://localhost:5173 verfügbar ist
+5. docker compose up -d
+# Überprüfen ob Viteserver in Browser auf Port  http://localhost:5173 verfügbar ist 
 
 🐳 Docker & CI/CD Deployment
 
-Das Projekt nutzt einen GitHub Actions Workflow, um Docker-Images automatisiert zu erstellen und bereitzustellen.
+# Das Projekt nutzt einen GitHub Actions Workflow, um Docker-Images automatisiert zu erstellen und bereitzustellen.
 
-Docker-Build lokal ausführen
+#  Docker-Build lokal ausführen
 
-docker build -t titocci-website:latest .
+6. docker build -t titocci-website:latest .
 
    
