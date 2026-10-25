@@ -137,12 +137,6 @@ function App() {
                 </div>
             )}
 
-            {/* Footer Bottom Bar */}
-
-
-
-
-            {/* Scroll To Top Button ausserhalb des Footers platziert */}
             <button
                 className="scroll-to-top"
                 title="Nach oben scrollen"
@@ -150,6 +144,14 @@ function App() {
             >
                 <img className="dropdown-img" src={Dropdown} alt="Nach oben" />
             </button>
+
+
+            {/* Footer Bottom Bar */}
+
+
+
+
+            {/* Scroll To Top Button ausserhalb des Footers platziert */}
 
 
             <footer className="footer-div">
@@ -161,10 +163,10 @@ function App() {
                     </p>
                     <div className="social-icons">
                         <a href="https://www.facebook.com/people/Titocci-Metalcostruzioni-Sagl/100063745770320/#" target="_blank" rel="noreferrer">
-                            <img src={Facebook} alt="Facebook" />
+                            <img  className="img-icon" src={Facebook} alt="Facebook" />
                         </a>
                         <a href="https://www.google.com/maps/place/Titocci+Metalcostruzioni+SAGL/@46.2040504,8.7647245,17z" target="_blank" rel="noreferrer">
-                            <img src={Google} alt="Google" />
+                            <img  className="img-icon" src={Google} alt="Google" />
                         </a>
                     </div>
                 </section>
@@ -182,6 +184,8 @@ function App() {
                         <span><a className="footer-red-link" href="https://titocci.ch/a/avegno/">Avegno</a></span>
                     </div>
                 </section>
+
+
 
                 {/* Colonna 3: CONTATTI */}
                 <section className="footer-section section-center">
@@ -210,25 +214,27 @@ function App() {
                 </section>
 
 
+                <div className="footer-bottom">
+                    <p>
+                        © 2026 <a href="/home" className="footer-links">Titocci Metalcostruzioni SAGL</a>{' '}
+                        <span>|</span>{' '}
+                        <a href="/impressum"  className="footer-links">Impressum</a>{' '}
+                        <span>|</span>{' '}
+                        <a href="/privacy" className="footer-links">Privacy</a>
+                    </p>
+                    <p className="footer-copyright">
+                        Web Design by{' '}
+                        <a href="https://marketingmaster.ch" target="_blank" rel="noreferrer" className="footer-links">
+                            marketingmaster.ch
+                        </a>{' '}
+                        with love
+                    </p>
+                </div>
+
+
             </footer>
 
-            <div className="footer-bottom">
-                <p>
-                    © 2026 <a href="/home" className="footer-links">Titocci Metalcostruzioni SAGL</a>{' '}
-                    <span>|</span>{' '}
-                    <a href="/impressum"  className="footer-links">Impressum</a>{' '}
-                    <span>|</span>{' '}
-                    <a href="/privacy" className="footer-links">Privacy</a>
-                </p>
 
-                <p className="footer-copyright">
-                    Web Design by{' '}
-                    <a href="https://marketingmaster.ch" target="_blank" rel="noreferrer" className="footer-links">
-                        marketingmaster.ch
-                    </a>{' '}
-                    with love
-                </p>
-            </div>
         </>
     );
 }

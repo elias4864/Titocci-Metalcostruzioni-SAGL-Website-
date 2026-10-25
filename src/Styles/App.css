@@ -1,13 +1,20 @@
 /* ==========================================
    TOP HEADER & INFO BAR (BEREINIGT)
    ========================================== */
-
+.highlight-red{
+  color: red;
+  text-wrap: nowrap;
+}
 /* Haupt-Container oben */
 .top-header {
   width: 100%;
   background-color: #ffffff;
 }
 
+.map-iframe{
+  width: 220px;
+  height: 350px;
+}
 /* Äussere Leiste mit Aussenabstand */
 .top-bar {
   display: flex;
@@ -15,6 +22,21 @@
   align-items: center;
   width: 100%;
   padding: 15px 60px; /* Grosser Abstand links und rechts */
+  box-sizing: border-box;
+}
+
+.social-icons {
+  display: flex;             /* Ordnet alle Kinder-Elemente nebeneinander an */
+  align-items: center;       /* Zentriert die Icons vertikal */
+  gap: 15px;                 /* Abstand zwischen den Icons (kannst du anpassen) */
+}
+
+
+/* Die einzelnen Icons */
+.img-icon {
+  height: 35px;
+  width: 50px;
+  object-fit: contain;       /* Verhindert, dass das Bild verzerrt wird */
   box-sizing: border-box;
 }
 
@@ -59,6 +81,24 @@
   color: #000000 !important;
 }
 
+
+.footer-links {
+  color: red !important;
+  }
+
+  .footer-red-link {
+  color: white;
+  font-size: 15px;
+}
+.footer-red-link:hover{
+  color: #dc3545;
+}
+
+.text-footer{
+  color: white !important;
+  font-size: 20px;
+  text-wrap: wrap !important;
+}
 /* Icons (Standort, Uhr, Mail) */
 .header-img {
   width: 20px;
@@ -97,4 +137,56 @@
     align-items: flex-start;
     gap: 15px;
   }
+}
+
+.scroll-to-top {
+  position: fixed;
+  bottom: 20px;  /* Abstand vom unteren Bildschirmrand */
+  right: 20px;   /* Abstand vom rechten Bildschirmrand */
+  z-index: 1000; /* Stellt sicher, dass er über anderen Elementen liegt */
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.dropdown-img {
+  height: 40px;
+  width: auto;
+}
+
+.footer-bottom {
+  width: 100%;                  /* Erstreckt sich über die volle Breite */
+  display: flex;
+  justify-content: space-between; /* Links: Copyright | Rechts: marketingmaster */
+  align-items: center;
+  margin-top: 30px;             /* Abstand zu den 4 Spalten darüber */
+  padding-top: 15px;
+  border-top: 1px solid #333;   /* Optional: Strich als Trennung */
+}
+
+
+.footer-bottom p {
+  margin: 0;
+  white-space: nowrap;     /* Verhindert Zeilenumbrüche im Text selbst */
+}
+.footer-section {
+  flex: 1;
+  min-width: 200px;
+}
+
+.footer-div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  background-color: #000000; /* Schwarzer Hintergrund */
+  padding: 40px 60px 20px 60px; /* Innenabstand oben/Seiten/unten */
+  box-sizing: border-box;
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+
 }
