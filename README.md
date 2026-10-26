@@ -14,6 +14,7 @@ Offizielle Website für den Schweizer Metallbau- und Schlosserbetrieb Titocci Me
 - **Build-Tool:** Vite (v8) und Npm
 - **Styling:** CSS3,Emotion (`@emotion/react`, `@emotion/styled`) (Responsive Design, Custom Properties)
 - **Deployment:** Docker und Docker-Compose Node.js Runtime
+- **Orchestrierung:**  Docker Container
 -  **Automatisierung:**  GitHub Actions(Github Worfklow-Pipeline)
 
 
@@ -22,10 +23,11 @@ Offizielle Website für den Schweizer Metallbau- und Schlosserbetrieb Titocci Me
 Die Website  umfasst folgende Routes+Pages
 
 - **`/` bzw. `/home`**: Hauptstartseite(Übersicht+Dienstleistungen)
-- **`/chi-siamo`**: Über das Unternehmen
+- **`/chi-siamo`**: Über das Unternehmen(*Über Uns Page)
 - **`/servizi`**: Detaillierte Übersicht aller Dienstleistungen (*Progettazione, Costruzione, Montaggio, Assistenza*)
 - **`/kontakte`**: Kontaktinformationen, Anfahrtskarte & Kontaktformular
-- **`/impressum`**: Impressum nach DSGVO 
+- **`/impressum`**: Impressum nach DSGVO
+- **`/galeria`**: Galerie mit Bildern
 - **`/privacy`**: Datenschutzbestimmungen (Privacy Policy) gemäss DSG+DSGVO
 
 
@@ -33,7 +35,7 @@ Die Website  umfasst folgende Routes+Pages
 
 ## ⚙️ Lokale Installation & Entwicklung
 
-Stelle sicher, dass **Node.js** auf deinem System installiert ist. Führe die folgenden Befehle im Terminal im Stammverzeichnis(Titocci-Metalcostruzioni-SAGL-Website-\my-react-app\Titocci-Metalcostruzioni-SAGL-Website->) des Projekts aus:
+Stelle sicher, dass **Node.js** auf deinem Node-Server installiert ist. Führe die folgenden Befehle im Terminal im Stammverzeichnis(Titocci-Metalcostruzioni-SAGL-Website-\my-react-app\Titocci-Metalcostruzioni-SAGL-Website->) des Vite-Projekts aus:
 
 ### 1. Bei jedem Deployment Dependencies removen und neu  installieren 
 # Ins Root Directory wechseln des Vite-Projekts wechseln /Titocci-Metalconstruzioni-SAGL
@@ -47,7 +49,7 @@ Stelle sicher, dass **Node.js** auf deinem System installiert ist. Führe die fo
 # Über Docker Compose per Container (Option B) deployen
 
 5. docker compose up -d
-# Überprüfen ob Viteserver in Browser auf Port  http://localhost:5173 verfügbar ist oder alternative redirected wird auf anderer Port http://localhost: 5174
+# Überprüfen ob Viteserver in Browser auf Port  http://localhost:5173 verfügbar ist oder alternativ auf einen andereern freien Port sofort  redirected wird wie beispielsweise  http://localhost: 5174
 
 🐳 Docker & CI/CD Deployment
 
