@@ -3,66 +3,106 @@ import { Link } from 'react-router-dom';
 import Logo from '../assets/Navicon.png';
 import Redfacebook from '../assets/Redfacebook.jfif';
 import Googlemapsimg from '../assets/RedGoogleMaps.jfif';
+import Zeit from '../assets/Zeit.png';
+import Standort from '../assets/Standort.jfif';
+import Email from '../assets/Email.png';
 
 import '../Styles/Navbar.css';
 
 function Navbar() {
     return (
-        <nav className="navbar-overlay">
-            <div className="navbar-container" style={{
-                position: 'relative',
-                zIndex: 20, // Stellt sicher, dass Klicks nicht von Overlays blockiert werden
+        <header style={{
+            width: '100%',
+            backgroundColor: '#ffffff',
+            borderBottom: '1px solid #e5e7eb',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+            position: 'relative',
+            zIndex: 20
+        }}>
+            <div style={{
+                maxWidth: '1450px',
+                margin: '0 auto',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                width: '100%',
-                padding: '20px 50px',
-                boxSizing: 'border-box',
+                padding: '12px 20px',
+                flexWrap: 'nowrap',
+                gap: '15px'
             }}>
-                {/* Logo links */}
-                <div className="navbar-logo">
+                {/* 1. Logo links */}
+                <div className="navbar-logo" style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
                     <Link to="/">
                         <img
                             src={Logo}
                             className="logo"
                             alt="Logo"
+                            style={{ height: '80px', width: '85px', objectFit: 'contain' }}
                         />
                     </Link>
                 </div>
 
-                {/* Menüpunkte rechts */}
-                <ul className="nav-menu" style={{
+                {/* 2. Kompakte Info-Daten in der Mitte (Adresse, Öffnungszeiten, Kontakt nebeneinander) */}
+                <div style={{
                     display: 'flex',
-                    listStyle: 'none',
-                    gap: '35px',
-                    margin: 0,
-                    textDecorationColor: 'blue',
-                    padding: 0,
                     alignItems: 'center',
-                    textDecoration: 'underline',
-
+                    gap: '20px',
+                    fontSize: '0.75rem',
+                    color: '#333',
+                    whiteSpace: 'nowrap'
                 }}>
-                    <li className="nav-item"><Link to="/" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Home</Link></li>
-                    <li className="nav-item"><Link to="/chi-siamo" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Chi siamo</Link></li>
-                    <li className="nav-item"><Link to="/servizi" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Servizi</Link></li>
-                    <li className="nav-item"><Link to="/galeria" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Galleria</Link></li>
-                    <li className="nav-item"><Link to="/kontakte" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' ,  transition: 'backgroundColor 0.3s ease'
-                    }}>Contatti</Link></li>
+                    {/* Adresse */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <img src={Standort} alt="Standort" style={{ width: '14px', height: '14px', objectFit: 'contain' }} />
+                        <span><b>In di Salécc 2, 6670 Avegno</b></span>
+                    </div>
 
+                    {/* Öffnungszeiten (kompakt in einer Zeile) */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <img src={Zeit} alt="Öffnungszeiten" style={{ width: '14px', height: '14px', objectFit: 'contain' }} />
+                        <span><b>Lunedì - Venerdì: 7:30 - 12:00 / 13:15 - 17:00; Sabato / Domenica: Chiuso</b></span>
+                    </div>
+
+                    {/* Kontakt */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <img src={Email} alt="Kontakt" style={{ width: '14px', height: '14px', objectFit: 'contain' }} />
+                        <span>
+                            <a href="mailto:info@titocci.ch" style={{ color: '#e62b2b', textDecoration: 'none' }}>Contatti: info@titocci.ch</a>
+                            <a href="tel:+41917962369" style={{ color: '#333', textDecoration: 'none', marginLeft: '3px',fontWeight:'bold' }}> Tel. +41 91 796 23 69</a>
+                        </span>
+                    </div>
+                </div>
+
+                {/* 3. Menüpunkte & Social Icons rechts */}
+                {/* 3. Menüpunkte & Social Icons rechts */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexShrink: 0, marginRight: '35px' }}>
+                    <ul className="nav-menu" style={{
+                        display: 'flex',
+                        listStyle: 'none',
+                        gap: '15px',
+                        margin: 0,
+                        padding: 0,
+                        alignItems: 'center',
+                        fontSize: '0.85rem'
+                    }}>
+                        <li><Link to="/" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Home</Link></li>
+                        <li><Link to="/chi-siamo" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Chi siamo</Link></li>
+                        <li><Link to="/servizi" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Servizi</Link></li>
+                        <li><Link to="/galeria" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Galleria</Link></li>
+                        <li><Link to="/kontakte" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Contatti</Link></li>
+                    </ul>
+                </div>
                     {/* Social Icons */}
-                    <li>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', borderLeft: '1px solid #ddd', paddingLeft: '12px' }}>
                         <a href="https://facebook.com" target="_blank" rel="noreferrer">
-                            <img className="red-facebook" src={Redfacebook} alt="Facebook" style={{ width: '24px', height: '24px' }} />
+                            <img src={Redfacebook} alt="Facebook" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
                         </a>
-                    </li>
-                    <li>
                         <a href="https://maps.google.com" target="_blank" rel="noreferrer">
-                            <img className="red-google" src={Googlemapsimg} alt="Google Maps" style={{ width: '24px', height: '24px' }} />
+                            <img src={Googlemapsimg} alt="Google Maps" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
                         </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+                    </div>
+                </div>
+
+        </header>
     );
 }
 

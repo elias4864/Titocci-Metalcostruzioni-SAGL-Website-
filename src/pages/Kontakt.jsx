@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link } from "react-router-dom";
 import emailjs from "@emailjs/browser";
-
 
 // Asset Imports
 import ContactBg from "../assets/Schleifen.jpg";
 import "../Styles/Kontakt.css";
-
+import Streifen from "../assets/Streifen.jfif";
+import Kontakt from "../assets/Contact.jfif";
+import Flieger from "../assets/Flieger.png";
 import '../Styles/Servici.css';
 import '../Styles/TimeLineSection.css';
 import RedFacebook from "../assets/Redfacebook.jfif";
@@ -29,8 +30,6 @@ const heroOverlayStyle = {
     pointerEvents: 'none'
 };
 
-
-
 function Contatti() {
     const [formData, setFormData] = useState({
         nome: '',
@@ -38,6 +37,10 @@ function Contatti() {
         messaggio: '',
         privacy: false
     });
+    const [isHovered, setIsHovered] = useState(false);
+
+    // Ref für das E-Mail Eingabefeld
+    const emailInputRef = useRef("");
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -45,38 +48,45 @@ function Contatti() {
             ...formData,
             [name]: type === 'checkbox' ? checked : value
         });
-    }
-    /**
-     * Send-Email Function for Kontact Formular to Se with EmailJS
-     * @param e
-     */
+    };
 
+    /**
+     * Send-Email Function für das Kontaktformular via EmailJS
+     */
     const sendEmail = (e) => {
         e.preventDefault();
 
+        // 1. Validierung: Privacy-Policy muss akzeptiert sein
         if (!formData.privacy) {
-            alert('Please Accept the Terms of Email.');
+            alert('Si prega di accettare la privacy policy.');
             return;
         }
 
-        // EmailJS Konfigurationswerte (Bitte durch deine echten IDs von EmailJS ersetzen)
+        // 2. Validierung: E-Mail darf nicht leer sein (falls nicht ausgefüllt, Fokus setzen)
+        if (!formData.email) {
+            if (emailInputRef.current) {
+                emailInputRef.current.focus();
+            }
+            return;
+        }
+
+        // EmailJS Konfiguration
         const EmailJS_serviceID = 'service_n9toe59';
         const EmailJS_templateID = 'template_mrshrnl';
         const EmailJS_publicKey = 'dFpVpt98rEIko4TLa';
 
-        // Parameter, die an das EmailJS-Template übergeben werden
         const templateParams = {
             from_name: formData.nome,
             from_email: formData.email,
-            time: new Date().toISOString('it-CH'),
+            time: new Date().toLocaleString('it-CH'),
             message: formData.messaggio,
+            privacy: formData.privacy,
         };
 
         emailjs.send(EmailJS_serviceID, EmailJS_templateID, templateParams, EmailJS_publicKey)
             .then((response) => {
                 console.log('SUCCESS!', response.status, response.text);
-                alert('Die Nachricht wurde erfolgierch an die Titocci Metalconstruzione  geschickt  am 16.10.2026'+templateParams.time,"von"+templateParams.from_email,"an"+templateParams.from_name+"mit der Nachricht"+templateParams.message );
-                // Formular nach erfolgreichem Senden zurücksetzen
+                alert('La messaggio è stata inviata con successo a Titocci Metalcostruzioni!');
                 setFormData({
                     nome: '',
                     email: '',
@@ -86,19 +96,8 @@ function Contatti() {
             })
             .catch((err) => {
                 console.error('FAILED...', err);
-                alert('Fehlermeldung der Titocci Metalconstruzione aufgrund von Problemen mit dem EmailJS Client!');
+                alert('Fehlermeldung der Titocci Metalcostruzioni aufgrund von Problemen mit dem EmailJS Client!');
             });
-    };
-
-
-    /**
-     * Handle Submit FUnktion for COntact Formular Button
-     * @param e
-     */
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        alert(' Die Nachricht wurde erfolgreich  an die Titocci Metalconstruzioni gesendet!');
-        console.log(formData);
     };
 
     return (
@@ -130,8 +129,7 @@ function Contatti() {
                         zIndex: 20,
                         background: 'linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)'
                     }}>
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center' }}></div>
 
                         <ul style={{
                             display: 'flex',
@@ -149,7 +147,7 @@ function Contatti() {
                     </nav>
 
                     <img
-                        src={ContactBg}
+                        src={Kontakt}
                         alt="Contatti"
                         style={{
                             width: '100vw',
@@ -187,7 +185,7 @@ function Contatti() {
             }}>
                 {/* Linke Spalte: Formular */}
                 <div style={{ flex: '1 1 500px' }}>
-                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    <form onSubmit={sendEmail} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                         <div>
                             <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '5px' }}>Nome</label>
                             <input
@@ -211,6 +209,7 @@ function Contatti() {
                                 Email
                             </label>
                             <input
+                                ref={emailInputRef}
                                 type="email"
                                 name="email"
                                 value={formData.email}
@@ -259,10 +258,7 @@ function Contatti() {
                                 Ho letto e accettato le condizioni della <Link to="/privacy" style={{ color: '#e62b2b', textDecoration: 'none' }}>privacy policy</Link>
                             </label>
                         </div>
-                        <br></br>
                         <button
-                            onClick={sendEmail}
-                            onChange={handleSubmit}
                             type="submit"
                             style={{
                                 backgroundColor: '#e62b2b',
@@ -277,21 +273,15 @@ function Contatti() {
                                 boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
                                 boxSizing: 'border-box',
                                 marginBottom: '40px'
-
                             }}
                         >
                             INVIO
                         </button>
-                        <br></br>
-
-
                     </form>
-
-
                 </div>
 
                 {/* Rechte Spalte: Kontaktdaten */}
-                <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', gap: '30px' }}>
+                <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', gap: '30px', alignItems: 'flex-start' }}>
                     <div>
                         <h3 style={{
                             color: '#000',
@@ -310,11 +300,10 @@ function Contatti() {
                             color: '#444',
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '8px'
+                            gap: '8px',
                         }}>
-                            <span style={{ color: '#e62b2b' }}>📞</span>
                             <a href="tel:+41917962369" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>
-                                Tel. +41 91 796 23 69
+                                <img className="streifen" src={Streifen} alt="Streifen Icon" /><span> Tel. +41 91 796 23 69</span>
                             </a>
                         </p>
                         <p style={{
@@ -325,8 +314,13 @@ function Contatti() {
                             alignItems: 'center',
                             gap: '8px'
                         }}>
-                            <span style={{ color: '#e62b2b' }}>✉️</span>
-                            <a href="mailto:info@titocci.ch" style={{ color: '#e62b2b', textDecoration: 'none' }}>info@titocci.ch</a>
+                            <a href="mailto:info@titocci.ch" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} style={{
+                                color: isHovered ? 'black' : '#e62b2b',
+                                textDecoration: isHovered ? 'underline' : 'none',
+                                transition: 'color 0.2s ease'
+                            }}>
+                                <img className="streifen" src={Streifen} alt="Streifen Icon" /> info@titocci.ch
+                            </a>
                         </p>
                     </div>
 
@@ -338,17 +332,20 @@ function Contatti() {
                             display: 'flex',
                             alignItems: 'center',
                             gap: '10px',
-                            marginBottom: '15px'
+                            marginBottom: '10px'
                         }}>
-                            <span style={{ color: '#e62b2b' }}>📍</span> INDIRIZZO
+                            <span style={{ color: '#e62b2b', display: 'flex', alignItems: 'center' }}>
+                                <img className="flieger" src={Flieger} alt="Indirizzo Icon" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
+                            </span>
+                            INDIRIZZO
                         </h3>
                         <p style={{
-                            margin: '5px 0',
+                            margin: '0',
                             fontSize: '0.95rem',
                             color: '#444',
                             lineHeight: '1.5',
-                            float:'left',
-                            textAlign: 'left'
+                            textAlign: 'left',
+                            paddingLeft: '34px'
                         }}>
                             In di Salécc 2,<br />
                             6670 Avegno
@@ -356,7 +353,7 @@ function Contatti() {
                     </div>
 
                     {/* Social Icons */}
-                    <div className="footer-social-icons" style={{ display: 'flex', gap: '15px' }}>
+                    <div className="footer-social-icons" style={{ display: 'flex', gap: '15px', borderRadius: '50px' }}>
                         <a className="img-facebook"
                            href="https://www.facebook.com/people/Titocci-Metalcostruzioni-Sagl/100063745770320/#"
                            target="_blank" rel="noreferrer">
@@ -369,23 +366,17 @@ function Contatti() {
                         </a>
                     </div>
 
-                    <iframe
-                        className="maps-full"
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2760.964782838872!2d8.740326876315036!3d46.211155571096!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4785b75776b14f6b%3A0x1a856f78a38373de!2sTitocci%20Metalcostruzioni%20SAGL!5e0!3m2!1sde!2sch!4v1792763434793!5m2!1sde!2sch"
-                        allowFullScreen=""
-                        loading="lazy"
-                        referrerPolicy="strict-origin-when-cross-origin"
-                    ></iframe>
-
-                    {/* Google Maps Karte platziert sich nun ganz unten in der Spalte */}
-
+                    <section className="footer-section map-section" style={{ width: '100%', marginTop: '60px', overflow: 'hidden' }}>
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d11043.906817275687!2d8.742987830688485!3d46.21091841923832!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4785b75776b14f6b%3A0x1a856f78a38373de!2sTitocci%20Metalcostruzioni%20SAGL!5e0!3m2!1sde!2sus!4v1792586980608!5m2!1sde!2sus"
+                            className="maps-full"
+                            allowFullScreen=""
+                            loading="lazy"
+                            referrerPolicy="strict-origin-when-cross-origin"
+                            title="Google Maps Standort"
+                        ></iframe>
+                    </section>
                 </div>
-
-
-
-
-
-
             </div>
         </div>
     );

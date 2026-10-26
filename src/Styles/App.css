@@ -32,12 +32,15 @@
 }
 
 
-/* Die einzelnen Icons */
 .img-icon {
-  height: 35px;
-  width: 50px;
+  height: 70px;
+  width: 70px;
   object-fit: contain;       /* Verhindert, dass das Bild verzerrt wird */
   box-sizing: border-box;
+  display: flex;
+  align-items: flex-end;
+  align-content: center;
+  margin-left: 15px;         /* Verschiebt das Icon ein Stück nach rechts (Wert nach Bedarf anpassen) */
 }
 
 /* Transparenter Wrapper für App-Header */
@@ -81,9 +84,14 @@
   color: #000000 !important;
 }
 
-
+.footer-copyright{
+  display: flex;
+  align-items: center;
+}
 .footer-links {
   color: red !important;
+     /* Zentriert die Elemente vertikal */
+<
   }
 
   .footer-red-link {

@@ -12,6 +12,14 @@ const heroOverlayStyle = {
     color: 'white'
 };
 
+/**
+ * Button-Onclick Window Reload Link
+ * @param event
+ */
+const handleChange = (event) => {
+    window.location.href = 'https://it.wikipedia.org/wiki/Fabbro';
+}
+
 const textOverlayStyle = {
     position: 'absolute',
     top: '50%',
@@ -58,6 +66,7 @@ export const TimelineSection = () => {
             {/* Timeline & Inhaltsbereich */}
             <div className="timeline-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '20px' }}>
                 <h1 className="yellow-title">Presentazione</h1>
+                <br></br>
                 <div className="yellow-divider"></div>
 
                 <div className="timeline-wrapper">
@@ -182,7 +191,7 @@ export const TimelineSection = () => {
 
                 {/* Beschreibungstext unter der Timeline */}
                 <div style={{ lineHeight: '1.6', fontSize: '1.05rem', color: '#333', marginTop: '40px' }}>
-                    Il <b>maestro</b> <span style={{ color: '#e62b2b' }}>fabbro</span> è un esperto nella lavorazione di vari metalli come ferro battuto, acciaio inox e alluminio, è il cuore pulsante di creazioni uniche e funzionali. La ditta <b>Titocci Metalcostruzioni</b> incarna questa tradizione, offrendo una gamma completa di servizi su misura per la lavorazione e creazione di opere in metallo di ringhiere di ogni tipo, scale, serramenti, cancelli manuali o automatizzati, porte garage, cassette postali, recinzioni, ecc. Eseguiamo anche riparazioni, lavorazione di lamiere, taglio, piegatura, saldatura di acciaio inox e alluminio, verniciatura semplice, ecc. Visita la pagina CONTATTI per ottenere ulteriori informazioni e per richiedere un preventivo senza impegno.
+                    Il <b>maestro</b> <span onClick={handleChange} style={{ color: '#e62b2b', cursor: 'pointer' }}>fabbro</span> è un esperto nella lavorazione di vari metalli come ferro battuto, acciaio inox e alluminio...
                 </div>
 
                 {/* Unteres Bild mit voller Breite */}
@@ -209,7 +218,7 @@ export const TimelineSection = () => {
                             Funzionalità e personalizzazione
                         </h2>
                         <p style={{ lineHeight: '1.6', fontSize: '1.05rem', color: '#333' }}>
-                            Un <b>fabbro moderno è un artista</b>,  un <p style={{color:'red'}}>artigiano </p> e un tecnico. Grazie alla vasta esperienza e a un’ampia gamma di strumenti specializzati, come fucine, incudini e martelli, trasforma materie prime in elementi funzionali. L’abilità di forgiare, saldare e rifinire il metallo è solo il punto di partenza. La vera magia risiede nella creazione di pezzi unici che coniugano estetica e utilità. Ogni cancellata, ogni ringhiera, ogni scala, o qualsiasi altro prodotto realizzato da Titocci Metalcostruzioni, è un elemento personalizzato in base alle tue richieste ed esigenze, un elemento unico che porta la firma distintiva del maestro fabbro.
+                            Un <b onClick={handleChange} style={{ cursor: 'pointer' }}>fabbro moderno è un artista</b>, un <span style={{ color: 'red' }}>artigiano</span> e un tecnico. Grazie alla vasta esperienza e a un’ampia gamma di strumenti specializzati, come fucine, incudini e martelli, trasforma materie prime in elementi funzionali. L’abilità di forgiare, saldare e rifinire il metallo è solo il punto di partenza. La vera magia risiede nella creazione di pezzi unici che coniugano estetica e utilità. Ogni cancellata, ogni ringhiera, ogni scala, o qualsiasi altro prodotto realizzato da Titocci Metalcostruzioni, è un elemento personalizzato in base alle tue richieste ed esigenze, un elemento unico che porta la firma distintiva del maestro fabbro.
                         </p>
                     </div>
 

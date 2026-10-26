@@ -11,25 +11,36 @@
 
 
 
+.div-maps {
+    margin-top: 40px; /* Keine Anführungszeichen in CSS! */
+    width: 100%;
+    display: flex;
+    justify-content: center; /* Zentriert die 400px breite Karte horizontal */
+}
 
 .maps-full {
     display: block;
     position: relative;
     width: 100vw;
-
-
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
     box-sizing: border-box;
     object-fit: cover;
     border: 0;
-    border-radius: 6px;
-    margin-top: 50px; /* Gibt der Karte genug Abstand zum Button */
-    height: 100vh;
-
-
-
-
+    border-radius: 0; /* Auf 0 gesetzt, damit es an den Rändern kantig und vollflächig abschliesst */
+    height: 400px;
+    max-width: 100vw;
 }
 
+.streifen{
+    width: 14px;            /* Unka size bohot chhota karne ke liye */
+    height: 10px;           /* Sahi ratio ke liye */
+    margin-right: 8px;      /* Text se thoda distance/gap dene ke liye */
+    display: inline-block;  /* Text ke saath ek hi line mein align rakhne ke liye */
+    vertical-align: middle;
+}
 
 .custom-input {
     width: 100%;
@@ -50,4 +61,18 @@
 
 .custom-input:invalid:not(:placeholder-shown) {
     border-color: #e62b2b;
+}
+
+.img-facebook{
+    width: 14px;
+    height: 14px;
+    border-radius: 50px;
+}
+
+
+.img-google{
+    width: 14px;
+    height: 14px;
+    border-radius: 20px;
+    border-radius: 50px;
 }
