@@ -20,50 +20,45 @@
 }
 
 /* Jahreszahlen-Badge (z.B. 1973, 1982) */
+/* Jahreszahlen-Badge (z.B. 1973, 1982) exakt mittig */
 .timeline-year {
     position: relative;
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 30px 0;
+    margin: 25px 0;
     z-index: 3;
 }
-
-
 /**
 Anfangspunkt ganz oben
  */
 .timeline-dot2 {
     position: absolute;
     left: 50%;
-    top: 0px;                  /* Ganz oben am Anfang der Timeline-Wrapper */
+    top: 0px;
     transform: translateX(-50%);
-    width: 14px;               /* Kleine, dezente Punktgröße */
-    height: 14px;
-    background-color: #d1d5db; /* Passender grauer Farbton */
+    width: 10px;
+    height: 10px;
+    background-color: #d1d5db;
     border-radius: 50%;
-    border: 2px solid #ffffff; /* Weißer Rand für einen sauberen Look */
-    z-index: 4;                /* Liegt über der vertikalen Linie */
+    border: 2px solid #ffffff;
+    z-index: 4;
 }
-
 .timeline-year span {
-    background-color: #4b5563; /* Dunkelgrauer Hintergrund */
+    background-color: #4b5563;
     color: #ffffff;
-    border-radius: 50%;
-    width: 44px;                 /* Noch schmalere & kompaktere Breite */
-    height: 44px;                /* Gleiche Höhe für perfekten Kreis */
+    border-radius: 50%;          /* Perfekter Kreis */
+    width: 42px;                 /* Feste Breite für den Kreis */
+    height: 42px;                /* Feste Höhe (gleich wie Breite) */
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
-    font-size: 0.85rem;
-    border: 1.5px solid #d1d5db; /* Sehr dünner, feiner grauer Rand *//* Leicht kleinere Schrift für kompakten Kreis */
+    font-size: 0.75rem;
+    border: 1.5px solid #d1d5db;
     box-sizing: border-box;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-
-    /* Garantierte horizontale Zentrierung */
-    margin: 0 auto;
     flex-shrink: 0;
 }
 /* Timeline Row (Item) */
@@ -98,16 +93,15 @@ Anfangspunkt ganz oben
 .timeline-dot {
     position: absolute;
     left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%);
+
     width: 28px;
     height: 28px;
     background-color: #ffb703;
     border-radius: 50%;
-    z-index: 10;
-    border: 4px solid #ccc;
+    z-index: 5;
+    border: 2px solid #ccc;
 
-    box-shadow: 0 0 0 3px grey;
 }
 
 /* Die gelben Info-Boxen */

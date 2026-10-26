@@ -3,6 +3,8 @@ import NavIcon from '../assets/Navicon.png';
 import Schleifbild from '../assets/Schleifpapier.jpg';
 import Schleifen from '../assets/Schleifbild.jpg';
 import "../Styles/ChiSiamo.css";
+import { useNavigate } from 'react-router-dom';
+
 import "../Styles/TimeLineSection.css";
 
 const heroOverlayStyle = {
@@ -12,6 +14,7 @@ const heroOverlayStyle = {
     color: 'white'
 };
 
+
 /**
  * Button-Onclick Window Reload Link
  * @param event
@@ -19,6 +22,12 @@ const heroOverlayStyle = {
 const handleChange = (event) => {
     window.location.href = 'https://it.wikipedia.org/wiki/Fabbro';
 }
+
+/**
+ * Submit-Button onClick on
+ * @param event
+ */
+
 
 const textOverlayStyle = {
     position: 'absolute',
@@ -30,6 +39,11 @@ const textOverlayStyle = {
 };
 
 export const TimelineSection = () => {
+    const navigate = useNavigate();
+    const handleSubmit=(event) =>{
+        navigate('/servizi');
+    }
+
     return (
         <div>
             {/* Hero Section */}
@@ -220,7 +234,7 @@ export const TimelineSection = () => {
                             Funzionalità e personalizzazione
                         </h2>
                         <p style={{ lineHeight: '1.6', fontSize: '1.05rem', color: '#333' }}>
-                            Un <b onClick={handleChange} style={{ cursor: 'pointer' }}>fabbro moderno è un artista</b>, un <span style={{ color: 'red' }}>artigiano</span> e un tecnico. Grazie alla vasta esperienza e a un’ampia gamma di strumenti specializzati, come fucine, incudini e martelli, trasforma materie prime in elementi funzionali. L’abilità di forgiare, saldare e rifinire il metallo è solo il punto di partenza. La vera magia risiede nella creazione di pezzi unici che coniugano estetica e utilità. Ogni cancellata, ogni ringhiera, ogni scala, o qualsiasi altro prodotto realizzato da Titocci Metalcostruzioni, è un elemento personalizzato in base alle tue richieste ed esigenze, un elemento unico che porta la firma distintiva del maestro fabbro.
+                            Un <b onClick={handleChange} style={{ cursor: 'pointer' }}>fabbro moderno è un artista</b>, un <span  onClick={handleSubmit} style={{ color: 'red' }}>artigiano</span> e un tecnico. Grazie alla vasta esperienza e a un’ampia gamma di strumenti specializzati, come fucine, incudini e martelli, trasforma materie prime in elementi funzionali. L’abilità di forgiare, saldare e rifinire il metallo è solo il punto di partenza. La vera magia risiede nella creazione di pezzi unici che coniugano estetica e utilità. Ogni cancellata, ogni ringhiera, ogni scala, o qualsiasi altro prodotto realizzato da Titocci Metalcostruzioni, è un elemento personalizzato in base alle tue richieste ed esigenze, un elemento unico che porta la firma distintiva del maestro fabbro.
                         </p>
                     </div>
 

@@ -91,7 +91,8 @@ Sabato / Domenica: Chiuso</b>
                         margin: 0,
                         padding: 0,
                         alignItems: 'center',
-                        fontSize: '0.85rem'
+                        fontSize: '0.85rem',
+                        textDecoration:'underline'
                     }}>
                         <li><Link to="/" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Home</Link></li>
                         <li><Link to="/chi-siamo" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Chi siamo</Link></li>
