@@ -41,44 +41,53 @@ function Navbar() {
                     </Link>
                 </div>
 
-                {/* 2. Kompakte Info-Daten in der Mitte (Adresse, Öffnungszeiten, Kontakt nebeneinander) */}
+                {/* 2. Kompakte Info-Daten in der Mitte */}
                 <div style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '20px',
+                    gap: '15px',
                     fontSize: '0.75rem',
                     color: '#333',
-                    whiteSpace: 'nowrap'
+                    flex: '1 1 auto',       /* Erlaubt dynamische Anpassung */
+                    minWidth: 0,            /* Verhindert Flexbox-Überlauf */
+                    justifyContent: 'center'
                 }}>
                     {/* Adresse */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexShrink: 0 }}>
                         <img src={Standort} alt="Standort" style={{ width: '14px', height: '14px', objectFit: 'contain' }} />
                         <span><b>In di Salécc 2, 6670 Avegno</b></span>
                     </div>
 
-                    {/* Öffnungszeiten (kompakt in einer Zeile) */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                        <img src={Zeit} alt="Öffnungszeiten" style={{ width: '14px', height: '14px', objectFit: 'contain' }} />
-                        <span><b>Lunedì - Venerdì: 7:30 - 12:00 / 13:15 - 17:00; Sabato / Domenica: Chiuso</b></span>
+                    {/* Öffnungszeiten (kompakter formatiert) */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexShrink: 1, overflow: 'hidden' }}>
+                        <img src={Zeit} alt="Orari" style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0 }} />
+                        <span style={{ whiteSpace: 'nowrap', fontSize: '0.7rem' }}>
+        <b>Lunedì - Venerdì: 7:30 - 12:00 / 13:15 - 17:00;​
+Sabato / Domenica: Chiuso</b>
+    </span>
                     </div>
 
                     {/* Kontakt */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexShrink: 0 }}>
                         <img src={Email} alt="Kontakt" style={{ width: '14px', height: '14px', objectFit: 'contain' }} />
-                        <span>
-                            <a href="mailto:info@titocci.ch" style={{ color: '#e62b2b', textDecoration: 'none' }}>Contatti: info@titocci.ch</a>
-                            <a href="tel:+41917962369" style={{ color: '#333', textDecoration: 'none', marginLeft: '3px',fontWeight:'bold' }}> Tel. +41 91 796 23 69</a>
-                        </span>
+                        <span style={{ whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+    <a href="mailto:info@titocci.ch" style={{ color: '#e62b2b', textDecoration: 'none' }}>
+        info@titocci.ch
+    </a>
+    <span style={{ color: '#ccc' }}>|</span>
+    <a href="tel:+41917962369" style={{ color: '#333', textDecoration: 'none', fontWeight: 'bold' }}>
+        +41 91 796 23 69
+    </a>
+</span>
                     </div>
                 </div>
 
-                {/* 3. Menüpunkte & Social Icons rechts */}
-                {/* 3. Menüpunkte & Social Icons rechts */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexShrink: 0, marginRight: '35px' }}>
+                {/* 3. Menüpunkte rechts */}
+                <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
                     <ul className="nav-menu" style={{
                         display: 'flex',
                         listStyle: 'none',
-                        gap: '15px',
+                        gap: '12px',         /* Abstand zwischen Links leicht reduziert */
                         margin: 0,
                         padding: 0,
                         alignItems: 'center',
@@ -91,6 +100,8 @@ function Navbar() {
                         <li><Link to="/kontakte" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Contatti</Link></li>
                     </ul>
                 </div>
+
+
                     {/* Social Icons */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', borderLeft: '1px solid #ddd', paddingLeft: '12px' }}>
                         <a href="https://facebook.com" target="_blank" rel="noreferrer">

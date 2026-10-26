@@ -91,7 +91,8 @@ p {
 
 .yellow-text {
     color:brown;
-    font-size: 30px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2rem;
 }
 
 .timeline-year-badge {

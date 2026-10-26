@@ -193,7 +193,7 @@ p {
 .yellow-title{
     color: gold;
     font-family: 'Montserrat', sans-serif;
-    font-size: 25px;
+    font-size: 2rem;
 }
 
 /* Einzelne Spalte (Icon + Text) */
@@ -307,7 +307,6 @@ h2 {
     display: flex;
     align-items: center;
 }
-.
 
 body, html {
     margin: 0;

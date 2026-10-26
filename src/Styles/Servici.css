@@ -6,6 +6,8 @@
     background-color: #FFD700; /* Ein schönes Gold-Gelb */
     border-radius: 4px;   /* Optionale leicht abgerundete Ecken */
     margin: 20px 0;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2rem;
 
     text-decoration: underline;
     text-decoration-color: yellow;       /* Farbe des Strichs */
