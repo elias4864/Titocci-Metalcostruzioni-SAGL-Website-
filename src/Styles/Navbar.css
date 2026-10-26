@@ -1,5 +1,4 @@
 .nav-menu :hover {
-    background-color: white;
 }
 
 /* Der Container, der alle Navigations-Links umschliesst */
@@ -11,6 +10,11 @@
     align-items: center;
     margin: 0;
     padding: 0;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 16px;
+    transition: color 0.3s ease-in-out;
 }
 
 /* Die gesamte Navbar wird fixiert */

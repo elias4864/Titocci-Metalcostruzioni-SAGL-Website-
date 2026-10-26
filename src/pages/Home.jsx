@@ -245,7 +245,7 @@ function Home() {
             </div>
 
             <div className="white-div">
-                <h2 className="text-white">I NOSTRI PUNTI DI LAVORI</h2>
+                <h2 className="yellow-title">I NOSTRI PUNTI DI LAVORI</h2>
             </div>
 
             <div className="orange-div">

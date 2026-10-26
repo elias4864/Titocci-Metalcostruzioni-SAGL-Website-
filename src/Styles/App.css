@@ -89,11 +89,17 @@
   .footer-red-link {
   color: white;
   font-size: 15px;
+    gap: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+    padding: 5px 10px;
 }
-.footer-red-link:hover{
+.footer-red-link:hover {
   color: #dc3545;
+  margin-left: 10px;
+  margin-right: 10px;
+  padding: 5px 10px;
 }
-
 .text-footer{
   color: white !important;
   font-size: 20px;

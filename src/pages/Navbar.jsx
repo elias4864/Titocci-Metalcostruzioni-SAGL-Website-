@@ -11,13 +11,13 @@ function Navbar() {
         <nav className="navbar-overlay">
             <div className="navbar-container" style={{
                 position: 'relative',
-                zIndex: 100, // Stellt sicher, dass Klicks nicht von Overlays blockiert werden
+                zIndex: 20, // Stellt sicher, dass Klicks nicht von Overlays blockiert werden
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 width: '100%',
                 padding: '20px 50px',
-                boxSizing: 'border-box'
+                boxSizing: 'border-box',
             }}>
                 {/* Logo links */}
                 <div className="navbar-logo">
@@ -36,6 +36,7 @@ function Navbar() {
                     listStyle: 'none',
                     gap: '35px',
                     margin: 0,
+                    textDecorationColor: 'blue',
                     padding: 0,
                     alignItems: 'center',
                     textDecoration: 'underline',

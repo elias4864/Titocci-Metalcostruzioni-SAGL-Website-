@@ -28,8 +28,12 @@ export const TimelineSection = () => {
             <div style={heroOverlayStyle}>
                 <img
                     src={Schleifbild}
-                    alt="Schleifbild"
-                    style={{ boxSizing:'border-box', display: 'block' , objectFit: 'cover'}}
+                    alt="Schleifbild Header"
+                    style={{ boxSizing:'border-box', display: 'block' , objectFit: 'cover', left:'50%',position: 'relative',
+                        right: '50%',
+                        marginLeft: '-50vw',
+                        marginRight: '-50vw',
+                       }}
                 />
                 <div style={textOverlayStyle}>
                     <h1 style={{
