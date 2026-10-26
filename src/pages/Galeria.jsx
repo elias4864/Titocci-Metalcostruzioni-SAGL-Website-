@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-import Galeriebild from "../assets/Galeria.jfif";
+import Impressumbild from "../assets/Impressum.jpg";
 
 import '../Styles/Galeria.css';
 
@@ -70,15 +70,16 @@ function Galeria() {
                         </ul>
                     </nav>
 
-                    {/* Bild */}
                     <img
-                        src={Galeriebild}
+                        src={Impressumbild}
                         alt="Galleria"
                         style={{
                             width: '100vw',
                             height: '450px',
                             objectFit: 'cover',
-                            display: 'block'
+                            display: 'block',
+                            imageRendering: '-webkit-optimize-contrast',
+                            filter: 'contrast(108%) saturate(102%)',
                         }}
                     />
 

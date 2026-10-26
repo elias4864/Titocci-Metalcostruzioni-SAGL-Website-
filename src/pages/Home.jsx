@@ -9,6 +9,7 @@ import PC from '../assets/PC.png';
 import Facebook from '../assets/Facebook.png';
 import Zangen from '../assets/Zangen.jfif';
 import Schleifen from '../assets/Schleifen.jpg';
+import Git from '../assets/Git.png';
 import Bauplan from '../assets/Bauplan.jfif';
 import Diplom from '../assets/Diplom.jfif';
 import Person from '../assets/Person.jfif';
@@ -149,7 +150,7 @@ function Home() {
                         alt={IMAGES[currentIndex].title}
                         style={{
                             width: '100vw',
-                            height: '550px',
+                            height: '100vh',
                             objectFit: 'cover',
                             display: 'block',
                             filter: 'brightness(0.65)'
@@ -174,6 +175,7 @@ function Home() {
                             color: '#ffffff',
                             textShadow: '2px 2px 6px rgba(0,0,0,0.8)',
                         }}>
+                            <br></br>
                             Preventivi e <span style={{ color: '#e62b2b' }}>consulenze</span>
                         </h2>
 
@@ -249,8 +251,8 @@ function Home() {
             </div>
 
             <div className="orange-div">
-                <h2 className="text-white"> </h2>
-                <img className="wirtschaft-img" src={Kreislauf} alt="Kreislauf" />
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '30px', width: '100%', flexWrap: 'wrap' }}>
+                <img className="wirtschaft-img" src={Git} alt="Kreislauf" />
 
                 <div className="banner-stats">
                     <StatCard value={286} suffix="+" label="Progetti realizzati" />
@@ -258,6 +260,7 @@ function Home() {
                     <StatCard value={8} label="Progetti attivi" />
                     <StatCard value={6} label="Progetti in attesa" />
                 </div>
+            </div>
             </div>
 
         </>

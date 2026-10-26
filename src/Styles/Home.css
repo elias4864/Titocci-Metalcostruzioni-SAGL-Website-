@@ -129,7 +129,7 @@ p {
     flex-direction: row;
     align-items: flex-start;
     gap: 45px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
 }
 
 .stat-item {
@@ -247,28 +247,35 @@ p {
 
 .orange-section {
     background-color: orange !important;
-    border-radius: 0.5px;
+    border-radius: 4px;
     padding: 55px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    gap: 15px;
+    gap: 20px;
+    color:black;
+    width: 100%;
+    max-width: 800px;
+    padding: 30px;
+    margin: 20px auto;
     box-sizing: border-box;
 }
 
 .grey-section {
     background-color: rgb(166 162 162 / 0.89) !important;
-    border-radius: 0.5px;
-    padding: 20px;
+    border-radius: 4px;
+    padding: 30px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    gap: 15px;
+    gap: 20px;
     box-sizing: border-box;
+    width: 100%;
+    max-width: 800px;           /* Gleiche maximale Breite wie die orange Sektion */
+    margin: 20px auto;          /* Zentriert und schafft Abstand */
 }
-
 .section-title {
     color: #e62b2b;
     font-weight: bold;
@@ -300,7 +307,7 @@ h2 {
     display: flex;
     align-items: center;
 }
-
+.
 
 body, html {
     margin: 0;
@@ -309,10 +316,13 @@ body, html {
     overflow-x: hidden; /* Verhindert horizontales Scrollen bei 100vw */
 }
 .section-img {
-    width: 100%;
-    height: 110px;
+    width: 100%;                /* Passt sech dem Container un */
+    max-width: 500px;           /* Optional: Eng maximal Breed festleeën */
+    height: 150px;
     object-fit: cover;
-    border-radius: 2px;
+    border-radius: 4px;
+    box-sizing: border-box;
+
 }
 .text-black {
     color: black;
