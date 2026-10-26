@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 
+
 // Asset Imports
 import Schleifbild from '../assets/Schleifen.jpg';
 import Wand from '../assets/Wand.jfif';
@@ -10,13 +11,16 @@ import Bauplan from '../assets/Bauplan.jfif';
 import Eingang from '../assets/Eingang.jfif';
 import PC from '../assets/PC.jpg';
 import Briefkasten from '../assets/Briefkasten.png';
+import Schraubenzieherbild from '../assets/Schraubenzieher.jfif';
 import Locarno from '../assets/Locarno.jfif';
 import Gitter3 from '../assets/Gitter3.jpg';
 import Gitter7 from '../assets/Gitter7.jpg';
 
 import Holztreppe  from '../assets/Holztreppe.jpg';
+import Steingarten from '../assets/Steingarten.jfif';
 import Stock from '../assets/Stock.jpg';
 import Pflanzen from '../assets/Pflanzen.jpg';
+import Steinhaus from '../assets/Steinhaus.jfif';
 import Dachterasse  from '../assets/Dachterasse.jpg';
 import Gitter2 from '../assets/Gitter2.jfif';
 import Weiss from '../assets/Weiss.png';
@@ -26,7 +30,6 @@ import Gitter6 from '../assets/Gitter6.jpg';
 import Innenhof from '../assets/Innenhof.jpg';
 
 
-import Icon from "../assets/Icon.jpg";
 
 import '../Styles/Servici.css';
 import '../Styles/TimeLineSection.css';
@@ -34,7 +37,8 @@ import '../Styles/TimeLineSection.css';
 const IMAGES = [
     { id: 1, url: Schleifbild, title: 'Schleifarbeiten', description: 'Lavorazione e finitura di alta precisione.' },
     { id: 2, url: Bauplan, title: 'Werkstatt', description: 'Progettazione e produzione artigianale.' },
-    { id: 3, url: PC, title: 'PC & Design', description: 'Pianificazione CAD e modellazione 3D.' },
+    { id: 3, url: PC, title: 'PC & Design', description: 'Pianificazione CAD e modellazione 3D.',},
+    {id: 4, url: Schraubenzieherbild    , title: 'Schraubenzieher',}
 ];
 
 const SERVICE_CARDS = [
@@ -174,16 +178,19 @@ function Servizi() {
     const navigate = useNavigate();
 
     const imagesParapetti = [Gitter, Wand];
+
     const imagesCancelli = [Fenster, Eingang];
 
     // Bilder-Arrays für die beiden unteren Slider
-    const bottomImages1 = [Gitter3, Holztreppe, Stock,Dachterasse, Pflanzen];
-    const bottomImages2 = [Gitter3,Innenhof,Gitter5,Gitter4, Weiss];
-
+    const bottomImages1 = [Gitter3, Holztreppe, Stock,Dachterasse, Pflanzen,Steingarten];
+    const bottomImages2 = [Gitter3,Innenhof,Gitter5,Gitter4, Weiss, Steinhaus];
+    /**
+     * Use Effect Timer for dynamic change  of Images Slide-Show
+     */
     useEffect(() => {
         const timer = setTimeout(() => {
             setIsOpen(true);
-        }, 2000);
+        }, 10000);
         return () => clearTimeout(timer);
     }, []);
 
@@ -200,6 +207,12 @@ function Servizi() {
     const handleClick = () => {
         window.location.href = 'https://titocci.ch/a/locarno/cancellate-per-giardino-a-locarno/';
     };
+
+
+    let handleSubmit = (e) => {
+        e.preventDefault();
+        window.location.href = 'https://it.wikipedia.org/wiki/Arte';
+    }
 
     return (
         <div className="rot">
@@ -230,10 +243,6 @@ function Servizi() {
                         zIndex: 20,
                         background: 'linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)'
                     }}>
-                        <div style={{display: 'flex', alignItems: 'center'}}>
-                            <img src={Icon} alt="Logo"
-                                 style={{width: '50px', height: '50px', objectFit: 'contain', borderRadius: '4px'}}/>
-                        </div>
 
                         <ul style={{
                             display: 'flex',
@@ -293,7 +302,7 @@ function Servizi() {
                 padding: '0 20px',
                 fontFamily: 'Arial, sans-serif'
             }}>
-                <div style={{display: 'flex', gap: '40px', justifyContent: 'center', flexWrap: 'wrap'}}>
+                <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '40px'}}>
 
                     {/* KARTE 1: Parapetti e ringhiere */}
                     <div style={{flex: '1 1 450px', maxWidth: '500px', textAlign: 'center'}}>
@@ -304,24 +313,24 @@ function Servizi() {
                         <div style={{
                             position: 'relative',
                             display: 'flex',
-                            gap: '5px',
+                            gap: '10px', /* Abstand zwischen den beiden Bildern */
                             overflow: 'hidden',
-                            borderRadius: '2px'
+                            borderRadius: '4px'
                         }}>
                             <button
                                 onClick={() => setIndexParapetti((prev) => (prev > 0 ? prev - 1 : imagesParapetti.length - 1))}
-                                style={{...sliderArrowStyle, left: '10px'}}
+                                style={{...sliderArrowStyle, left: '10px', zIndex: 10}}
                             >
                                 ‹
                             </button>
 
-                            <img src={imagesParapetti[indexParapetti]} alt="Parapetti 1" style={cardImageStyle}/>
+                            <img src={imagesParapetti[indexParapetti]} alt="Parapetti 1" style={{...cardImageStyle, width: 'calc(50% - 5px)', flex: 1}}/>
                             <img src={imagesParapetti[(indexParapetti + 1) % imagesParapetti.length]} alt="Parapetti 2"
-                                 style={cardImageStyle}/>
+                                 style={{...cardImageStyle, width: 'calc(50% - 5px)', flex: 1}}/>
 
                             <button
                                 onClick={() => setIndexParapetti((prev) => (prev + 1) % imagesParapetti.length)}
-                                style={{...sliderArrowStyle, right: '10px'}}
+                                style={{...sliderArrowStyle, right: '10px', zIndex: 10}}
                             >
                                 ›
                             </button>
@@ -354,24 +363,24 @@ function Servizi() {
                         <div style={{
                             position: 'relative',
                             display: 'flex',
-                            gap: '5px',
+                            gap: '10px', /* Abstand zwischen den beiden Bildern */
                             overflow: 'hidden',
-                            borderRadius: '2px'
+                            borderRadius: '4px'
                         }}>
                             <button
                                 onClick={() => setIndexCancelli((prev) => (prev > 0 ? prev - 1 : imagesCancelli.length - 1))}
-                                style={{...sliderArrowStyle, left: '10px'}}
+                                style={{...sliderArrowStyle, left: '10px', zIndex: 10}}
                             >
                                 ‹
                             </button>
 
-                            <img src={imagesCancelli[indexCancelli]} alt="Cancelli 1" style={cardImageStyle}/>
+                            <img src={imagesCancelli[indexCancelli]} alt="Cancelli 1" style={{...cardImageStyle, width: 'calc(50% - 5px)', flex: 1}}/>
                             <img src={imagesCancelli[(indexCancelli + 1) % imagesCancelli.length]} alt="Cancelli 2"
-                                 style={cardImageStyle}/>
+                                 style={{...cardImageStyle, width: 'calc(50% - 5px)', flex: 1}}/>
 
                             <button
                                 onClick={() => setIndexCancelli((prev) => (prev + 1) % imagesCancelli.length)}
-                                style={{...sliderArrowStyle, right: '10px'}}
+                                style={{...sliderArrowStyle, right: '10px', zIndex: 10}}
                             >
                                 ›
                             </button>
@@ -560,7 +569,7 @@ function Servizi() {
 
                     </h2>
                     <p style={{lineHeight: '1.6', fontSize: '1.05rem', color: '#333', marginBottom: '40px'}}>
-                        La Titocci Metalcostruzioni <b>si distingue </b>  per i <b> suoi servizi realizzati ad </b><span style={{color:'red'}}>arte</span> è una figura professionale che ha le sue radici nei secoli passati,
+                        La Titocci Metalcostruzioni <b>si distingue </b>  per i <b> suoi servizi realizzati ad </b><span  onClick={handleSubmit}style={{color:'red'}}>arte</span> è una figura professionale che ha le sue radici nei secoli passati,
                         risudando i ferri caldi nella lavorazione dei metalli ma fondamentale per la sopravvivenza della
                         comunità. Questo mestiere affascinante e versatile, ancora oggi di grande importanza, combina
                         abilità artigianali con l'innovazione tecnologica per creare elementi unici, funzionali e altamente

@@ -72,8 +72,10 @@ export const TimelineSection = () => {
                 <div className="timeline-wrapper">
                     {/* Vertikale Linie in der Mitte */}
                     <div className="timeline-line"></div>
+                    <div className="timeline-dot2">
 
-                    {/* --- 1973 --- */}
+                    </div>
+
                     <div className="timeline-year">
                         <span>1973</span>
                     </div>

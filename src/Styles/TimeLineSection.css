@@ -30,6 +30,23 @@
     z-index: 3;
 }
 
+
+/**
+Anfangspunkt ganz oben
+ */
+.timeline-dot2 {
+    position: absolute;
+    left: 50%;
+    top: 0px;                  /* Ganz oben am Anfang der Timeline-Wrapper */
+    transform: translateX(-50%);
+    width: 14px;               /* Kleine, dezente Punktgröße */
+    height: 14px;
+    background-color: #d1d5db; /* Passender grauer Farbton */
+    border-radius: 50%;
+    border: 2px solid #ffffff; /* Weißer Rand für einen sauberen Look */
+    z-index: 4;                /* Liegt über der vertikalen Linie */
+}
+
 .timeline-year span {
     background-color: #4b5563; /* Dunkelgrauer Hintergrund */
     color: #ffffff;
