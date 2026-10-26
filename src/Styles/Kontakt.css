@@ -32,6 +32,10 @@ html, body {
     vertical-align: middle;
 }
 
+
+.requirements-button{
+    background-color:red;
+}
 .custom-input {
     width: 100%;
     padding: 10px 12px;
@@ -49,6 +53,10 @@ html, body {
     box-shadow: 0 0 4px rgba(230, 43, 43, 0.3);
 }
 
+
+.rg-card{
+    background-color: orange;
+}
 .custom-input:invalid:not(:placeholder-shown) {
     border-color: #e62b2b;
 }

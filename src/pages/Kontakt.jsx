@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import { Link } from "react-router-dom";
 import emailjs from "@emailjs/browser";
 
-
 // Asset Imports
 import ContactBg from "../assets/Schleifen.jpg";
 import "../Styles/Kontakt.css";
@@ -39,9 +38,49 @@ function Contatti() {
         privacy: false
     });
     const [isHovered, setIsHovered] = useState(false);
+    const [showRequirements, setShowRequirements] = useState(false);
 
     // Ref für das E-Mail Eingabefeld
-    const emailInputRef = useRef("");
+    const emailInputRef = useRef(null);
+
+    const emailRequirements = [
+        {
+            label: "Mindestens 8 Zeichen lang",
+            valid: formData.email.length >= 8
+        },
+        {
+            label: "Mindestens 1 Kleinbuchstabe (a-z)",
+            valid: /[a-z]/.test(formData.email)
+        },
+        {
+            label: "Muss ein @ enthalten",
+            valid: formData.email.includes("@")
+        },
+        {
+            label: "Muss eine Domain enthalten (z.B. .de, .com, .ch)",
+            valid: /\.[a-zA-Z]{2,}$/.test(formData.email)
+        },
+        {
+            label: "Muss eine gültige E-Mail-Adresse sein",
+            valid: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
+        }
+    ];
+
+
+
+    const nameRequirements = [
+
+        {
+            label: "Mindestens 1 Großbuchstabe (A-Z)",
+            valid: /[A-Z]/.test(formData.nome)
+        },
+        {
+            label: "Mindestens 1 Kleinbuchstabe (a-z)",
+            valid: /[a-z]/.test(formData.nome)
+        },
+
+
+    ];
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -51,28 +90,26 @@ function Contatti() {
         });
     };
 
-    /**
-     * Send-Email Function für das Kontaktformular via EmailJS
-     */
     const sendEmail = (e) => {
         e.preventDefault();
 
-        // 1. Validierung: Privacy-Policy muss akzeptiert sein
+        // 1. Validierung: Pflichtfelder prüfen
+        if (!formData.nome.trim() || !formData.email.trim() || !formData.messaggio.trim()) {
+            alert("Bitte fülle alle Pflichtfelder aus!");
+            return;
+        }
+
+        // 2. Validierung: Name Länge
+        if (formData.nome.trim().length < 5) {
+            alert("Der Name ist zu kurz, bitte einen längeren Namen eingeben.");
+            return;
+        }
+
+        // 3. Validierung: Privacy-Policy muss akzeptiert sein
         if (!formData.privacy) {
-            alert("Du musst die Datenschutzrichtlinien akzeptieren");
-            console.log(formData)
+            alert("Du musst die Datenschutzrichtlinien akzeptieren.");
             return;
         }
-
-        // 2. Validierung: E-Mail darf nicht leer sein (falls nicht ausgefüllt, Fokus setzen)
-        if (!formData.email) {
-            if (emailInputRef.current) {
-                emailInputRef.current.focus();
-            }
-            return;
-        }
-
-
 
         // EmailJS Konfiguration
         const EmailJS_serviceID = 'service_n9toe59';
@@ -103,32 +140,6 @@ function Contatti() {
                 alert('Fehlermeldung der Titocci Metalcostruzioni aufgrund von Problemen mit dem EmailJS Client!');
             });
     };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
-
-            if (!formData.nome.trim() || !formData.email.trim()  || !formData.messaggio.trim()) {
-                alert("Bitte fülle alle Pflichtfelder aus");
-                console.log("Alle Pflichtfelder bitte ausfüllen"+formData.nome+formData.email+formData.messaggio);
-                return;
-            }
-            /**
-             * Name ist kleiner als 7 Zeichen
-             */
-
-            if(formData.nome.trim().length<5){
-                alert("Der Name ist zu kurz bitte ein anderer Eingeben"+formData.nome);
-                console.log("Der Name ist zu kurz"+formData.nome);
-
-            }
-            else if(formData.email.trim().length<12){
-                alert("Die E-Mail ist zu kurz bitte eine gültige E-Mail-Adresse eingeben!");
-                console.log("Die E-Mail-Adresse ist ungültig, bitte eine gültige Adresse eingeben!");
-
-
-        }
-    }
 
     return (
         <div className="rot" style={{ backgroundColor: '#ffffff', minHeight: '100vh' }}>
@@ -245,7 +256,7 @@ function Contatti() {
                                 name="email"
                                 value={formData.email}
                                 required
-                                placeholder="alex.gmail.com"
+                                placeholder="alex@gmail.com"
                                 onChange={handleChange}
                                 className="custom-input"
                                 style={{
@@ -258,6 +269,88 @@ function Contatti() {
                                 }}
                             />
                         </div>
+
+                        {/* Anforderungen öffnen */}
+                        <button
+                            type="button"
+                            className="requirements-button"
+                            onClick={() => setShowRequirements(true)}
+                        >
+                            Anforderungen anzeigen
+                        </button>
+
+
+
+
+                        {showRequirements && (
+                            <div className="popup-overlay" onClick={() => setShowRequirements(false)}>
+                                <div className="rg-card" onClick={(e) => e.stopPropagation()}>
+                                    <button
+                                        type="button"
+                                        className="popup-close"
+                                        onClick={() => setShowRequirements(false)}
+                                    >
+                                        ✕
+                                    </button>
+
+                                    <h3>Anforderungen:</h3>
+                                    <p>Name-Anforderungen:</p>
+                                    <ul style={{ listStyle: "none", paddingLeft: 0 }}>
+                                        {nameRequirements.map((req, index) => (
+                                            <li
+                                                key={index}
+                                                className="rg-item"
+                                                style={{
+                                                    color: req.valid ? "#2e7d32" : "#d32f2f",
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    gap: "8px",
+                                                    marginBottom: "4px"
+                                                }}
+                                            >
+                                                <span>{req.valid ? "✓" : "✗"}</span>
+                                                <span>{req.label}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Popup */}
+                        {showRequirements && (
+                            <div className="popup-overlay" onClick={() => setShowRequirements(false)}>
+                                <div className="rg-card" onClick={(e) => e.stopPropagation()}>
+                                    <button
+                                        type="button"
+                                        className="popup-close"
+                                        onClick={() => setShowRequirements(false)}
+                                    >
+                                        ✕
+                                    </button>
+
+                                    <p>E-Mail-Anforderungen:</p>
+                                    <ul style={{ listStyle: "none", paddingLeft: 0 }}>
+                                        {emailRequirements.map((req, index) => (
+                                            <li
+                                                key={index}
+                                                className="rg-item"
+                                                style={{
+                                                    color: req.valid ? "#2e7d32" : "#d32f2f",
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    gap: "8px",
+                                                    marginBottom: "4px"
+                                                }}
+                                            >
+                                                <span>{req.valid ? "✓" : "✗"}</span>
+                                                <span>{req.label}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+                        )}
 
                         <div>
                             <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '5px' }}>Messaggio</label>
@@ -293,7 +386,6 @@ function Contatti() {
                         </div>
                         <button
                             type="submit"
-                            onClick={sendEmail}
                             style={{
                                 backgroundColor: '#e62b2b',
                                 color: 'white',
@@ -374,11 +466,9 @@ function Contatti() {
                             justifyContent: 'flex-end',
                             gap: '10px',
                             marginBottom: '10px'
-                        }}>                <img className="flieger" src={Flieger} alt="Indirizzo Icon" style={{ width: '24px', height: '24px', objectFit: 'contain', position: 'left' ,float:'left'}} />
-
+                        }}>
+                            <img className="flieger" src={Flieger} alt="Indirizzo Icon" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
                             INDIRIZZO
-                            <span style={{ color: '#e62b2b', display: 'flex', alignItems: 'center' }}>
-            </span>
                         </h3>
                         <p style={{
                             margin: '0',
@@ -407,19 +497,20 @@ function Contatti() {
                         </a>
                     </div>
                 </div>
-
-                    <section className="footer-section map-section" style={{ width: '100vw', marginTop: '60px', overflow: 'hidden' ,height:'100px' }}>
-                        <iframe
-                            src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d11043.906817275687!2d8.742987830688485!3d46.21091841923832!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4785b75776b14f6b%3A0x1a856f78a38373de!2sTitocci%20Metalcostruzioni%20SAGL!5e0!3m2!1sde!2sus!4v1792586980608!5m2!1sde!2sus"
-                            className="maps-full"
-                            allowFullScreen=""
-                            loading="lazy"
-                            referrerPolicy="strict-origin-when-cross-origin"
-                            title="Google Maps Standort"
-                        ></iframe>
-                    </section>
-                </div>
             </div>
+
+            {/* Google Maps Vollbild-Sektion unten */}
+            <section className="footer-section map-section" style={{ width: '100vw', marginTop: '60px', overflow: 'hidden', height: '400px' }}>
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d11043.906817275687!2d8.742987830688485!3d46.21091841923832!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4785b75776b14f6b%3A0x1a856f78a38373de!2sTitocci%20Metalcostruzioni%20SAGL!5e0!3m2!1sde!2sus!4v1792586980608!5m2!1sde!2sus"
+                    className="maps-full"
+                    allowFullScreen=""
+                    loading="lazy"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    title="Google Maps Standort"
+                ></iframe>
+            </section>
+        </div>
     );
 }
 
