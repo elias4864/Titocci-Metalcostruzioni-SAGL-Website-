@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from "react-router-dom";
+import emailjs from "@emailjs/browser";
+
 
 // Asset Imports
 import ContactBg from "../assets/Schleifen.jpg";
@@ -27,6 +29,8 @@ const heroOverlayStyle = {
     pointerEvents: 'none'
 };
 
+
+
 function Contatti() {
     const [formData, setFormData] = useState({
         nome: '',
@@ -41,6 +45,49 @@ function Contatti() {
             ...formData,
             [name]: type === 'checkbox' ? checked : value
         });
+    }
+    /**
+     * Send-Email Function for Kontact Formular to Se with EmailJS
+     * @param e
+     */
+
+    const sendEmail = (e) => {
+        e.preventDefault();
+
+        if (!formData.privacy) {
+            alert('Please Accept the Terms of Email.');
+            return;
+        }
+
+        // EmailJS Konfigurationswerte (Bitte durch deine echten IDs von EmailJS ersetzen)
+        const EmailJS_serviceID = 'service_n9toe59';
+        const EmailJS_templateID = 'template_mrshrnl';
+        const EmailJS_publicKey = 'dFpVpt98rEIko4TLa';
+
+        // Parameter, die an das EmailJS-Template übergeben werden
+        const templateParams = {
+            from_name: formData.nome,
+            from_email: formData.email,
+            time: new Date().toISOString('it-CH'),
+            message: formData.messaggio,
+        };
+
+        emailjs.send(EmailJS_serviceID, EmailJS_templateID, templateParams, EmailJS_publicKey)
+            .then((response) => {
+                console.log('SUCCESS!', response.status, response.text);
+                alert('Die Nachricht wurde erfolgierch an die Titocci Metalconstruzione  geschickt  am 16.10.2026'+templateParams.time,"von"+templateParams.from_email,"an"+templateParams.from_name+"mit der Nachricht"+templateParams.message );
+                // Formular nach erfolgreichem Senden zurücksetzen
+                setFormData({
+                    nome: '',
+                    email: '',
+                    messaggio: '',
+                    privacy: false
+                });
+            })
+            .catch((err) => {
+                console.error('FAILED...', err);
+                alert('Fehlermeldung der Titocci Metalconstruzione aufgrund von Problemen mit dem EmailJS Client!');
+            });
     };
 
 
@@ -50,7 +97,7 @@ function Contatti() {
      */
     const handleSubmit = (e) => {
         e.preventDefault();
-        alert('Nachricht wurde erfolgreich gesendet!');
+        alert(' Die Nachricht wurde erfolgreich  an die Titocci Metalconstruzioni gesendet!');
         console.log(formData);
     };
 
@@ -212,8 +259,10 @@ function Contatti() {
                                 Ho letto e accettato le condizioni della <Link to="/privacy" style={{ color: '#e62b2b', textDecoration: 'none' }}>privacy policy</Link>
                             </label>
                         </div>
-
+                        <br></br>
                         <button
+                            onClick={sendEmail}
+                            onChange={handleSubmit}
                             type="submit"
                             style={{
                                 backgroundColor: '#e62b2b',
@@ -225,14 +274,20 @@ function Contatti() {
                                 borderRadius: '4px',
                                 cursor: 'pointer',
                                 alignSelf: 'flex-start',
-                                boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
+                                boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+                                boxSizing: 'border-box',
+                                marginBottom: '40px'
+
                             }}
                         >
                             INVIO
                         </button>
+                        <br></br>
 
 
                     </form>
+
+
                 </div>
 
                 {/* Rechte Spalte: Kontaktdaten */}
@@ -314,7 +369,6 @@ function Contatti() {
                         </a>
                     </div>
 
-                    {/* Google Maps Karte platziert sich nun ganz unten in der Spalte */}
                     <iframe
                         className="maps-full"
                         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2760.964782838872!2d8.740326876315036!3d46.211155571096!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4785b75776b14f6b%3A0x1a856f78a38373de!2sTitocci%20Metalcostruzioni%20SAGL!5e0!3m2!1sde!2sch!4v1792763434793!5m2!1sde!2sch"
@@ -322,6 +376,9 @@ function Contatti() {
                         loading="lazy"
                         referrerPolicy="strict-origin-when-cross-origin"
                     ></iframe>
+
+                    {/* Google Maps Karte platziert sich nun ganz unten in der Spalte */}
+
                 </div>
 
 

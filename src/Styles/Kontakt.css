@@ -13,16 +13,19 @@
 
 
 .maps-full {
-    height: 30vh;
     display: block;
-    width: 100vw;
     position: relative;
-    margin-left: -50vw;
-    margin-right: -50vw;
+    width: 100vw;
+
+
     box-sizing: border-box;
     object-fit: cover;
     border: 0;
     border-radius: 6px;
+    margin-top: 50px; /* Gibt der Karte genug Abstand zum Button */
+    height: 100vh;
+
+
 
 
 }
