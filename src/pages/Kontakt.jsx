@@ -59,7 +59,7 @@ function Contatti() {
 
         // 1. Validierung: Privacy-Policy muss akzeptiert sein
         if (!formData.privacy) {
-            alert('Si prega di accettare la privacy policy.');
+            alert("Du musst die Datenschutzrichtlinien akzeptieren");
             console.log(formData)
             return;
         }
@@ -124,6 +124,8 @@ function Contatti() {
             }
             else if(formData.email.trim().length<12){
                 alert("Die E-Mail ist zu kurz bitte eine gültige E-Mail-Adresse eingeben!");
+                console.log("Die E-Mail-Adresse ist ungültig, bitte eine gültige Adresse eingeben!");
+
 
         }
     }

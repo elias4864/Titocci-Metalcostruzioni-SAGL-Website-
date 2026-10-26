@@ -23,16 +23,38 @@
 /* Jahreszahlen-Badge (z.B. 1973, 1982) exakt mittig */
 .timeline-year {
     position: relative;
-    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 25px 0;
     z-index: 3;
 }
-/**
-Anfangspunkt ganz oben
- */
+.timeline-year::before {
+    content: '';
+    position: absolute;
+    transform: translate(-50%,-50%);
+      /* Perfekte Größe für den Punkt */
+    z-index: 1;
+    left: 50%;
+    top: 50%;
+    width: 20px;
+    height: 20px;
+    background-color: #888888;
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px #ffffff, 0 0 0 6px #d0d0d0; /* Zweifarbiger Außenring */
+}
+
+
+
+
+
+.timeline-year span {
+    position: relative;
+    z-index: 2;        /* Liegt über dem Punkt */
+    background-color: #ffffff; /* Passe dies an die Hintergrundfarbe deiner Seite an */
+    padding: 0 12px;   /* Schafft links und rechts etwas Platz */
+    font-weight: bold;
+}
+
 .timeline-dot2 {
     position: absolute;
     left: 50%;
@@ -69,6 +91,24 @@ Anfangspunkt ganz oben
     width: 100%;
     margin: 35px 0;
     z-index: 2;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+    /* Größe des Dots hier anpassen */
+    width: 30px;
+    height: 30px;
+
+    background-color: #888888; /* Graue Farbe */
+    border-radius: 50%;
+    border: 4px solid #ffffff; /* Weißer Rahmen um den Dot */
+    box-shadow: 0 0 0 2px #cccccc; /* Äußerer grauer Ring */
+    z-index: 3;
 }
 
 /* Beide Hälften teilen sich exakt 50% der Breite */
@@ -128,6 +168,7 @@ Anfangspunkt ganz oben
     border-top: 10px solid transparent;
     border-bottom: 10px solid transparent;
     border-right: 10px solid #ffb703;
+
 }
 
 /* Pfeil an der Box nach rechts (wenn Box links ist) */
