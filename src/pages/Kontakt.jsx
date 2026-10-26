@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Link } from "react-router-dom";
 import emailjs from "@emailjs/browser";
 
+
 // Asset Imports
 import ContactBg from "../assets/Schleifen.jpg";
 import "../Styles/Kontakt.css";
@@ -59,6 +60,7 @@ function Contatti() {
         // 1. Validierung: Privacy-Policy muss akzeptiert sein
         if (!formData.privacy) {
             alert('Si prega di accettare la privacy policy.');
+            console.log(formData)
             return;
         }
 
@@ -69,6 +71,8 @@ function Contatti() {
             }
             return;
         }
+
+
 
         // EmailJS Konfiguration
         const EmailJS_serviceID = 'service_n9toe59';
@@ -86,7 +90,7 @@ function Contatti() {
         emailjs.send(EmailJS_serviceID, EmailJS_templateID, templateParams, EmailJS_publicKey)
             .then((response) => {
                 console.log('SUCCESS!', response.status, response.text);
-                alert('La messaggio è stata inviata con successo a Titocci Metalcostruzioni!');
+                alert('Wir haben die Nachricht der Titocci Metalconstruzione erfolgreich erhalten!');
                 setFormData({
                     nome: '',
                     email: '',
@@ -99,6 +103,26 @@ function Contatti() {
                 alert('Fehlermeldung der Titocci Metalcostruzioni aufgrund von Problemen mit dem EmailJS Client!');
             });
     };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+
+            if (!formData.nome.trim() || !formData.email.trim()  || !formData.messaggio.trim()) {
+                alert("Bitte fülle alle Pflichtfelder aus");
+                console.log("Alle Pflichtfelder bitte ausfüllen"+formData.nome+formData.email+formData.messaggio);
+                return;
+            }
+            /**
+             * Name ist kleiner als 7 Zeichen
+             */
+
+            if(formData.nome.trim.length<7){
+                alert("Der Name ist leer"+formData.nome);
+                console.log("Der Name ist zu kurz"+formData.nome);
+                return;
+            }console.log("Formular erfolgreich abgeschickt!");
+    }
 
     return (
         <div className="rot" style={{ backgroundColor: '#ffffff', minHeight: '100vh' }}>
@@ -187,11 +211,12 @@ function Contatti() {
                 <div style={{ flex: '1 1 500px' }}>
                     <form onSubmit={sendEmail} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                         <div>
-                            <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '5px' }}>Nome</label>
+                            <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '5px' }}>Nome*</label>
                             <input
                                 type="text"
                                 name="nome"
                                 required={true}
+                                placeholder="Alex"
                                 value={formData.nome}
                                 onChange={handleChange}
                                 style={{
@@ -206,7 +231,7 @@ function Contatti() {
                         </div>
                         <div>
                             <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '5px' }}>
-                                Email
+                                Email*
                             </label>
                             <input
                                 ref={emailInputRef}
@@ -214,6 +239,7 @@ function Contatti() {
                                 name="email"
                                 value={formData.email}
                                 required
+                                placeholder="alex.gmail.com"
                                 onChange={handleChange}
                                 className="custom-input"
                                 style={{
@@ -234,6 +260,7 @@ function Contatti() {
                                 rows="5"
                                 value={formData.messaggio}
                                 onChange={handleChange}
+                                placeholder="Ich möchte Aufkunft über die Anzahl freie Imobillien der Titocci Metalconstruzione SAGL wissen..."
                                 style={{
                                     width: '100%',
                                     padding: '10px 12px',
