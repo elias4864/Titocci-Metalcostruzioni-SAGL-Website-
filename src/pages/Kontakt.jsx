@@ -117,11 +117,15 @@ function Contatti() {
              * Name ist kleiner als 7 Zeichen
              */
 
-            if(formData.nome.trim.length<7){
-                alert("Der Name ist leer"+formData.nome);
+            if(formData.nome.trim().length<5){
+                alert("Der Name ist zu kurz bitte ein anderer Eingeben"+formData.nome);
                 console.log("Der Name ist zu kurz"+formData.nome);
-                return;
-            }console.log("Formular erfolgreich abgeschickt!");
+
+            }
+            else if(formData.email.trim().length<12){
+                alert("Die E-Mail ist zu kurz bitte eine gültige E-Mail-Adresse eingeben!");
+
+        }
     }
 
     return (
@@ -287,6 +291,7 @@ function Contatti() {
                         </div>
                         <button
                             type="submit"
+                            onClick={sendEmail}
                             style={{
                                 backgroundColor: '#e62b2b',
                                 color: 'white',
@@ -308,14 +313,15 @@ function Contatti() {
                 </div>
 
                 {/* Rechte Spalte: Kontaktdaten */}
-                <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', gap: '30px', alignItems: 'flex-start' }}>
-                    <div>
+                <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', gap: '30px', alignItems: 'flex-end', marginLeft: 'auto' }}>
+                    <div style={{ textAlign: 'right' }}>
                         <h3 style={{
                             color: '#000',
                             fontSize: '1.1rem',
                             fontWeight: 'bold',
                             display: 'flex',
                             alignItems: 'center',
+                            justifyContent: 'flex-end',
                             gap: '10px',
                             marginBottom: '15px'
                         }}>
@@ -327,9 +333,10 @@ function Contatti() {
                             color: '#444',
                             display: 'flex',
                             alignItems: 'center',
+                            justifyContent: 'flex-end',
                             gap: '8px',
                         }}>
-                            <a href="tel:+41917962369" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>
+                            <a href="tel:+41917962369" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <img className="streifen" src={Streifen} alt="Streifen Icon" /><span> Tel. +41 91 796 23 69</span>
                             </a>
                         </p>
@@ -339,40 +346,45 @@ function Contatti() {
                             color: '#444',
                             display: 'flex',
                             alignItems: 'center',
+                            justifyContent: 'flex-end',
                             gap: '8px'
                         }}>
                             <a href="mailto:info@titocci.ch" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} style={{
                                 color: isHovered ? 'black' : '#e62b2b',
                                 textDecoration: isHovered ? 'underline' : 'none',
-                                transition: 'color 0.2s ease'
+                                transition: 'color 0.2s ease',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px'
                             }}>
                                 <img className="streifen" src={Streifen} alt="Streifen Icon" /> info@titocci.ch
                             </a>
                         </p>
                     </div>
 
-                    <div>
+                    <div style={{ textAlign: 'right' }}>
                         <h3 style={{
                             color: '#000',
                             fontSize: '1.1rem',
                             fontWeight: 'bold',
                             display: 'flex',
                             alignItems: 'center',
+                            justifyContent: 'flex-end',
                             gap: '10px',
                             marginBottom: '10px'
-                        }}>
-                            <span style={{ color: '#e62b2b', display: 'flex', alignItems: 'center' }}>
-                                <img className="flieger" src={Flieger} alt="Indirizzo Icon" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
-                            </span>
+                        }}>                <img className="flieger" src={Flieger} alt="Indirizzo Icon" style={{ width: '24px', height: '24px', objectFit: 'contain', position: 'left' ,float:'left'}} />
+
                             INDIRIZZO
+                            <span style={{ color: '#e62b2b', display: 'flex', alignItems: 'center' }}>
+            </span>
                         </h3>
                         <p style={{
                             margin: '0',
                             fontSize: '0.95rem',
                             color: '#444',
                             lineHeight: '1.5',
-                            textAlign: 'left',
-                            paddingLeft: '34px'
+                            textAlign: 'right',
+                            paddingLeft: '0'
                         }}>
                             In di Salécc 2,<br />
                             6670 Avegno
@@ -380,7 +392,7 @@ function Contatti() {
                     </div>
 
                     {/* Social Icons */}
-                    <div className="footer-social-icons" style={{ display: 'flex', gap: '15px', borderRadius: '50px' }}>
+                    <div className="footer-social-icons" style={{ display: 'flex', gap: '15px', borderRadius: '50px', justifyContent: 'flex-end' }}>
                         <a className="img-facebook"
                            href="https://www.facebook.com/people/Titocci-Metalcostruzioni-Sagl/100063745770320/#"
                            target="_blank" rel="noreferrer">
@@ -392,8 +404,9 @@ function Contatti() {
                             <img src={RedGoogleMaps} alt="Google Maps Icon" style={{ width: '30px', height: '30px', objectFit: 'contain' }} />
                         </a>
                     </div>
+                </div>
 
-                    <section className="footer-section map-section" style={{ width: '100%', marginTop: '60px', overflow: 'hidden' }}>
+                    <section className="footer-section map-section" style={{ width: '100vw', marginTop: '60px', overflow: 'hidden' ,height:'100px' }}>
                         <iframe
                             src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d11043.906817275687!2d8.742987830688485!3d46.21091841923832!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4785b75776b14f6b%3A0x1a856f78a38373de!2sTitocci%20Metalcostruzioni%20SAGL!5e0!3m2!1sde!2sus!4v1792586980608!5m2!1sde!2sus"
                             className="maps-full"
@@ -405,7 +418,6 @@ function Contatti() {
                     </section>
                 </div>
             </div>
-        </div>
     );
 }
 
