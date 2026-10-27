@@ -1,4 +1,4 @@
-name: Deploy Website for GitHub Pages on Titocci-Metalconstruzione-SAGL-Website
+name: Deploy Website for GitHub Pages on Titocci-Metalcostruzioni-SAGL-Website
 
 on:
   push:
@@ -21,6 +21,13 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    
+    # WICHTIG: Hier geben wir den Unterordner an, in dem dein React-Projekt liegt!
+    # (Falls der Ordner anders heißt, passe "my-react-app" entsprechend an)
+    defaults:
+      run:
+        working-directory: ./my-react-app/Titocci-Metalcostruzioni-SAGL-Website-
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -36,10 +43,11 @@ jobs:
       - name: Projekt bauen (Build)
         run: npm run build
 
-      - name: Build-Artefakt hochladen
+      - name: Build-Artefakt(Docker Image) hochladen
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './dist'
+          # Da wir im Unterordner sind, muss der Pfad zum dist-Ordner angepasst werden:
+          path: './my-react-app/dist'
 
       - name: Auf GitHub Pages deployen
         id: deployment
