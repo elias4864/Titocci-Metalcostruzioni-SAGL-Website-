@@ -37,8 +37,8 @@ jobs:
       - name: Projekt bauen (Build)
         run: npm run build
 
-      - name: Jedes mal bei jedem Durchlauf Dependencies neu installieren
-        run: npm install
+      - name: Abhängigkeiten installieren
+        run: npm install --legacy-peer-deps
 
       - name: Build-Artefakt hochladen
         uses: actions/upload-pages-artifact@v3
