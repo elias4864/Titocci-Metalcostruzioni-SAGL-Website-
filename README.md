@@ -41,6 +41,7 @@ Vor dem lokalen Deployment  müssen folgende Tools  bereits installiert sein:
 -Node.js (Version 20 LTS empfohlen)
 
 -Git
+-CMD/Powershell(Git Bash CLI für Deployment Vitserver
 
 -Docker Compose Depdendencies installiert
 -Docker Desktop
