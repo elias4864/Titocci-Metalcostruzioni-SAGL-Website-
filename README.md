@@ -20,7 +20,7 @@ Offizielle Website für den Schweizer Metallbau- und Schlosserbetrieb Titocci Me
 
 
 
-Die Website  umfasst folgende Routes+Pages
+Die Website  umfasst folgende Routes+Pages(Links)
 
 - **`/` bzw. `/home`**: Hauptstartseite(Übersicht+Dienstleistungen)
 - **`/chi-siamo`**: Über das Unternehmen(*Über Uns Page)
@@ -79,7 +79,7 @@ Stelle sicher, dass **Node.js** auf deinem Node-Server installiert ist. Führe d
 7. docker compose up -d --build -t titocci-website:latest .
 
 
-🔄 ### CI/CD Pipeline (GitHub Workflows)
+🔄 ### CI/CD  Deployment Viteserver- Pipeline (GitHub Workflows)
 Das Repository ist mit einer GitHub Actions Pipeline ausgestattet (.github/workflows/deploy.yml). Bei jedem Push oder Pull Request auf den main-Branch führt die Pipeline folgende Schritte aus:
 
 Checkout Code: Lädt den aktuellen Repository-Stand.
@@ -90,10 +90,20 @@ Dependencies & Linting: Installiert die Pakete sauber über npm ci.
 
 Vite Production Build: Testet den Build-Prozess (npm run build) auf Syntax- und CSS-Fehler.
 
-Docker Build & Push: Baut das Docker-Image und stellt es auf dem Zielserver / der Container Registry(pullt es )  bereit.
+Docker Build & Push: Baut das Docker-Image und stellt es auf dem Zielserver / der Container Registry(pullt es )  bereit
 
+🚀 ###  CI/CD Pipeline für  automatisierte Deloyment der Github Page: 
+1GitHub Pages DeploymentDieses Repository nutzt einen automatisierten GitHub Actions Workflow (deploy.yml). 
+2.Bei jedem Push auf den main-Branch wird die React-Anwendung (Vite) automatisch gebaut, ein Deployment-Artefakt erstellt und auf GitHub Pages veröffentlicht.
 
-
+⚙️ Konfiguration & SteuerungTrigger (on.push.branches: [main]): Die Pipeline startet automatisch, sobald neuer Code in den main-Branch gepusht wird.Berechtigungen (permissions):contents: read: Erlaubt das Auslesen des Quellcodes.pages: write: Erlaubt das Veröffentlichen auf GitHub Pages.id-token: write: Erzeugt ein OIDC-Token zur sicheren Authentifizierung gegenüber GitHub Pages.Ressourcen-Steuerung (concurrency): Verhindert Konflikte bei mehreren schnellen Pushes. Wenn ein neuer Run startet, wird ein noch laufendes altes Deployment abgebrochen (cancel-in-progress: true).
+🛠️ Ablauf der Build- & Deploy-Schritte (steps)SchrittBefehl / ActionErklärung
+1. Checkout Repositoryactions/checkout@v4lädt den aktuellen Quellcode aus dem Repository auf den virtuellen ubuntu-latest-Runner herunter
+2. Node.js einrichtenactions/setup-node@v4Installiert Node.js in Version 20 und aktiviert den automatischen npm-Paket-Cache für schnellere Builds.
+3.  Abhängigkeiten installierennpm ci --legacy-peer-depsFührt eine saubere Neuinstallation der npm-Pakete durch.Das Flag --legacy-peer-deps löst Versionskonflikte zwischen Vite 8 und älteren Peers.
+4.  4.npm run build Projekt neu bauen ( Docker Build)Führt das Vite-Build-Skript aus. Compiliert JSX/JS, optimiert Assets und generiert die produktionsbereiten Dateien im /dist-Ordner.
+5.  5. Build-Artefakt hochladenactions/upload-pages-artifact@v3Verpackt den Inhalt des generierten ./dist-Ordners als komprimiertes GitHub-Pages-Artefakt.
+6. Auf GitHub Pages deployenactions/deploy-pages@v4Nimmt das hochgeladene Artefakt und veröffentlicht es live unter der GitHub Pages URL.
 
 
 
