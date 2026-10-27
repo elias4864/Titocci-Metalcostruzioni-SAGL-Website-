@@ -29,16 +29,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-
-      - name: Abhängigkeiten installieren
-        run: npm ci --legacy-peer-deps
-
-      - name: Projekt bauen (Build)
-        run: npm run build
 
       - name: Abhängigkeiten installieren
         run: npm install --legacy-peer-deps
+
+      - name: Projekt bauen (Build)
+        run: npm run build
 
       - name: Build-Artefakt hochladen
         uses: actions/upload-pages-artifact@v3
