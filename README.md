@@ -49,9 +49,12 @@ Führe die folgenden Befehle im Stammverzeichnis deines Vite-Projekts aus (`my-r
 
  **Abhängigkeiten installieren** (falls noch nicht geschehen):
 1. npm install --legacy-peer-deps oder npm install
+2. npm install --save-dev @testing-library/react @testing-library/dom(DevDependencies Libaries installieren)
 Um die Tests in deiner Entwicklungsumgebung auszuführen, nutze folgenden Befehl im  Rootprojektverzeichnis(my-react-app/Titocci-Metalconstruzioni-SAGL-Website-)
  Tests ausführen mit Live-Reloading der Unit-Tests
-3. npm run test oder npm test(vitest oder vite)
+3. npm run test(Vite) oder  npx vitest run(Vitest)
+4. Bei den package.json jeweils unter "scripts" folgenden Eintrag  hinzufügen:
+   test vitest oder alternativ
 
 
 
