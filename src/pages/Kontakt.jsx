@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import { Link } from "react-router-dom";
 import emailjs from "@emailjs/browser";
 
-
 // Asset Imports
 import ContactBg from "../assets/Schleifen.jpg";
 import "../Styles/Kontakt.css";
@@ -28,7 +27,7 @@ const heroOverlayStyle = {
     textAlign: 'center',
     color: 'white',
     zIndex: 5,
-    pointerEvents: 'none'
+    pointerEvents: 'none',
 };
 
 function Contatti() {
@@ -41,7 +40,7 @@ function Contatti() {
     const [isHovered, setIsHovered] = useState(false);
 
     // Ref für das E-Mail Eingabefeld
-    const emailInputRef = useRef("");
+    const emailInputRef = useRef(null);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -52,77 +51,86 @@ function Contatti() {
     };
 
     /**
-     * Send-Email Function für das Kontaktformular via EmailJS
+     * Send-Email Function für das Kontaktformular via EmailJS inkl. Try/Catch & Validierung
      */
-    const sendEmail = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // 1. Validierung: Privacy-Policy muss akzeptiert sein
-        if (!formData.privacy) {
-            alert('Si prega di accettare la privacy policy.');
-            console.log(formData)
-            return;
-        }
+        try {
 
-        // 2. Validierung: E-Mail darf nicht leer sein (falls nicht ausgefüllt, Fokus setzen)
-        if (!formData.email) {
-            if (emailInputRef.current) {
-                emailInputRef.current.focus();
-            }
-            return;
-        }
-
-
-
-        // EmailJS Konfiguration
-        const EmailJS_serviceID = 'service_n9toe59';
-        const EmailJS_templateID = 'template_mrshrnl';
-        const EmailJS_publicKey = 'dFpVpt98rEIko4TLa';
-
-        const templateParams = {
-            from_name: formData.nome,
-            from_email: formData.email,
-            time: new Date().toLocaleString('it-CH'),
-            message: formData.messaggio,
-            privacy: formData.privacy,
-        };
-
-        emailjs.send(EmailJS_serviceID, EmailJS_templateID, templateParams, EmailJS_publicKey)
-            .then((response) => {
-                console.log('SUCCESS!', response.status, response.text);
-                alert('Wir haben die Nachricht der Titocci Metalconstruzione erfolgreich erhalten!');
-                setFormData({
-                    nome: '',
-                    email: '',
-                    messaggio: '',
-                    privacy: false
-                });
-            })
-            .catch((err) => {
-                console.error('FAILED...', err);
-                alert('Fehlermeldung der Titocci Metalcostruzioni aufgrund von Problemen mit dem EmailJS Client!');
-            });
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
-
-            if (!formData.nome.trim() || !formData.email.trim()  || !formData.messaggio.trim()) {
-                alert("Bitte fülle alle Pflichtfelder aus");
-                console.log("Alle Pflichtfelder bitte ausfüllen"+formData.nome+formData.email+formData.messaggio);
-                return;
-            }
             /**
-             * Name ist kleiner als 7 Zeichen
+             * Accept Terms of Privacy Use
+             */
+            if (!formData.privacy) {
+                alert('Si prega di accettare la privacy policy.');
+                throw new Error("Bitte akzeptiere die Datenschutzbestimmungen");
+            }
+
+            if (!formData.nome.trim() || !formData.email.trim() || !formData.messaggio.trim()) {
+                if (!formData.email.trim() && emailInputRef.current) {
+                    emailInputRef.current.focus();
+                }
+                throw new Error("Bitte fülle alle Pflichtfelder aus!");
+            }
+
+            /**
+             * Wenn  Name leer ist Reset Formular
              */
 
-            if(formData.nome.trim.length<7){
-                alert("Der Name ist leer"+formData.nome);
-                console.log("Der Name ist zu kurz"+formData.nome);
-                return;
-            }console.log("Formular erfolgreich abgeschickt!");
-    }
+            if (formData.nome.trim().length < 7) {
+                throw new Error("Der Name muss mindestens 7 Zeichen lang sein!");
+            }
+
+            // 4. Validierung: Mindestlänge der Nachricht (mindestens 10 Zeichen)
+            if (formData.messaggio.trim().length < 10) {
+                throw new Error("Die Nachricht ist zu kurz. Bitte gib eine ausführlichere Nachricht ein!");
+            }
+
+            /**
+             * Mindestlänge der E-Mail ist 10 Zeichen
+             */
+
+            if(formData.email.trim().length < 10) {
+                alert("Die E-Mail Adresse ist nicht gültig und zu kurz bitte eine gültige E-Mail eingeben");
+            }
+
+            // EmailJS Konfiguration
+            const EmailJS_serviceID = 'service_n9toe59';
+            const EmailJS_templateID = 'template_mrshrnl';
+            const EmailJS_publicKey = 'dFpVpt98rEIko4TLa';
+
+            const templateParams = {
+                from_name: formData.nome,
+                from_email: formData.email,
+                time: new Date().toLocaleString('it-CH'),
+                message: formData.messaggio,
+                privacy: formData.privacy,
+            };
+
+            const response = await emailjs.send(
+                EmailJS_serviceID,
+                EmailJS_templateID,
+                templateParams,
+                EmailJS_publicKey
+            );
+
+            console.log('SUCCESS!', response.status, response.text);
+            alert('Vielen Dank! Deine Nachricht wurde erfolgreich versendet.');
+
+            // Formular nach erfolgreichem Senden zurücksetzen
+            setFormData({
+                nome: '',
+                email: '',
+                messaggio: '',
+                privacy: false
+            });
+
+        } catch (error) {
+            // Catch-Block fängt Validierungs- & EmailJS-Fehler ab
+            console.error("Fehler beim Absenden des Formulars:", error.message);
+            alert("Fehler: " + error.message);
+        }
+    };
 
     return (
         <div className="rot" style={{ backgroundColor: '#ffffff', minHeight: '100vh' }}>
@@ -209,7 +217,7 @@ function Contatti() {
             }}>
                 {/* Linke Spalte: Formular */}
                 <div style={{ flex: '1 1 500px' }}>
-                    <form onSubmit={sendEmail} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                         <div>
                             <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '5px' }}>Nome*</label>
                             <input
@@ -239,7 +247,7 @@ function Contatti() {
                                 name="email"
                                 value={formData.email}
                                 required
-                                placeholder="alex.gmail.com"
+                                placeholder="alex@gmail.com"
                                 onChange={handleChange}
                                 className="custom-input"
                                 style={{
@@ -254,13 +262,13 @@ function Contatti() {
                         </div>
 
                         <div>
-                            <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '5px' }}>Messaggio</label>
+                            <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '5px' }}>Messaggio*</label>
                             <textarea
                                 name="messaggio"
                                 rows="5"
                                 value={formData.messaggio}
                                 onChange={handleChange}
-                                placeholder="Ich möchte Aufkunft über die Anzahl freie Imobillien der Titocci Metalconstruzione SAGL wissen..."
+                                placeholder="Ich möchte Auskunft über die Dienstleistungen der Titocci Metalcostruzioni SAGL erhalten..."
                                 style={{
                                     width: '100%',
                                     padding: '10px 12px',
