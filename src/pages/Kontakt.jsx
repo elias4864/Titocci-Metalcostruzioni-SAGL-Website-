@@ -27,7 +27,7 @@ const heroOverlayStyle = {
     textAlign: 'center',
     color: 'white',
     zIndex: 5,
-    pointerEvents: 'none'
+    pointerEvents: 'none',
 };
 
 function Contatti() {
@@ -38,49 +38,9 @@ function Contatti() {
         privacy: false
     });
     const [isHovered, setIsHovered] = useState(false);
-    const [showRequirements, setShowRequirements] = useState(false);
 
     // Ref für das E-Mail Eingabefeld
     const emailInputRef = useRef(null);
-
-    const emailRequirements = [
-        {
-            label: "Mindestens 8 Zeichen lang",
-            valid: formData.email.length >= 8
-        },
-        {
-            label: "Mindestens 1 Kleinbuchstabe (a-z)",
-            valid: /[a-z]/.test(formData.email)
-        },
-        {
-            label: "Muss ein @ enthalten",
-            valid: formData.email.includes("@")
-        },
-        {
-            label: "Muss eine Domain enthalten (z.B. .de, .com, .ch)",
-            valid: /\.[a-zA-Z]{2,}$/.test(formData.email)
-        },
-        {
-            label: "Muss eine gültige E-Mail-Adresse sein",
-            valid: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
-        }
-    ];
-
-
-
-    const nameRequirements = [
-
-        {
-            label: "Mindestens 1 Großbuchstabe (A-Z)",
-            valid: /[A-Z]/.test(formData.nome)
-        },
-        {
-            label: "Mindestens 1 Kleinbuchstabe (a-z)",
-            valid: /[a-z]/.test(formData.nome)
-        },
-
-
-    ];
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -90,55 +50,86 @@ function Contatti() {
         });
     };
 
-    const sendEmail = (e) => {
+    /**
+     * Send-Email Function für das Kontaktformular via EmailJS inkl. Try/Catch & Validierung
+     */
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // 1. Validierung: Pflichtfelder prüfen
-        if (!formData.nome.trim() || !formData.email.trim() || !formData.messaggio.trim()) {
-            alert("Bitte fülle alle Pflichtfelder aus!");
-            return;
-        }
+        try {
 
-        // 2. Validierung: Name Länge
-        if (formData.nome.trim().length < 5) {
-            alert("Der Name ist zu kurz, bitte einen längeren Namen eingeben.");
-            return;
-        }
+            /**
+             * Accept Terms of Privacy Use
+             */
+            if (!formData.privacy) {
+                alert('Si prega di accettare la privacy policy.');
+                throw new Error("Bitte akzeptiere die Datenschutzbestimmungen");
+            }
 
-        // 3. Validierung: Privacy-Policy muss akzeptiert sein
-        if (!formData.privacy) {
-            alert("Du musst die Datenschutzrichtlinien akzeptieren.");
-            return;
-        }
+            if (!formData.nome.trim() || !formData.email.trim() || !formData.messaggio.trim()) {
+                if (!formData.email.trim() && emailInputRef.current) {
+                    emailInputRef.current.focus();
+                }
+                throw new Error("Bitte fülle alle Pflichtfelder aus!");
+            }
 
-        // EmailJS Konfiguration
-        const EmailJS_serviceID = 'service_n9toe59';
-        const EmailJS_templateID = 'template_mrshrnl';
-        const EmailJS_publicKey = 'dFpVpt98rEIko4TLa';
+            /**
+             * Wenn  Name leer ist Reset Formular
+             */
 
-        const templateParams = {
-            from_name: formData.nome,
-            from_email: formData.email,
-            time: new Date().toLocaleString('it-CH'),
-            message: formData.messaggio,
-            privacy: formData.privacy,
-        };
+            if (formData.nome.trim().length < 7) {
+                throw new Error("Der Name muss mindestens 7 Zeichen lang sein!");
+            }
 
-        emailjs.send(EmailJS_serviceID, EmailJS_templateID, templateParams, EmailJS_publicKey)
-            .then((response) => {
-                console.log('SUCCESS!', response.status, response.text);
-                alert('Wir haben die Nachricht der Titocci Metalconstruzione erfolgreich erhalten!');
-                setFormData({
-                    nome: '',
-                    email: '',
-                    messaggio: '',
-                    privacy: false
-                });
-            })
-            .catch((err) => {
-                console.error('FAILED...', err);
-                alert('Fehlermeldung der Titocci Metalcostruzioni aufgrund von Problemen mit dem EmailJS Client!');
+            // 4. Validierung: Mindestlänge der Nachricht (mindestens 10 Zeichen)
+            if (formData.messaggio.trim().length < 10) {
+                throw new Error("Die Nachricht ist zu kurz. Bitte gib eine ausführlichere Nachricht ein!");
+            }
+
+            /**
+             * Mindestlänge der E-Mail ist 10 Zeichen
+             */
+
+            if(formData.email.trim().length < 10) {
+                alert("Die E-Mail Adresse ist nicht gültig und zu kurz bitte eine gültige E-Mail eingeben");
+            }
+
+            // EmailJS Konfiguration
+            const EmailJS_serviceID = 'service_n9toe59';
+            const EmailJS_templateID = 'template_mrshrnl';
+            const EmailJS_publicKey = 'dFpVpt98rEIko4TLa';
+
+            const templateParams = {
+                from_name: formData.nome,
+                from_email: formData.email,
+                time: new Date().toLocaleString('it-CH'),
+                message: formData.messaggio,
+                privacy: formData.privacy,
+            };
+
+            const response = await emailjs.send(
+                EmailJS_serviceID,
+                EmailJS_templateID,
+                templateParams,
+                EmailJS_publicKey
+            );
+
+            console.log('SUCCESS!', response.status, response.text);
+            alert('Vielen Dank! Deine Nachricht wurde erfolgreich versendet.');
+
+            // Formular nach erfolgreichem Senden zurücksetzen
+            setFormData({
+                nome: '',
+                email: '',
+                messaggio: '',
+                privacy: false
             });
+
+        } catch (error) {
+            // Catch-Block fängt Validierungs- & EmailJS-Fehler ab
+            console.error("Fehler beim Absenden des Formulars:", error.message);
+            alert("Fehler: " + error.message);
+        }
     };
 
     return (
@@ -226,7 +217,7 @@ function Contatti() {
             }}>
                 {/* Linke Spalte: Formular */}
                 <div style={{ flex: '1 1 500px' }}>
-                    <form onSubmit={sendEmail} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                         <div>
                             <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '5px' }}>Nome*</label>
                             <input
@@ -270,96 +261,14 @@ function Contatti() {
                             />
                         </div>
 
-                        {/* Anforderungen öffnen */}
-                        <button
-                            type="button"
-                            className="requirements-button"
-                            onClick={() => setShowRequirements(true)}
-                        >
-                            Anforderungen anzeigen
-                        </button>
-
-
-
-
-                        {showRequirements && (
-                            <div className="popup-overlay" onClick={() => setShowRequirements(false)}>
-                                <div className="rg-card" onClick={(e) => e.stopPropagation()}>
-                                    <button
-                                        type="button"
-                                        className="popup-close"
-                                        onClick={() => setShowRequirements(false)}
-                                    >
-                                        ✕
-                                    </button>
-
-                                    <h3>Anforderungen:</h3>
-                                    <p>Name-Anforderungen:</p>
-                                    <ul style={{ listStyle: "none", paddingLeft: 0 }}>
-                                        {nameRequirements.map((req, index) => (
-                                            <li
-                                                key={index}
-                                                className="rg-item"
-                                                style={{
-                                                    color: req.valid ? "#2e7d32" : "#d32f2f",
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    gap: "8px",
-                                                    marginBottom: "4px"
-                                                }}
-                                            >
-                                                <span>{req.valid ? "✓" : "✗"}</span>
-                                                <span>{req.label}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Popup */}
-                        {showRequirements && (
-                            <div className="popup-overlay" onClick={() => setShowRequirements(false)}>
-                                <div className="rg-card" onClick={(e) => e.stopPropagation()}>
-                                    <button
-                                        type="button"
-                                        className="popup-close"
-                                        onClick={() => setShowRequirements(false)}
-                                    >
-                                        ✕
-                                    </button>
-
-                                    <p>E-Mail-Anforderungen:</p>
-                                    <ul style={{ listStyle: "none", paddingLeft: 0 }}>
-                                        {emailRequirements.map((req, index) => (
-                                            <li
-                                                key={index}
-                                                className="rg-item"
-                                                style={{
-                                                    color: req.valid ? "#2e7d32" : "#d32f2f",
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    gap: "8px",
-                                                    marginBottom: "4px"
-                                                }}
-                                            >
-                                                <span>{req.valid ? "✓" : "✗"}</span>
-                                                <span>{req.label}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </div>
-                        )}
-
                         <div>
-                            <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '5px' }}>Messaggio</label>
+                            <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '5px' }}>Messaggio*</label>
                             <textarea
                                 name="messaggio"
                                 rows="5"
                                 value={formData.messaggio}
                                 onChange={handleChange}
-                                placeholder="Ich möchte Aufkunft über die Anzahl freie Imobillien der Titocci Metalconstruzione SAGL wissen..."
+                                placeholder="Ich möchte Auskunft über die Dienstleistungen der Titocci Metalcostruzioni SAGL erhalten..."
                                 style={{
                                     width: '100%',
                                     padding: '10px 12px',
@@ -407,15 +316,14 @@ function Contatti() {
                 </div>
 
                 {/* Rechte Spalte: Kontaktdaten */}
-                <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', gap: '30px', alignItems: 'flex-end', marginLeft: 'auto' }}>
-                    <div style={{ textAlign: 'right' }}>
+                <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', gap: '30px', alignItems: 'flex-start' }}>
+                    <div>
                         <h3 style={{
                             color: '#000',
                             fontSize: '1.1rem',
                             fontWeight: 'bold',
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'flex-end',
                             gap: '10px',
                             marginBottom: '15px'
                         }}>
@@ -427,10 +335,9 @@ function Contatti() {
                             color: '#444',
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'flex-end',
                             gap: '8px',
                         }}>
-                            <a href="tel:+41917962369" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <a href="tel:+41917962369" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>
                                 <img className="streifen" src={Streifen} alt="Streifen Icon" /><span> Tel. +41 91 796 23 69</span>
                             </a>
                         </p>
@@ -440,34 +347,31 @@ function Contatti() {
                             color: '#444',
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'flex-end',
                             gap: '8px'
                         }}>
                             <a href="mailto:info@titocci.ch" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} style={{
                                 color: isHovered ? 'black' : '#e62b2b',
                                 textDecoration: isHovered ? 'underline' : 'none',
-                                transition: 'color 0.2s ease',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px'
+                                transition: 'color 0.2s ease'
                             }}>
                                 <img className="streifen" src={Streifen} alt="Streifen Icon" /> info@titocci.ch
                             </a>
                         </p>
                     </div>
 
-                    <div style={{ textAlign: 'right' }}>
+                    <div>
                         <h3 style={{
                             color: '#000',
                             fontSize: '1.1rem',
                             fontWeight: 'bold',
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'flex-end',
                             gap: '10px',
                             marginBottom: '10px'
                         }}>
-                            <img className="flieger" src={Flieger} alt="Indirizzo Icon" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
+                            <span style={{ color: '#e62b2b', display: 'flex', alignItems: 'center' }}>
+                                <img className="flieger" src={Flieger} alt="Indirizzo Icon" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
+                            </span>
                             INDIRIZZO
                         </h3>
                         <p style={{
@@ -475,8 +379,8 @@ function Contatti() {
                             fontSize: '0.95rem',
                             color: '#444',
                             lineHeight: '1.5',
-                            textAlign: 'right',
-                            paddingLeft: '0'
+                            textAlign: 'left',
+                            paddingLeft: '34px'
                         }}>
                             In di Salécc 2,<br />
                             6670 Avegno
@@ -484,7 +388,7 @@ function Contatti() {
                     </div>
 
                     {/* Social Icons */}
-                    <div className="footer-social-icons" style={{ display: 'flex', gap: '15px', borderRadius: '50px', justifyContent: 'flex-end' }}>
+                    <div className="footer-social-icons" style={{ display: 'flex', gap: '15px', borderRadius: '50px' }}>
                         <a className="img-facebook"
                            href="https://www.facebook.com/people/Titocci-Metalcostruzioni-Sagl/100063745770320/#"
                            target="_blank" rel="noreferrer">
@@ -496,20 +400,19 @@ function Contatti() {
                             <img src={RedGoogleMaps} alt="Google Maps Icon" style={{ width: '30px', height: '30px', objectFit: 'contain' }} />
                         </a>
                     </div>
+
+                    <section className="footer-section map-section" style={{ width: '100%', marginTop: '60px', overflow: 'hidden' }}>
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d11043.906817275687!2d8.742987830688485!3d46.21091841923832!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4785b75776b14f6b%3A0x1a856f78a38373de!2sTitocci%20Metalcostruzioni%20SAGL!5e0!3m2!1sde!2sus!4v1792586980608!5m2!1sde!2sus"
+                            className="maps-full"
+                            allowFullScreen=""
+                            loading="lazy"
+                            referrerPolicy="strict-origin-when-cross-origin"
+                            title="Google Maps Standort"
+                        ></iframe>
+                    </section>
                 </div>
             </div>
-
-            {/* Google Maps Vollbild-Sektion unten */}
-            <section className="footer-section map-section" style={{ width: '100vw', marginTop: '60px', overflow: 'hidden', height: '400px' }}>
-                <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d11043.906817275687!2d8.742987830688485!3d46.21091841923832!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4785b75776b14f6b%3A0x1a856f78a38373de!2sTitocci%20Metalcostruzioni%20SAGL!5e0!3m2!1sde!2sus!4v1792586980608!5m2!1sde!2sus"
-                    className="maps-full"
-                    allowFullScreen=""
-                    loading="lazy"
-                    referrerPolicy="strict-origin-when-cross-origin"
-                    title="Google Maps Standort"
-                ></iframe>
-            </section>
         </div>
     );
 }
