@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main # ODER 'master'-Mainbranch 
-      - dev # ODER  'dev-Branch ' 
+      - dev # ODER  'dev-Branch deployen ' 
 
 # Erforderliche Schreibrechte für GitHub Pages
 permissions:
@@ -38,6 +38,9 @@ jobs:
 
       - name: Projekt bauen (Build)
         run: npm run build
+
+      - name:  Npm installieren
+        run: npm install
 
       - name: Build-Artefakt hochladen
         uses: actions/upload-pages-artifact@v3
