@@ -11,7 +11,7 @@ Offizielle Website für den Schweizer Metallbau- und Schlosserbetrieb Titocci Me
 - **Frontend:** React (v19), React Router DOM(19.3.1), React-Intersection-observer(9.5.3)  und  react-countup(6.5.3)
 - **UI & Animationen:** React CountUp, React Intersection Observer,
 - - **UI Component Library:** Material UI (`@mui/lab`, `@mui/material`)
-- **Build-Tool:** Vite (v8) und Npm
+- **Build-Tool:** Vite (v8) und Npm-Libaries
 - **Styling:** CSS3,Emotion (`@emotion/react`, `@emotion/styled`) (Responsive Design, Custom Properties)
 - **Deployment:** Docker und Docker-Compose Node.js Runtime
 - **Orchestrierung:**  Docker Container(Docker Swarm)
@@ -20,18 +20,38 @@ Offizielle Website für den Schweizer Metallbau- und Schlosserbetrieb Titocci Me
 
 
 
-Die Website  umfasst folgende Routes+Pages(Links)
+Die Website  umfasst folgende Routes+Seitenlinks in der Navbar
 
 - **`/` bzw. `/home`**: Hauptstartseite(Übersicht+Dienstleistungen)
 - **`/chi-siamo`**: Über das Unternehmen(*Über Uns Page)
 - **`/servizi`**: Detaillierte Übersicht aller Dienstleistungen (*Progettazione, Costruzione, Montaggio, Assistenza*)
 - **`/kontakte`**: Kontaktinformationen, Anfahrtskarte & Kontaktformular über Titocci Metalconstruzione SAGL
-- **`/impressum`**: Impressum nach DSGVO
-- **`/galeria`**: Galerie 
+- **`/impressum`**: Impressum nach DSGVO+DSG
+- **`/galeria`**: Galerie-Karte
+  `
 - **`/privacy`**: Datenschutzbestimmungen (Privacy Policy) gemäss DSG+DSGVO
 
 
 ---
+
+
+## 🧪 Tests & Qualitätssicherung (Vitest / React Testing Library)
+
+Für die wichtigsten UI-Komponenten wie Home, Kontakt, sowie Chi Siamo  sind automatisierte Unit- und Integrationstests eingerichtet, welche Komponenten-Rendering, State-Wechsel, Texte von Buttons, Textelemente sowie das serverseitige Rendering  test mit Mocking-Objekten.
+
+### Test-Struktur:
+- **`Home.test.jsx`**: Testet das Header-Rendering, Heading-Validierungen, das interaktive Bild-Karussell (Vor/Zurück-Buttons sowie automatisches Autoplay nach 3 Sekunden), Leistungs-Sektionen und `StatCard`-Komponenten.
+- **`Chi Siamo.test.jsx`**: Testet das Rendering der "Über uns"-Seite, Navigationselemente sowie die Existenz relevanter Inhaltsstrukturen.
+
+### 🚀 Vor jedem (Jest)Tests  lokal ausführen:
+
+Führe die folgenden Befehle im Stammverzeichnis deines Vite-Projekts aus (`my-react-app/Titocci-Metalcostruzioni-SAGL-Website`):
+
+ **Abhängigkeiten installieren** (falls noch nicht geschehen):
+1. npm install --legacy-peer-deps oder npm install
+Um die Tests in deiner Entwicklungsumgebung auszuführen, nutze folgenden Befehl im  Rootprojektverzeichnis(my-react-app/Titocci-Metalconstruzioni-SAGL-Website-)
+ Tests ausführen mit Live-Reloading der Unit-Tests
+3. npm run test oder npm test(vitest oder vite)
 
 
 
@@ -54,7 +74,7 @@ Stelle sicher, dass **Node.js** auf deinem Node-Server installiert ist. Führe d
 
 ###  Bei jedem Deployment Dependencies removen und neu  installieren 
 
- ## Repository aus Github clonen auf Desktop
+ ## Repository aus Github in eigenen Ordner clonen auf Desktop
 1. git  clone https://github.com/elias4864/Titocci-Metalcostruzioni-SAGL-Website-.git
 
 # Ins Root Directory wechseln des Vite-Projekts wechseln /Titocci-Metalconstruzioni-SAGL
@@ -86,24 +106,24 @@ Checkout Code: Lädt den aktuellen Repository-Stand.
 
 Setup Node.js Environment: Richtet die Node-Umgebung ein und cached npm-Pakete.
 
-Dependencies & Linting: Installiert die Pakete sauber über npm ci.
+Dependencies & Linting: Installiert die Npm-Dependencies sauber über npm ci.
 
 Vite Production Build: Testet den Build-Prozess (npm run build) auf Syntax- und CSS-Fehler.
 
-Docker Build & Push: Baut das Docker-Image und stellt es auf dem Zielserver / der Container Registry(pullt es )  bereit
+Docker Build & Push: Baut das Docker-Image und stellt es auf dem Zielserver / der Container Registry(/Pull )  bereit
 
 🚀 ###  CI/CD Pipeline für  automatisierte Deloyment der Github Page: 
 1GitHub Pages DeploymentDieses Repository nutzt einen automatisierten GitHub Actions Workflow (deploy.yml). 
-2.Bei jedem Push auf den main-Branch wird die React-Anwendung (Vite) automatisch gebaut, ein Deployment-Artefakt erstellt und auf GitHub Pages veröffentlicht.
+2.Bei jedem Push auf den main  und Master-Branch wird die React-Anwendung (Vite) automatisch gebaut, ein Deployment-Artefakt erstellt und auf GitHub Pages veröffentlicht.
 
 ⚙️ Konfiguration & SteuerungTrigger (on.push.branches: [main]): Die Pipeline startet automatisch, sobald neuer Code in den main-Branch gepusht wird.Berechtigungen (permissions):contents: read: Erlaubt das Auslesen des Quellcodes.pages: write: Erlaubt das Veröffentlichen auf GitHub Pages.id-token: write: Erzeugt ein OIDC-Token zur sicheren Authentifizierung gegenüber GitHub Pages.Ressourcen-Steuerung (concurrency): Verhindert Konflikte bei mehreren schnellen Pushes. Wenn ein neuer Run startet, wird ein noch laufendes altes Deployment abgebrochen (cancel-in-progress: true).
-🛠️ Ablauf der Build- & Deploy-Schritte (steps)SchrittBefehl / ActionErklärung
+🛠️ Ablauf der Build- & Deploy-Schritte (steps)SchrittBefehl / Action Anleitung
 1. Checkout Repositoryactions/checkout@v4lädt den aktuellen Quellcode aus dem Repository auf den virtuellen ubuntu-latest-Runner herunter
-2. Node.js einrichtenactions/setup-node@v4Installiert Node.js in Version 20 und aktiviert den automatischen npm-Paket-Cache für schnellere Builds.
-3.  Abhängigkeiten installierennpm ci --legacy-peer-depsFührt eine saubere Neuinstallation der npm-Pakete durch.Das Flag --legacy-peer-deps löst Versionskonflikte zwischen Vite 8 und älteren Peers.
-4.  4.npm run build Projekt neu bauen ( Docker Build)Führt das Vite-Build-Skript aus. Compiliert JSX/JS, optimiert Assets und generiert die produktionsbereiten Dateien im /dist-Ordner.
-5.  5. Build-Artefakt hochladenactions/upload-pages-artifact@v3Verpackt den Inhalt des generierten ./dist-Ordners als komprimiertes GitHub-Pages-Artefakt.
-6. Auf GitHub Pages deployenactions/deploy-pages@v4Nimmt das hochgeladene Artefakt und veröffentlicht es live unter der GitHub Pages URL.
+2. Node.js einrichten: actions/setup-node@v4Installiert Node.js in Version 20 und aktiviert den automatischen npm-Paket-Cache für schnellere Builds.
+3. Dependencies jedesmal Npm-Packete neu installieren und removen: npm ci --legacy-peer-deps Führt eine saubere Neuinstallation der npm-Pakete durch.Das Flag --legacy-peer-deps löst Versionskonflikte zwischen Vite 8 und älteren Peers.
+ 4.npm run build Projekt neu bauen ( Docker Build)Führt das Vite-Build-Skript aus. Compiliert JSX/JS, optimiert Assets und generiert die produktionsbereiten Dateien im /dist-Ordner.
+6.  5. Build-Artefakt hochladen actions/upload-pages-artifact@v3Verpackt den Inhalt des generierten ./dist-Ordners als komprimiertes GitHub-Pages-Artefakt.
+7. Auf GitHub Pages deployenactions/deploy-pages@v4 nimmt das hochgeladene Artefakt und veröffentlicht es live unter der GitHub Pages URL direkt
 
 
 
