@@ -1,0 +1,49 @@
+name: Frontend CI
+
+on:
+  push:
+    branches: ["dev"]
+  pull_request:
+    branches: ["dev"]
+
+jobs:
+  frontend-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Code auschecken
+        uses: actions/checkout@v4
+
+      - name: Frontend-Projekt prüfen
+        id: project
+        shell: bash
+        run: |
+          if [ -f package.json ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "package.json gefunden. Frontend-Build wird gestartet."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "Keine package.json gefunden. Der Workflow läuft nur auf dem dev-Branch mit dem Frontend-Projekt."
+          fi
+
+      - name: Node.js einrichten
+        if: ${{ steps.project.outputs.exists == 'true' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Abhängigkeiten installieren
+        if: ${{ steps.project.outputs.exists == 'true' }}
+        shell: bash
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+      - name: Frontend bauen
+        if: ${{ steps.project.outputs.exists == 'true' }}
+        shell: bash
+        run: npm run build -- --mode production

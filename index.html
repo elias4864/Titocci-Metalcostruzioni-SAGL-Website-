@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="/Titocci-Metalcostruzioni-SAGL-Website-/assets/Navicon-BQnanwiL.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <script>
+    function updateTitle() {
+      const path = window.location.pathname;
+      let title = "Home - Titocci Metalcostruzioni SAGL";
+
+      if (path.includes('/chi-siamo')) {
+        title = "Fabbro: Creazioni Uniche in Metalconstruzioni SAGL";
+      } else if (path.includes('/servizi')) {
+        title = "Il Fabbro artigiano numero 1 de";
+      } else if (path.includes('/galeria')) {
+        title = "Il Fabbro: creazioni personalizzate";
+      }
+
+      else if(path.includes('/kontakte')) {
+        title = "Contatti  - Titocci Metalcostruzioni SAGL";
+      }
+
+      else if(path.includes('/impressum')) {
+        title = "Impressum- Titocci Metalcostruzioni SAGL";
+      }
+      else if(path.includes('/privacy')) {
+        title = "Privacy - Titocci Metalcostruzioni SAGL";
+      }
+
+
+
+
+
+
+
+
+      // Titel im Browser-Tab aktualisieren
+      document.title = title;
+    }
+
+    // 1. Richtige Funktionsreferenz ohne () übergeben
+    window.addEventListener('popstate', updateTitle);
+
+    // 2. Ausführen, sobald DOM bereit ist
+    document.addEventListener('DOMContentLoaded', updateTitle);
+
+    // 3. Observer für React Router SPAs
+    const observer = new MutationObserver(updateTitle);
+    document.addEventListener('DOMContentLoaded', () => {
+      const root = document.getElementById('root');
+      if (root) {
+        observer.observe(root, { childList: true, subtree: true });
+      }
+    });
+  </script>
+  <script type="module" crossorigin src="/Titocci-Metalcostruzioni-SAGL-Website-/assets/index-D7W0ZtkS.js"></script>
+  <link rel="stylesheet" crossorigin href="/Titocci-Metalcostruzioni-SAGL-Website-/assets/index-CXIwJE-n.css">
+</head>
+
+<body>
+<div id="root"></div>
+</body>
+</html>
