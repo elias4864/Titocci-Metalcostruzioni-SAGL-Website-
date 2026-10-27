@@ -14,7 +14,7 @@ Offizielle Website für den Schweizer Metallbau- und Schlosserbetrieb Titocci Me
 - **Build-Tool:** Vite (v8) und Npm
 - **Styling:** CSS3,Emotion (`@emotion/react`, `@emotion/styled`) (Responsive Design, Custom Properties)
 - **Deployment:** Docker und Docker-Compose Node.js Runtime
-- **Orchestrierung:**  Docker Container
+- **Orchestrierung:**  Docker Container(Docker Swarm)
 -  **Automatisierung:**  GitHub Actions(Github Worfklow-Pipeline)
 
 
@@ -46,7 +46,7 @@ Vor dem lokalen Deployment  müssen folgende Tools  bereits installiert sein:
 -Docker Compose Depdendencies installiert
 -Docker Desktop
 -Docker
--Npm installiert
+-Npm Libaries und Packages bereits installiert 
 
 ## ⚙️ Lokale Installation & Entwicklung
 
