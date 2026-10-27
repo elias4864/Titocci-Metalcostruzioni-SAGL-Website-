@@ -1,0 +1,49 @@
+name: Deploy Website for GitHub Pages on Titocci-Metalconstruzione-SAGL-Website
+
+on:
+  push:
+    branches:
+      - main # ODER 'master'-Mainbranch 
+      - dev # ODER  'dev-Branch ' 
+
+# Erforderliche Schreibrechte für GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Nur einen parallelen Deployment-Run erlauben
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Node.js einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Abhängigkeiten installieren
+        run: npm ci --legacy-peer-deps
+
+      - name: Projekt bauen (Build)
+        run: npm run build
+
+      - name: Build-Artefakt hochladen
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist'
+
+      - name: Auf GitHub Pages deployen
+        id: deployment
+        uses: actions/deploy-pages@v4
