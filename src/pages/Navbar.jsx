@@ -54,14 +54,14 @@ function Navbar() {
                 }}>
                     {/* Adresse */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexShrink: 0 }}>
-                        <img src={Standort} alt="Standort" style={{ width: '14px', height: '14px', objectFit: 'contain' }} />
+                        <img src={Standort} alt="Standort" style={{ width: '14px', height: '14px', fontSize:'20px', objectFit: 'contain' }} />
                         <span><b>In di Salécc 2, 6670 Avegno</b></span>
                     </div>
 
                     {/* Öffnungszeiten (kompakter formatiert) */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexShrink: 1, overflow: 'hidden' }}>
                         <img src={Zeit} alt="Orari" style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0 }} />
-                        <span style={{ whiteSpace: 'nowrap', fontSize: '0.7rem' }}>
+                        <span style={{ whiteSpace: 'nowrap', fontSize: '1.2rem',textWrap:'nowrap' }}>
         <b>Lunedì - Venerdì: 7:30 - 12:00 / 13:15 - 17:00;​
 Sabato / Domenica: Chiuso</b>
     </span>
@@ -92,7 +92,9 @@ Sabato / Domenica: Chiuso</b>
                         padding: 0,
                         alignItems: 'center',
                         fontSize: '0.85rem',
-                        textDecoration:'underline'
+                        textDecoration:'underline',
+                        color:'blue'
+
                     }}>
                         <li><Link to="/" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Home</Link></li>
                         <li><Link to="/chi-siamo" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Chi siamo</Link></li>
