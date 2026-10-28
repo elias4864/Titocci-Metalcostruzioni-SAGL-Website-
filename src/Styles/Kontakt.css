@@ -30,6 +30,14 @@ html, body {
     filter: 'brightness(0.65)';
 }
 
+h2{
+    color:orange;
+}
+
+
+.google-maps{
+    width: '50px';
+}
 .streifen{
     width: 14px;            /* Unka size bohot chhota karne ke liye */
     height: 10px;           /* Sahi ratio ke liye */

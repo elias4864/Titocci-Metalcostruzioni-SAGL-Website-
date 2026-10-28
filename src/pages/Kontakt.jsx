@@ -31,7 +31,19 @@ const heroOverlayStyle = {
     pointerEvents: 'none',
 };
 
-function Contatti() {
+function Contatti({ lang }) {
+    // 1. Sicheres Handling der Sprache & Mapping für Google Maps Embed
+    const currentLang =lang|| "de";
+    const mapLangMap = {
+        de: "de",
+        en: "en",
+        it: "it",
+        fr: "fr"
+    };
+
+    const currentMapLang = mapLangMap[currentLang] || "de";
+    const mapUrl = `https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d11043.906817275687!2d8.742987830688485!3d46.21091841923832!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4785b75776b14f6b%3A0x1a856f78a38373de!2sTitocci%20Metalcostruzioni%20SAGL!5e0!3m2!1s${currentMapLang}!2sch!4v1792586980608!5m2!1s${currentMapLang}!2sch`;
+
     const [formData, setFormData] = useState({
         nome: '',
         email: '',
@@ -44,7 +56,7 @@ function Contatti() {
     const emailInputRef = useRef(null);
     const recaptchaRef = useRef(null);
 
-    // Dein neuer reCAPTCHA v2 Site Key (direkt als stabiler Fallback integriert)
+    // reCAPTCHA v2 Site Key mit direktem Fallback
     const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY || "6Le-tQQuAAAAADd4dqSkP1Q06wIH8RyzRN5wtAzb";
 
     const handleChange = (e) => {
@@ -216,6 +228,7 @@ function Contatti() {
                 justifyContent: 'space-between',
                 fontFamily: 'Arial, sans-serif'
             }}>
+                {/* Linke Spalte: Formular */}
                 <div style={{ flex: '1 1 500px' }}>
                     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                         <div>
@@ -291,7 +304,7 @@ function Contatti() {
                             </label>
                         </div>
 
-                        {/* Korrigierter reCAPTCHA-Container mit vollem Platz */}
+                        {/* Sauberes reCAPTCHA-Kästchen */}
                         <div style={{ margin: '15px 0', minHeight: '78px' }}>
                             <ReCAPTCHA
                                 ref={recaptchaRef}
@@ -314,7 +327,8 @@ function Contatti() {
                                 alignSelf: 'flex-start',
                                 boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
                                 boxSizing: 'border-box',
-                                marginBottom: '40px'
+                                marginBottom: '40px',
+
                             }}
                         >
                             INVIO
@@ -322,6 +336,7 @@ function Contatti() {
                     </form>
                 </div>
 
+                {/* Rechte Spalte: Kontaktdaten & Einzelner Google Maps Iframe */}
                 <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', gap: '30px', alignItems: 'flex-start' }}>
                     <div>
                         <h3 style={{ color: '#000', fontSize: '1.1rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>
@@ -365,14 +380,16 @@ function Contatti() {
                         </a>
                     </div>
 
-                    <section className="footer-section map-section" style={{ width: '100%', marginTop: '60px', overflow: 'hidden' }}>
+                    {/* Dynamische Google Maps Karte */}
+                    <section className="footer-section map-section" style={{ width: '100%', marginTop: '30px', overflow: 'hidden' }}>
                         <iframe
-                            src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d11043.906817275687!2d8.742987830688485!3d46.21091841923832!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4785b75776b14f6b%3A0x1a856f78a38373de!2sTitocci%20Metalcostruzioni%20SAGL!5e0!3m2!1sde!2sus!4v1792586980608!5m2!1sde!2sus"
+                            src={mapUrl}
                             className="maps-full"
                             allowFullScreen=""
                             loading="lazy"
                             referrerPolicy="strict-origin-when-cross-origin"
                             title="Google Maps Standort"
+                            style={{ width: '100%', height: '400px', border: 0 }}
                         ></iframe>
                     </section>
                 </div>
