@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Link } from "react-router-dom";
 import emailjs from "@emailjs/browser";
+import ReCAPTCHA from "react-google-recaptcha"; // <-- reCAPTCHA Import
 
 // Asset Imports
 import ContactBg from "../assets/Schleifen.jpg";
@@ -38,9 +39,11 @@ function Contatti() {
         privacy: false
     });
     const [isHovered, setIsHovered] = useState(false);
+    const [captchaToken, setCaptchaToken] = useState(null); // <-- State für das Captcha Token
 
     // Ref für das E-Mail Eingabefeld
     const emailInputRef = useRef(null);
+    const recaptchaRef = useRef(null);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -49,6 +52,11 @@ function Contatti() {
             [name]: type === 'checkbox' ? checked : value
         });
     };
+
+    let handleChangeCaptcha = (token)=>{
+        setCaptchaToken(token);
+
+    }
 
     /**
      * Send-Email Function für das Kontaktformular via EmailJS inkl. Try/Catch & Validierung
@@ -65,6 +73,11 @@ function Contatti() {
                 alert('Si prega di accettare la privacy policy.');
                 throw new Error("Bitte akzeptiere die Datenschutzbestimmungen");
 
+            }
+
+            if(!captchaToken){
+                alert("Bitt akzeptiere den Google-Recaptcha!");
+                throw new Error("reCAPTCHA nicht gelöst.");
             }
 
 
@@ -99,6 +112,7 @@ function Contatti() {
                 alert("Die E-Mail Adresse ist nicht gültig und zu kurz bitte eine gültige E-Mail eingeben");
             }
 
+
             // EmailJS Konfiguration
             const EmailJS_serviceID = 'service_n9toe59';
             const EmailJS_templateID = 'template_mrshrnl';
@@ -110,6 +124,7 @@ function Contatti() {
                 time: new Date().toLocaleString('it-CH'),
                 message: formData.messaggio,
                 privacy: formData.privacy,
+                'g-recaptcha-response': captchaToken // Token für EmailJS / Server-Prüfung
             };
 
             const response = await emailjs.send(
@@ -129,6 +144,11 @@ function Contatti() {
                 messaggio: '',
                 privacy: false
             });
+
+            setCaptchaToken(null);
+            if (recaptchaRef.current) {
+                recaptchaRef.current.reset();
+            }
 
         } catch (error) {
             // Catch-Block fängt Validierungs- & EmailJS-Fehler ab
@@ -297,6 +317,15 @@ function Contatti() {
                             <label htmlFor="privacy-check" style={{ fontSize: '0.85rem', color: '#555' }}>
                                 Ho letto e accettato le condizioni della <Link to="/privacy" style={{ color: '#e62b2b', textDecoration: 'underline' }}>privacy policy</Link>
                             </label>
+                        </div>
+
+
+                        <div style={{ marginTop: '10px' }}>
+                            <ReCAPTCHA
+                                ref={recaptchaRef}
+                                sitekey="6LdXXXXX_DEIN_GOOGLE_RECAPTCHA_SITE_KEY_HIER"
+                                onChange={handleChangeCaptcha()}
+                            />
                         </div>
                         <button
                             type="submit"
