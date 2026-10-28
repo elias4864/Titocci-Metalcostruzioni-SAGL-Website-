@@ -7,6 +7,7 @@ import Googlemapsimg from '../assets/RedGoogleMaps.jfif';
 import Zeit from '../assets/Zeit.png';
 import Standort from '../assets/Standort.jfif';
 import Email from '../assets/Email.png';
+import Instagram  from '../assets/Insagram.jfif';
 
 import '../Styles/Navbar.css';
 
@@ -138,9 +139,19 @@ Sabato / Domenica: Chiuso</b>
                         <li><Link to="/chi-siamo" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Chi siamo</Link></li>
                         <li><Link to="/servizi" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Servizi</Link></li>
                         <li><Link to="/galeria"  onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Galleria</Link></li>
-                        <li><Link to="/sitemap" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Sitemap of Links</Link></li>
                         <li><Link to="/kontakte" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Contatti</Link></li>
+                        <li><Link to="/aboutus>" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>About Us</Link></li>
+
                     </ul>
+
+                    <select className="dropdown" for="language">Wähle bitte eine Sprache aus:▼</select>
+                    <select id="language" name="Languages">
+                        <option value="de">Deutsch</option>
+                        <option value="en">English</option>
+                        <option value="it">Italienisch</option>
+                        <option value="fr">Französisch</option>
+                        <option value="nl">Holländisch</option>
+                    </select>
                 </div>
 
 
@@ -151,6 +162,10 @@ Sabato / Domenica: Chiuso</b>
                         </a>
                         <a href="https://maps.google.com" target="_blank" rel="noreferrer">
                             <img src={Googlemapsimg} alt="Google Maps" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
+                        </a>
+
+                        <a href="" target={"_blank"} rel="noreferrer">
+                            <img  className="instagram" src={Instagram}/> <img/>
                         </a>
                     </div>
                 </div>

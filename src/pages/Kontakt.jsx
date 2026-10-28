@@ -1,18 +1,18 @@
 import React, { useState, useRef } from 'react';
 import { Link } from "react-router-dom";
 import emailjs from "@emailjs/browser";
-import ReCAPTCHA from "react-google-recaptcha";
 
-// Asset Imports
 import ContactBg from "../assets/Schleifen.jpg";
 import "../Styles/Kontakt.css";
 import Streifen from "../assets/Streifen.jfif";
 import Kontakt from "../assets/Contact.jfif";
 import Flieger from "../assets/Flieger.png";
+import { Turnstile } from '@marsidev/react-turnstile';
 import '../Styles/Servici.css';
 import '../Styles/TimeLineSection.css';
 import RedFacebook from "../assets/Redfacebook.jfif";
 import RedGoogleMaps from "../assets/RedGoogleMaps.jfif";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const heroOverlayStyle = {
     position: 'absolute',
@@ -41,6 +41,10 @@ function Contatti({ lang }) {
         fr: "fr"
     };
 
+
+
+
+
     const form = useRef();
 
     const currentMapLang = mapLangMap[currentLang] || "de";
@@ -50,7 +54,9 @@ function Contatti({ lang }) {
         nome: '',
         email: '',
         messaggio: '',
-        privacy: false
+        privacy: false,
+        checkbox:'',
+        turnstileToken:''
     });
     const [isHovered, setIsHovered] = useState(false);
     const [captchaToken, setCaptchaToken] = useState(null);
@@ -59,8 +65,15 @@ function Contatti({ lang }) {
     const emailInputRef = useRef(null);
     const recaptchaRef = useRef(null);
     const messagioRef = useRef(null);
+    const checkboxRef = useRef(null);
     const nomeInputRef = useRef(null);
     const containerRef = useRef(null);
+
+
+    /**
+     * ScrollToInput Function
+     * @param inputRef
+     */
 
     const scrollToInput = (inputRef) => {
         if (inputRef.current) {
@@ -83,6 +96,15 @@ function Contatti({ lang }) {
         setCaptchaToken(token);
     };
 
+
+
+
+
+
+
+
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -92,6 +114,11 @@ function Contatti({ lang }) {
                 throw new Error("Datenschutzbestimmungen nicht akzeptiert.");
             }
 
+            if(!formData.turnstileToken){
+                alert("Bitte bestätige, dass du kein Roboter bist!");
+                console.log("Token zum Verifizieren:", formData.turnstileToken);
+                return;
+            }
             if (!captchaToken) {
                 alert("Bitte akzeptiere das Google-reCAPTCHA!");
                 throw new Error("reCAPTCHA nicht gelöst.");
@@ -268,7 +295,7 @@ function Contatti({ lang }) {
                                 type="text"
                                 name="nome"
                                 required
-                                placeholder="Alex"
+                                placeholder="Elias"
                                 value={formData.nome}
                                 onChange={handleChange}
                                 ref={nomeInputRef}
@@ -327,6 +354,23 @@ function Contatti({ lang }) {
                             />
                         </div>
 
+                        <div style={{ margin: '10px 0' }}>
+                            <Turnstile
+                                siteKey="0x4AAAAAAFpm7ahS6lg9KOLG"
+                                onSuccess={(token) => {
+                                    setFormData(prev => ({ ...prev, turnstileToken: token }));
+                                }}
+                                onError={() => {
+                                    console.error("Verbindung zu Cloudflare wurde geblockt");
+                                }}
+                                onExpire={() => {
+                                    setFormData(prev => ({ ...prev, turnstileToken: '' }));
+                                }}
+                            />
+                        </div>
+
+
+
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                             <input
                                 type="checkbox"
@@ -334,6 +378,7 @@ function Contatti({ lang }) {
                                 checked={formData.privacy}
                                 onChange={handleChange}
                                 id="privacy-check"
+                                onFocus={()=>scrollToInput(checkboxRef)}
                             />
                             <label htmlFor="privacy-check" style={{ fontSize: '0.85rem', color: '#555' }}>
                                 Ho letto e accettato le condizioni della <Link to="/privacy" style={{ color: '#e62b2b', textDecoration: 'underline' }}>privacy policy</Link>

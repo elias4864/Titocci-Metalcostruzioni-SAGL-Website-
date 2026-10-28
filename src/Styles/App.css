@@ -11,6 +11,21 @@
   background-color: #ffffff;
 }
 
+.newsletter{
+  text-decoration: 2px 2px gold;
+  font-size: 30px;
+  color:'brown';
+  text-shadow: 2px 2px green;
+}
+
+.instagram{
+  width:'20px';
+  max-width: '16px';
+  height: '30px';
+  object-fit: cover;
+
+}
+
 .map-iframe{
   width: 220px;
   height: 350px;

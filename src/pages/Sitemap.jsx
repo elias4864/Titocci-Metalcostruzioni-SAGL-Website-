@@ -23,10 +23,11 @@ function Sitemap() {
             <ul style={{ listStyle: 'none', padding: 0, display: 'flex', color:'brown', flexDirection: 'column', gap: '15px' }}>
                 <div style={{padding: '12px 15px', color:'brown',backgroundColor: '#f9f9f9', borderRadius: '6px', }}>
                 <li style={{ padding: '12px 15px', backgroundColor: '#f9f9f9', borderRadius: '6px', borderLeft: '4px solid #e62b2b' }}>
+                <li style={{ padding: '12px 15px', backgroundColor: '#f9f9f9', borderRadius: '6px', borderLeft: '4px solid #e62b2b' }}>
                     <Link to="/" style={{ color: '#000', textDecoration: 'none', fontWeight: 'bold', fontSize: '1.1rem', display: 'block' }}>
                         🏠 Home
                     </Link>
-                    <span style={{ fontSize: '0.85rem', color: '#666', display: 'block', marginTop: '3px' }}>
+                    <span style={{ fontSize: '0.85rem', color: 'red', display: 'block', marginTop: '3px' }}>
                         Pagina principale con panoramica dei nostri servizi di carpenteria metallica e lavorazione del ferro.
                     </span>
                 </li>
@@ -35,48 +36,53 @@ function Sitemap() {
                     <Link to="/chi-siamo" style={{ color: '#000', textDecoration: 'none', fontWeight: 'bold', fontSize: '1.1rem', display: 'block' }}>
                         📖 Chi siamo
                     </Link>
-                    <span style={{ fontSize: '0.85rem', color: '#666', display: 'block', marginTop: '3px' }}>
+                    <span style={{ fontSize: '0.85rem', color: 'red', fontWeight:'bold', display: 'block', marginTop: '3px' }}>
                         La storia della nostra azienda dal 1973 a Ponte Brolla e Avegno, tramandata da generazione in generazione.
                     </span>
                 </li>
 
-                <li style={{ padding: '12px 15px', backgroundColor: '#f9f9f9', borderRadius: '6px', borderLeft: '4px solid #e62b2b' }}>
+                <li style={{ padding: '12px 15px', backgroundColor: '#f9f9f9',color: 'red', fontWeight:'bold',borderRadius: '6px', borderLeft: '4px solid #e62b2b' }}>
                     <Link to="/servizi" style={{ color: '#000', textDecoration: 'none', fontWeight: 'bold', fontSize: '1.1rem', display: 'block' }}>
                         🛠️ Servizi
                     </Link>
-                    <span style={{ fontSize: '0.85rem', color: '#666', display: 'block', marginTop: '3px' }}>
+                    <span style={{ fontSize: '0.85rem', color: 'red', display: 'block', marginTop: '3px' }}>
                         I nostri lavori specializzati: cancelli, ringhiere, scale, acciaio inox e strutture in ferro battuto.
                     </span>
                 </li>
 
-                <li style={{ padding: '12px 15px', backgroundColor: '#f9f9f9', borderRadius: '6px', borderLeft: '4px solid #e62b2b' }}>
+                <li style={{ padding: '12px 15px', backgroundColor: '#f9f9f9',  fontWeight:'bold',borderRadius: '6px', borderLeft: '4px solid #e62b2b' }}>
                     <Link to="/galeria" style={{ color: '#000', textDecoration: 'none', fontWeight: 'bold', fontSize: '1.1rem', display: 'block' }}>
                         🖼️ Galleria
                     </Link>
-                    <span style={{ fontSize: '0.85rem', color: '#666', display: 'block', marginTop: '3px' }}>
+                    <span style={{ fontSize: '0.85rem', color: 'red', display: 'block', fontWeidht:'bold', marginTop: '3px' }}>
                         Una selezione fotografica delle nostre creazioni artigianali realizzate su misura per i clienti.
                     </span>
                 </li>
 
-                <li style={{ padding: '12px 15px', backgroundColor: '#f9f9f9', borderRadius: '6px', borderLeft: '4px solid #e62b2b' }}>
+                <li style={{ padding: '12px 15px',  backgroundColor: '#f9f9f9', fontWeight:'bold', borderRadius: '6px', borderLeft: '4px solid #e62b2b' }}>
                     <Link to="/kontakte" style={{ color: '#000', textDecoration: 'none', fontWeight: 'bold', fontSize: '1.1rem', display: 'block' }}>
                         📞 Contatti
                     </Link>
-                    <span style={{ fontSize: '0.85rem', color: '#666', display: 'block', marginTop: '3px' }}>
+                    <span style={{ fontSize: '0.85rem', color: 'red', fontWeight:`bold`, display: 'block', marginTop: '3px' }}>
                         Mettiti in contatto con noi tramite il modulo online, telefono o visita la nostra sede ad Avegno.
                     </span>
                 </li>
 
                 <li style={{ padding: '10px 15px' }}>
-                    <Link to="/impressum" style={{ color: '#444', textDecoration: 'none', fontWeight: '500', fontSize: '0.95rem' }}>
+                    <Link to="/impressum" style={{ color: '#444', textDecoration: 'none', fontWeight: 'bold', fontSize: '0.95rem' }}>
                         📄 Impressum
                     </Link>
+                    <span style={{ fontSize: '0.85rem', color: 'red', display: 'block',fontWeight:'bold', marginTop: '3px' }}>
+                        Ti preghiamo di accettare l'informativa sulla privacy
+                    </span>
                 </li>
 
                 <li style={{ padding: '10px 15px' }}>
                     <Link to="/privacy" style={{ color: '#444', textDecoration: 'none', fontWeight: '500', fontSize: '0.95rem' }}>
                         🔒 Privacy Policy
                     </Link>
+                    <span  style={{fontSize: '0.85rem', color: 'red', display: 'block',fontWeight:'bold', marginTop: '3px'}}>Ti preghiamo di accettare l'informativa sulla privacy</span>
+                </li>
                 </li>
                 </div>
             </ul>

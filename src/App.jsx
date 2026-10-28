@@ -6,12 +6,14 @@ import Dropdown from "./assets/Dropdown.png";
 import ChisiamoPage from "./pages/Chi Siamo.jsx";
 import Galeria from "./pages/Galeria.jsx";
 import Servizi from "./pages/Servici.jsx";
+import AboutUs  from "./pages/AboutUs.jsx";
 import Kontakte from "./pages/Kontakt.jsx";
 import Sitemap  from "./pages/Sitemap.jsx";
 import './Styles/App.css';
 
 import Facebook from "./assets/Facebook.png";
 import Privacy from "./pages/Privacy.jsx";
+import Instagram  from "./assets/Insagram.jfif";
 import Google from "./assets/Google.png";
 import Verifizierungbild from "./assets/Verifizierung.gif";
 import Impressumpage from "./pages/Impressum.jsx";
@@ -53,6 +55,14 @@ function App() {
         setShowBanner(false);
     };
 
+
+    const handleSubmit =()=>{
+        alert("Bitte akzeptiere unser Newsletter!");
+
+    }
+
+
+
     return (
         <BrowserRouter basename="/Titocci-Metalcostruzioni-SAGL-Website-">
             <>
@@ -71,6 +81,8 @@ function App() {
                             <Route path="/home" element={<Home  lang={language}/>} />
                             <Route path="/servizi" element={<Servizi lang={language} />} />
                             <Route path="/chi-siamo" element={<ChisiamoPage lang={language} />} />
+                            <Route path="/galeria" element={<Galeria lang={language} />} />
+                            <Route path="/aboutus" element={<AboutUs  lang={language}/>} />
                             <Route path="/sitemap" element={<Sitemap />} />
                             {/* Sprache wird hier korrekt als lang={language} übergeben */}
                             <Route path="/kontakte" element={<Kontakte lang={language} />} />
@@ -118,6 +130,10 @@ function App() {
                             <a href="https://www.google.com/maps/place/Titocci+Metalcostruzioni+SAGL/@46.2040504,8.7647245,17z" target="_blank" rel="noreferrer">
                                 <img className="img-icon" src={Google} alt="Google" />
                             </a>
+
+                            <a href="https://www.instagram.com/costruzionimetalliche_sagl/" target="_blank" rel="noreferrer">
+                                <img className="instagram" src={Instagram} alt="Instagram" />
+                            </a>
                         </div>
                     </section>
 
@@ -160,6 +176,9 @@ function App() {
                             title="Google Maps Standort"
                         ></iframe>
                     </section>
+
+                    <h2 className="newsletter"><marquee>Aboniere jetzt unseren Newsletter </marquee></h2>
+                    <button className="red-btn"></button>
 
                     <div className="footer-bottom">
                         <p>
