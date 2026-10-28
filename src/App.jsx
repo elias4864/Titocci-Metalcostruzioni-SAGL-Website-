@@ -11,6 +11,7 @@ import Kontakte from "./pages/Kontakt.jsx";
 import Sitemap from "./pages/Sitemap.jsx";
 import './Styles/App.css';
 import LanguageSwitcher from "./pages/LanguageDropwdon.jsx";
+import Imobiliacalculatori from "./pages/ImobiliaCalculatori.jsx";
 
 import Facebook from "./assets/Facebook.png";
 import Privacy from "./pages/Privacy.jsx";
@@ -129,6 +130,7 @@ function MainContent() {
                         <Route path="/galeria" element={<Galeria lang={language} />} />
                         <Route path="/aboutus" element={<AboutUs lang={language} />} />
                         <Route path="/sitemap" element={<Sitemap />} />
+                        <Route path="/calculatori" element={<Imobiliacalculatori />} />
                         <Route path="/kontakte" element={<Kontakte lang={language} />} />
                         <Route path="/impressum" element={<Impressumpage lang={language} />} />
                         <Route path="/privacy" element={<Privacy lang={language} />} />
@@ -219,10 +221,10 @@ function MainContent() {
                     <h2 className="newsletter"><marquee>Aboniere jetzt unseren Newsletter </marquee></h2>
 
                     <form className="formular">
-                        <label><b>Nome:*</b></label>
+                        <span><label><b>Nome:*</b></label></span>
                         <input type="text" id="name" placeholder="Elias" name="name" ref={nameInputRef} onFocus={() => scrollToInput(nomeInputRef)}
                         />
-                        <label><b>E-Mail-Adresse*</b></label>
+                        <span><label><b>E-Mail-Adresse*</b></label></span>
                         <input type="email" id="email" name="email"  required placeholder="elias.kaiser@gmx.ch" onFocus={()=>scrollToInput(emailInputRef)} ref={emailInputRef} />
                     </form>
 

@@ -141,10 +141,13 @@ Sabato / Domenica: Chiuso</b>
                         <li><Link to="/galeria"  onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Galleria</Link></li>
                         <li><Link to="/kontakte" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Contatti</Link></li>
                         <li><Link to="/aboutus" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>About Us</Link></li>
+                        <li><Link to="/calculatori" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Online Preisrechner</Link></li>
+
+
 
                     </ul>
 
-                    <select className="dropdown" fo="language">Wähle bitte eine Sprache aus:▼</select>
+                    <select className="dropdown" form="language">Wähle bitte eine Sprache aus:▼</select>
                     <select id="language"  className="language-dropwdown" name="Languages">
                         <option value="de">Deutsch</option>
                         <option value="en">English</option>
