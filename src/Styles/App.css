@@ -12,7 +12,9 @@
 }
 
 .red-btn{
-  color:'gold'
+  color:'gold';
+  border-radius: 50px;
+  border-color: blue;
 }
 
 
@@ -20,6 +22,7 @@
   float:'left';
   display: 'flex';
   color:'brown';
+  text-wrap: wrap;
 }
 .newsletter{
   text-decoration: 2px 2px gold;

@@ -38,6 +38,18 @@ function MainContent() {
         });
     };
 
+    /**
+     * ScrolltoInput Ref
+     * @param inputRef
+     */
+    const scrollToInput = (inputRef) => {
+        if (inputRef.current) {
+            inputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    };
+
+
+
     useEffect(() => {
         const cookieChoice = localStorage.getItem('cookieConsent');
         if (!cookieChoice) {
@@ -75,6 +87,7 @@ function MainContent() {
             const templateParams = {
                 from_name: "Newsletter Abonnent",
                 from_email: "info@titocci.ch",
+
             };
 
             const response = await emailjs.send(
@@ -206,10 +219,11 @@ function MainContent() {
                     <h2 className="newsletter"><marquee>Aboniere jetzt unseren Newsletter </marquee></h2>
 
                     <form className="formular">
-                        <label><b>Name:</b></label>
-                        <input type="text" id="name" name="name" ref={nameInputRef} />
-                        <label><b>E-Mail-Adresse</b></label>
-                        <input type="email" id="email" name="email" ref={emailInputRef} />
+                        <label><b>Nome:*</b></label>
+                        <input type="text" id="name" placeholder="Elias" name="name" ref={nameInputRef} onFocus={() => scrollToInput(nomeInputRef)}
+                        />
+                        <label><b>E-Mail-Adresse*</b></label>
+                        <input type="email" id="email" name="email"  required placeholder="elias.kaiser@gmx.ch" onFocus={()=>scrollToInput(emailInputRef)} ref={emailInputRef} />
                     </form>
 
                     <button onClick={sendEmail} className="red-btn">

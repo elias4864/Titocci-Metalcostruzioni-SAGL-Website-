@@ -50,6 +50,11 @@ describe('Home Component', () => {
             </MemoryRouter>
         );
 
+
+
+
+    it()
+
     it('wechselt zum nächsten Bild der Image-Slide beim Klick auf den Weiter-Button (▶)', () => {
         renderComponent();
 
