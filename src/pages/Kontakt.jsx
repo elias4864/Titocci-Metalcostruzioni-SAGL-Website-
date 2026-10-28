@@ -64,7 +64,10 @@ function Contatti() {
             if (!formData.privacy) {
                 alert('Si prega di accettare la privacy policy.');
                 throw new Error("Bitte akzeptiere die Datenschutzbestimmungen");
+
             }
+
+
 
             if (!formData.nome.trim() || !formData.email.trim() || !formData.messaggio.trim()) {
                 if (!formData.email.trim() && emailInputRef.current) {
@@ -74,16 +77,18 @@ function Contatti() {
             }
 
             /**
-             * Wenn  Name leer ist Reset Formular
+             * Wenn Name, Nachricht oder  Email-Leer oder kleienr als 7 bzw 10 Zeichen sind
              */
 
             if (formData.nome.trim().length < 7) {
                 throw new Error("Der Name muss mindestens 7 Zeichen lang sein!");
+                alert("Bitte gebe einen gültigen Namen ein, er muss mindestens 7 Zeichen lang sein!");
             }
 
             // 4. Validierung: Mindestlänge der Nachricht (mindestens 10 Zeichen)
             if (formData.messaggio.trim().length < 10) {
                 throw new Error("Die Nachricht ist zu kurz. Bitte gib eine ausführlichere Nachricht ein!");
+                alert("Die Nachricht ist zu kurz bitte eine gültige Message ein!");
             }
 
             /**
@@ -290,7 +295,7 @@ function Contatti() {
                                 id="privacy-check"
                             />
                             <label htmlFor="privacy-check" style={{ fontSize: '0.85rem', color: '#555' }}>
-                                Ho letto e accettato le condizioni della <Link to="/privacy" style={{ color: '#e62b2b', textDecoration: 'none' }}>privacy policy</Link>
+                                Ho letto e accettato le condizioni della <Link to="/privacy" style={{ color: '#e62b2b', textDecoration: 'underline' }}>privacy policy</Link>
                             </label>
                         </div>
                         <button

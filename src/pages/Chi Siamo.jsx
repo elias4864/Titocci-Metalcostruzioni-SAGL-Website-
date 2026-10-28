@@ -55,6 +55,9 @@ export const TimelineSection = () => {
                         right: '50%',
                         marginLeft: '-50vw',
                         marginRight: '-50vw',
+                        width: '100vw',
+                        height: '100vh',
+                        filter: 'brightness(0.65)'
                        }}
                 />
                 <div style={textOverlayStyle}>
