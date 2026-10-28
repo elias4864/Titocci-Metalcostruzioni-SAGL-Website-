@@ -1,11 +1,9 @@
 import React, { useState, useRef } from 'react';
 import { Link } from "react-router-dom";
 import emailjs from "@emailjs/browser";
-
-/**
- * Import Google Recaptcha  für SEO
- */
 import ReCAPTCHA from "react-google-recaptcha";
+
+// Asset Imports
 import ContactBg from "../assets/Schleifen.jpg";
 import "../Styles/Kontakt.css";
 import Streifen from "../assets/Streifen.jfif";
@@ -41,16 +39,13 @@ function Contatti() {
         privacy: false
     });
     const [isHovered, setIsHovered] = useState(false);
-
-    /**
-     * Captcha Token initalisieren für GoogleRecaptcha UseState
-     */
     const [captchaToken, setCaptchaToken] = useState(null);
-    /**
-     * Recaptcha InputRef UseState
-     */
+
     const emailInputRef = useRef(null);
     const recaptchaRef = useRef(null);
+
+    // Dein neuer reCAPTCHA v2 Site Key (direkt als stabiler Fallback integriert)
+    const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY || "6Le-tQQuAAAAADd4dqSkP1Q06wIH8RyzRN5wtAzb";
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -60,72 +55,47 @@ function Contatti() {
         });
     };
 
-    /**
-     * Function for GoogleRecaptcha implemented
-     * @param token
-     */
-
-    let handleChangeCaptcha = (token)=>{
+    const handleChangeCaptcha = (token) => {
         setCaptchaToken(token);
+    };
 
-    }
-
-    /**
-     * Send-Email Function für das Kontaktformular via EmailJS inkl. Try/Catch & Validierung
-     */
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
-
-            /**
-             * Accept Terms of Privacy Use
-             */
             if (!formData.privacy) {
                 alert('Si prega di accettare la privacy policy.');
-                throw new Error("Bitte akzeptiere die Datenschutzbestimmungen");
-
+                throw new Error("Datenschutzbestimmungen nicht akzeptiert.");
             }
 
-            if(!captchaToken){
-                alert("Bitt akzeptiere den Google-Recaptcha!");
+            if (!captchaToken) {
+                alert("Bitte akzeptiere das Google-reCAPTCHA!");
                 throw new Error("reCAPTCHA nicht gelöst.");
             }
-
-
 
             if (!formData.nome.trim() || !formData.email.trim() || !formData.messaggio.trim()) {
                 if (!formData.email.trim() && emailInputRef.current) {
                     emailInputRef.current.focus();
                 }
-                throw new Error("Bitte fülle alle Pflichtfelder aus!");
+                alert("Bitte fülle alle Pflichtfelder aus!");
+                throw new Error("Pflichtfelder fehlen.");
             }
-
-            /**
-             * Wenn Name, Nachricht oder  Email-Leer oder kleienr als 7 bzw 10 Zeichen sind
-             */
 
             if (formData.nome.trim().length < 7) {
-                throw new Error("Der Name muss mindestens 7 Zeichen lang sein!");
-                alert("Bitte gebe einen gültigen Namen ein, er muss mindestens 7 Zeichen lang sein!");
+                alert("Bitte gib einen gültigen Namen ein (mindestens 7 Zeichen)!");
+                throw new Error("Name zu kurz.");
             }
 
-            // 4. Validierung: Mindestlänge der Nachricht (mindestens 10 Zeichen)
             if (formData.messaggio.trim().length < 10) {
-                throw new Error("Die Nachricht ist zu kurz. Bitte gib eine ausführlichere Nachricht ein!");
-                alert("Die Nachricht ist zu kurz bitte eine gültige Message ein!");
+                alert("Die Nachricht ist zu kurz (mindestens 10 Zeichen)!");
+                throw new Error("Nachricht zu kurz.");
             }
 
-            /**
-             * Mindestlänge der E-Mail ist 10 Zeichen
-             */
-
-            if(formData.email.trim().length < 10) {
-                alert("Die E-Mail Adresse ist nicht gültig und zu kurz bitte eine gültige E-Mail eingeben");
+            if (formData.email.trim().length < 10) {
+                alert("Bitte gib eine gültige E-Mail-Adresse ein!");
+                throw new Error("E-Mail ungültig.");
             }
 
-
-            // EmailJS Konfiguration
             const EmailJS_serviceID = 'service_n9toe59';
             const EmailJS_templateID = 'template_mrshrnl';
             const EmailJS_publicKey = 'dFpVpt98rEIko4TLa';
@@ -136,7 +106,7 @@ function Contatti() {
                 time: new Date().toLocaleString('it-CH'),
                 message: formData.messaggio,
                 privacy: formData.privacy,
-                'g-recaptcha-response': captchaToken // Token für EmailJS / Server-Prüfung
+                'g-recaptcha-response': captchaToken
             };
 
             const response = await emailjs.send(
@@ -149,7 +119,6 @@ function Contatti() {
             console.log('SUCCESS!', response.status, response.text);
             alert('Vielen Dank! Deine Nachricht wurde erfolgreich versendet.');
 
-            // Formular nach erfolgreichem Senden zurücksetzen
             setFormData({
                 nome: '',
                 email: '',
@@ -163,9 +132,7 @@ function Contatti() {
             }
 
         } catch (error) {
-            // Catch-Block fängt Validierungs- & EmailJS-Fehler ab
             console.error("Fehler beim Absenden des Formulars:", error.message);
-            alert("Fehler: " + error.message);
         }
     };
 
@@ -183,8 +150,6 @@ function Contatti() {
                 marginTop: '0px'
             }}>
                 <div style={{ position: 'relative', width: '100%' }}>
-
-                    {/* Navbar */}
                     <nav style={{
                         position: 'absolute',
                         top: 0,
@@ -199,7 +164,6 @@ function Contatti() {
                         background: 'linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)'
                     }}>
                         <div style={{ display: 'flex', alignItems: 'center' }}></div>
-
                         <ul style={{
                             display: 'flex',
                             listStyle: 'none',
@@ -241,7 +205,7 @@ function Contatti() {
                 </div>
             </div>
 
-            {/* Kontaktformular & Info Bereich */}
+            {/* Formular & Info-Bereich */}
             <div style={{
                 maxWidth: '1000px',
                 margin: '60px auto',
@@ -252,7 +216,6 @@ function Contatti() {
                 justifyContent: 'space-between',
                 fontFamily: 'Arial, sans-serif'
             }}>
-                {/* Linke Spalte: Formular */}
                 <div style={{ flex: '1 1 500px' }}>
                     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                         <div>
@@ -260,7 +223,7 @@ function Contatti() {
                             <input
                                 type="text"
                                 name="nome"
-                                required={true}
+                                required
                                 placeholder="Alex"
                                 value={formData.nome}
                                 onChange={handleChange}
@@ -275,9 +238,7 @@ function Contatti() {
                             />
                         </div>
                         <div>
-                            <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '5px' }}>
-                                Email*
-                            </label>
+                            <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '5px' }}>Email*</label>
                             <input
                                 ref={emailInputRef}
                                 type="email"
@@ -286,7 +247,6 @@ function Contatti() {
                                 required
                                 placeholder="alex@gmail.com"
                                 onChange={handleChange}
-                                className="custom-input"
                                 style={{
                                     width: '100%',
                                     padding: '10px 12px',
@@ -331,15 +291,15 @@ function Contatti() {
                             </label>
                         </div>
 
-
-                        <div style={{ marginTop: '10px' }}>
+                        {/* Korrigierter reCAPTCHA-Container mit vollem Platz */}
+                        <div style={{ margin: '15px 0', minHeight: '78px' }}>
                             <ReCAPTCHA
                                 ref={recaptchaRef}
-                                sitekey="6LcBoAQuAAAAAH6Cz6ixXGHX3wAgHZ8A291wSTUG"
-
-                                onChange={(token)=>handleChangeCaptcha(token)}
+                                sitekey={siteKey}
+                                onChange={handleChangeCaptcha}
                             />
                         </div>
+
                         <button
                             type="submit"
                             style={{
@@ -362,40 +322,17 @@ function Contatti() {
                     </form>
                 </div>
 
-                {/* Rechte Spalte: Kontaktdaten */}
                 <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', gap: '30px', alignItems: 'flex-start' }}>
                     <div>
-                        <h3 style={{
-                            color: '#000',
-                            fontSize: '1.1rem',
-                            fontWeight: 'bold',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '10px',
-                            marginBottom: '15px'
-                        }}>
+                        <h3 style={{ color: '#000', fontSize: '1.1rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>
                             <span style={{ color: '#e62b2b' }}>📄</span> CONTATTI
                         </h3>
-                        <p style={{
-                            margin: '5px 0',
-                            fontSize: '0.95rem',
-                            color: '#444',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                        }}>
+                        <p style={{ margin: '5px 0', fontSize: '0.95rem', color: '#444', display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <a href="tel:+41917962369" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>
                                 <img className="streifen" src={Streifen} alt="Streifen Icon" /><span> Tel. +41 91 796 23 69</span>
                             </a>
                         </p>
-                        <p style={{
-                            margin: '5px 0',
-                            fontSize: '0.95rem',
-                            color: '#444',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px'
-                        }}>
+                        <p style={{ margin: '5px 0', fontSize: '0.95rem', color: '#444', display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <a href="mailto:info@titocci.ch" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} style={{
                                 color: isHovered ? 'black' : '#e62b2b',
                                 textDecoration: isHovered ? 'underline' : 'none',
@@ -407,43 +344,23 @@ function Contatti() {
                     </div>
 
                     <div>
-                        <h3 style={{
-                            color: '#000',
-                            fontSize: '1.1rem',
-                            fontWeight: 'bold',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '10px',
-                            marginBottom: '10px'
-                        }}>
+                        <h3 style={{ color: '#000', fontSize: '1.1rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
                             <span style={{ color: '#e62b2b', display: 'flex', alignItems: 'center' }}>
                                 <img className="flieger" src={Flieger} alt="Indirizzo Icon" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
                             </span>
                             INDIRIZZO
                         </h3>
-                        <p style={{
-                            margin: '0',
-                            fontSize: '0.95rem',
-                            color: '#444',
-                            lineHeight: '1.5',
-                            textAlign: 'left',
-                            paddingLeft: '34px'
-                        }}>
+                        <p style={{ margin: '0', fontSize: '0.95rem', color: '#444', lineHeight: '1.5', textAlign: 'left', paddingLeft: '34px' }}>
                             In di Salécc 2,<br />
                             6670 Avegno
                         </p>
                     </div>
 
-                    {/* Social Icons */}
                     <div className="footer-social-icons" style={{ display: 'flex', gap: '15px', borderRadius: '50px' }}>
-                        <a className="img-facebook"
-                           href="https://www.facebook.com/people/Titocci-Metalcostruzioni-Sagl/100063745770320/#"
-                           target="_blank" rel="noreferrer">
+                        <a className="img-facebook" href="https://www.facebook.com/people/Titocci-Metalcostruzioni-Sagl/100063745770320/#" target="_blank" rel="noreferrer">
                             <img src={RedFacebook} alt="Facebook Icon" style={{ width: '30px', height: '30px', objectFit: 'contain' }} />
                         </a>
-                        <a className="img-google"
-                           href="https://www.google.com/maps/place/Titocci+Metalcostruzioni+SAGL/@46.2040504,8.7647245,17z/data=!3m1!4b1!4m5!3m4!1s0x4785b75776b14f6b:0x1a856f78a38373de!8m2!3d46.2040504!4d8.7669132"
-                           target="_blank" rel="noreferrer">
+                        <a className="img-google" href="https://www.google.com/maps/place/Titocci+Metalcostruzioni+SAGL/@46.2040504,8.7647245,17z/data=!3m1!4b1!4m5!3m4!1s0x4785b75776b14f6b:0x1a856f78a38373de!8m2!3d46.2040504!4d8.7669132" target="_blank" rel="noreferrer">
                             <img src={RedGoogleMaps} alt="Google Maps Icon" style={{ width: '30px', height: '30px', objectFit: 'contain' }} />
                         </a>
                     </div>
