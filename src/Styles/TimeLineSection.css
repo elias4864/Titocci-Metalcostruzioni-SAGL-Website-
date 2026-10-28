@@ -27,6 +27,7 @@
     justify-content: center;
     align-items: center;
     z-index: 3;
+    animation: pulseGlow 2.5s infinite;
 }
 .timeline-year::before {
     content: '';
@@ -53,6 +54,8 @@
     background-color: #ffffff; /* Passe dies an die Hintergrundfarbe deiner Seite an */
     padding: 0 12px;   /* Schafft links und rechts etwas Platz */
     font-weight: bold;
+    background-color: #ff3b3b;
+    box-shadow: 0 0 15px rgba(230, 43, 43, 0.8);
 }
 
 .timeline-dot2 {
@@ -129,20 +132,52 @@
     padding-left: 35px;
 }
 
+
+
 /* Der gelbe Punkt – exakt absolut auf der grauen Linie zentriert */
-.timeline-dot {
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%);
+    .timeline-dot {
+        width: 18px;
+        height: 18px;
+        background-color: #e62b2b;
+        animation:pulseGlow 2.5 infinite;
+        border: 3px solid #ffffff;
+        border-radius: 50%;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        box-shadow: 0 0 0 rgba(230, 43, 43, 0.4);
+        transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+        z-index: 3;
+    }
 
-    width: 28px;
-    height: 28px;
-    background-color: #ffb703;
-    border-radius: 50%;
-    z-index: 5;
-    border: 2px solid #ccc;
-
+.timeline-item:hover .timeline-dot {
+    transform: translateX(-50%) scale(1.35);
+    background-color: #ff3b3b;
+    box-shadow: 0 0 15px rgba(230, 43, 43, 0.8);
 }
+
+/* Sanfter Hover-Effekt für die Inhaltsboxen */
+.timeline-item .timeline-box {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.timeline-item:hover .timeline-box {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+}
+
+    /* Pulsierender Animationseffekt für die Dots */
+    @keyframes pulseGlow {
+        0% {
+            box-shadow: 0 0 0 0 rgba(230, 43, 43, 0.6);
+        }
+        70% {
+            box-shadow: 0 0 0 12px rgba(230, 43, 43, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(230, 43, 43, 0);
+        }
+    }
 
 /* Die gelben Info-Boxen */
 .timeline-box {

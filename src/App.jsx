@@ -37,11 +37,13 @@ function App() {
 
     const handleAcceptCookies = () => {
         localStorage.setItem('cookieConsent', 'accepted');
+        alert("Die Cookies wurden akzeptiert");
         setShowBanner(false);
     };
 
     const handleDeclineCookies = () => {
         localStorage.setItem('cookieConsent', 'declined');
+        alert("Die Cookies wurden abgelehnt!");
         setShowBanner(false);
     };
 
@@ -64,15 +66,15 @@ function App() {
                 <main className="hero-image-wrapper">
                     <div className="content">
                         <Routes>
-                            <Route path="/" element={<Home />} />
-                            <Route path="/home" element={<Home />} />
-                            <Route path="/servizi" element={<Servizi />} />
-                            <Route path="/chi-siamo" element={<ChisiamoPage />} />
-                            <Route path="/galeria" element={<Galeria />} />
+                            <Route path="/" element={<Home lang={language} />} />
+                            <Route path="/home" element={<Home  lang={language}/>} />
+                            <Route path="/servizi" element={<Servizi lang={language} />} />
+                            <Route path="/chi-siamo" element={<ChisiamoPage lang={language} />} />
+                            <Route path="/galeria" element={<Galeria  lang={language}/>} />
                             {/* Sprache wird hier korrekt als lang={language} übergeben */}
                             <Route path="/kontakte" element={<Kontakte lang={language} />} />
-                            <Route path="/impressum" element={<Impressumpage />} />
-                            <Route path="/privacy" element={<Privacy />} />
+                            <Route path="/impressum" element={<Impressumpage  lang={language}/>} />
+                            <Route path="/privacy" element={<Privacy lang={language} />} />
 
                             <Route path="*" element={<Navigate to="/" replace />} />
                         </Routes>

@@ -64,7 +64,7 @@ function Navbar() {
                     justifyContent: 'center'
                 }}>
                     {/* Adresse */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexShrink: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexShrink: 0,fontSize:'10px' }}>
                         <img src={Standort} alt="Standort" style={{ width: '14px', height: '14px', fontSize:'20px', objectFit: 'contain' }} />
                         <span><b>In di Salécc 2, 6670 Avegno</b></span>
                     </div>
@@ -72,7 +72,7 @@ function Navbar() {
                     {/* Öffnungszeiten (kompakter formatiert) */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexShrink: 1, overflow: 'hidden' }}>
                         <img src={Zeit} alt="Orari" style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0 }} />
-                        <span style={{ whiteSpace: 'nowrap', fontSize: '1.2rem',textWrap:'nowrap' }}>
+                        <span style={{ whiteSpace: 'nowrap', fontSize: '10px',textWrap:'nowrap' }}>
         <b>Lunedì - Venerdì: 7:30 - 12:00 / 13:15 - 17:00;​
 Sabato / Domenica: Chiuso</b>
     </span>
@@ -138,7 +138,7 @@ Sabato / Domenica: Chiuso</b>
                         <li><Link to="/chi-siamo" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Chi siamo</Link></li>
                         <li><Link to="/servizi" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Servizi</Link></li>
                         <li><Link to="/galeria"  onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Galleria</Link></li>
-                        <li><Link to="/kontakte" onClick={closeMenu}style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Contatti</Link></li>
+                        <li><Link to="/kontakte" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Contatti</Link></li>
                     </ul>
                 </div>
 

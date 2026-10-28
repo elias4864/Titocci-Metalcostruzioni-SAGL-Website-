@@ -4,7 +4,6 @@ import Schleifbild from '../assets/Schleifpapier.jpg';
 import Schleifen from '../assets/Schleifbild.jpg';
 import "../Styles/ChiSiamo.css";
 import { useNavigate } from 'react-router-dom';
-
 import "../Styles/TimeLineSection.css";
 
 const heroOverlayStyle = {
@@ -14,20 +13,9 @@ const heroOverlayStyle = {
     color: 'white'
 };
 
-
-/**
- * Button-Onclick Window Reload Link
- * @param event
- */
 const handleChange = (event) => {
     window.location.href = 'https://it.wikipedia.org/wiki/Fabbro';
 }
-
-/**
- * Submit-Button onClick on
- * @param event
- */
-
 
 const textOverlayStyle = {
     position: 'absolute',
@@ -40,7 +28,7 @@ const textOverlayStyle = {
 
 export const TimelineSection = () => {
     const navigate = useNavigate();
-    const handleSubmit=(event) =>{
+    const handleSubmit = (event) => {
         navigate('/servizi');
     }
 
@@ -51,14 +39,19 @@ export const TimelineSection = () => {
                 <img
                     src={Schleifbild}
                     alt="Schleifbild Header"
-                    style={{ boxSizing:'border-box', display: 'block' , objectFit: 'cover', left:'50%',position: 'relative',
+                    style={{
+                        boxSizing: 'border-box',
+                        display: 'block',
+                        objectFit: 'cover',
+                        left: '50%',
+                        position: 'relative',
                         right: '50%',
                         marginLeft: '-50vw',
                         marginRight: '-50vw',
                         width: '100vw',
                         height: '100vh',
                         filter: 'brightness(0.65)'
-                       }}
+                    }}
                 />
                 <div style={textOverlayStyle}>
                     <h1 style={{
@@ -89,9 +82,6 @@ export const TimelineSection = () => {
                 <div className="timeline-wrapper">
                     {/* Vertikale Linie in der Mitte */}
                     <div className="timeline-line"></div>
-                    <div className="timeline-dot2">
-
-                    </div>
 
                     <div className="timeline-year">
                         <span>1973</span>
@@ -218,7 +208,7 @@ export const TimelineSection = () => {
                     <img
                         src={Schleifen}
                         alt="Lavorazione"
-
+                        style={{ width: '100%', display: 'block' }}
                     />
                 </div>
 
@@ -237,7 +227,7 @@ export const TimelineSection = () => {
                             Funzionalità e personalizzazione
                         </h2>
                         <p style={{ lineHeight: '1.6', fontSize: '1.05rem', color: '#333' }}>
-                            Un <b onClick={handleChange} style={{ cursor: 'pointer' }}>fabbro moderno è un artista</b>, un <span  onClick={handleSubmit} style={{ color: 'red' }}>artigiano</span> e un tecnico. Grazie alla vasta esperienza e a un’ampia gamma di strumenti specializzati, come fucine, incudini e martelli, trasforma materie prime in elementi funzionali. L’abilità di forgiare, saldare e rifinire il metallo è solo il punto di partenza. La vera magia risiede nella creazione di pezzi unici che coniugano estetica e utilità. Ogni cancellata, ogni ringhiera, ogni scala, o qualsiasi altro prodotto realizzato da Titocci Metalcostruzioni, è un elemento personalizzato in base alle tue richieste ed esigenze, un elemento unico che porta la firma distintiva del maestro fabbro.
+                            Un <b onClick={handleChange} style={{ cursor: 'pointer' }}>fabbro moderno è un artista</b>, un <span onClick={handleSubmit} style={{ color: 'red', cursor: 'pointer' }}>artigiano</span> e un tecnico. Grazie alla vasta esperienza e a un’ampia gamma di strumenti specializzati, come fucine, incudini e martelli, trasforma materie prime in elementi funzionali. L’abilità di forgiare, saldare e rifinire il metallo è solo il punto di partenza. La vera magia risiede nella creazione di pezzi unici che coniugano estetica e utilità. Ogni cancellata, ogni ringhiera, ogni scala, o qualsiasi altro prodotto realizzato da Titocci Metalcostruzioni, è un elemento personalizzato in base alle tue richieste ed esigenze, un elemento unico che porta la firma distintiva del maestro fabbro.
                         </p>
                     </div>
 
