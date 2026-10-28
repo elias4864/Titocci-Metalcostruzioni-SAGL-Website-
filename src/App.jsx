@@ -7,6 +7,7 @@ import ChisiamoPage from "./pages/Chi Siamo.jsx";
 import Galeria from "./pages/Galeria.jsx";
 import Servizi from "./pages/Servici.jsx";
 import Kontakte from "./pages/Kontakt.jsx";
+import Sitemap  from "./pages/Sitemap.jsx";
 import './Styles/App.css';
 
 import Facebook from "./assets/Facebook.png";
@@ -70,7 +71,7 @@ function App() {
                             <Route path="/home" element={<Home  lang={language}/>} />
                             <Route path="/servizi" element={<Servizi lang={language} />} />
                             <Route path="/chi-siamo" element={<ChisiamoPage lang={language} />} />
-                            <Route path="/galeria" element={<Galeria  lang={language}/>} />
+                            <Route path="/sitemap" element={<Sitemap />} />
                             {/* Sprache wird hier korrekt als lang={language} übergeben */}
                             <Route path="/kontakte" element={<Kontakte lang={language} />} />
                             <Route path="/impressum" element={<Impressumpage  lang={language}/>} />

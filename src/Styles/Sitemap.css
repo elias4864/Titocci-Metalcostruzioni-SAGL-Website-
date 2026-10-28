@@ -1,0 +1,9 @@
+.divider{
+    color:'gold';
+    height: 4px;
+    background-color: #f59e0b; /* bzw. gold */
+    border: none;
+    border-radius: 2px;
+    margin: 20px 0;
+    box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3); /
+}
