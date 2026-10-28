@@ -50,7 +50,7 @@ const heroOverlayStyle = {
     pointerEvents: 'none'
 };
 
-function Impressum (){
+function Impressum ({lang}){
 
     return (
 

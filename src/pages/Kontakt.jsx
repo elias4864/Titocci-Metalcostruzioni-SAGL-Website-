@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import emailjs from "@emailjs/browser";
 
@@ -31,23 +31,27 @@ const heroOverlayStyle = {
     pointerEvents: 'none',
 };
 
-function Contatti({ lang }) {
-    // 1. Sicheres Handling der Sprache & Mapping für Google Maps Embed
-    const currentLang = lang || "de";
+function Contatti({ lang: externalLang }) {
+    // Lokaler State für die Sprache (Initialisierung über Prop oder Standard "it")
+    const [currentLang, setCurrentLang] = useState(externalLang || "it");
+
+    // Dokumentensprache bei Änderung im HTML-Tag aktualisieren
+    useEffect(() => {
+        document.documentElement.lang = currentLang;
+    }, [currentLang]);
+
+    // Mapping für Google Maps Embed Sprache
     const mapLangMap = {
         de: "de",
         en: "en",
         it: "it",
-        fr: "fr"
+        fr: "fr",
+        nl: "nl"
     };
-
-
-
-
 
     const form = useRef();
 
-    const currentMapLang = mapLangMap[currentLang] || "de";
+    const currentMapLang = mapLangMap[currentLang] || "it";
     const mapUrl = `https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d11043.906817275687!2d8.742987830688485!3d46.21091841923832!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4785b75776b14f6b%3A0x1a856f78a38373de!2sTitocci%20Metalcostruzioni%20SAGL!5e0!3m2!1s${currentMapLang}!2sch!4v1792586980608!5m2!1s${currentMapLang}!2sch`;
 
     const [formData, setFormData] = useState({
@@ -55,8 +59,8 @@ function Contatti({ lang }) {
         email: '',
         messaggio: '',
         privacy: false,
-        checkbox:'',
-        turnstileToken:''
+        checkbox: '',
+        turnstileToken: ''
     });
     const [isHovered, setIsHovered] = useState(false);
     const [captchaToken, setCaptchaToken] = useState(null);
@@ -68,12 +72,6 @@ function Contatti({ lang }) {
     const checkboxRef = useRef(null);
     const nomeInputRef = useRef(null);
     const containerRef = useRef(null);
-
-
-    /**
-     * ScrollToInput Function
-     * @param inputRef
-     */
 
     const scrollToInput = (inputRef) => {
         if (inputRef.current) {
@@ -96,15 +94,6 @@ function Contatti({ lang }) {
         setCaptchaToken(token);
     };
 
-
-
-
-
-
-
-
-
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -114,7 +103,7 @@ function Contatti({ lang }) {
                 throw new Error("Datenschutzbestimmungen nicht akzeptiert.");
             }
 
-            if(!formData.turnstileToken){
+            if (!formData.turnstileToken) {
                 alert("Bitte bestätige, dass du kein Roboter bist!");
                 console.log("Token zum Verifizieren:", formData.turnstileToken);
                 return;
@@ -193,7 +182,8 @@ function Contatti({ lang }) {
                 nome: '',
                 email: '',
                 messaggio: '',
-                privacy: false
+                privacy: false,
+                turnstileToken: ''
             });
 
             setCaptchaToken(null);
@@ -233,7 +223,35 @@ function Contatti({ lang }) {
                         zIndex: 20,
                         background: 'linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)'
                     }}>
-                        <div style={{ display: 'flex', alignItems: 'center' }}></div>
+                        {/* Sprach-Dropdown in der Navbar */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <label htmlFor="language" style={{ color: 'white', fontSize: '13px', fontWeight: 'bold' }}>
+                                Lang:
+                            </label>
+                            <select
+                                id="language"
+                                className="language-dropdown"
+                                name="Languages"
+                                value={currentLang}
+                                onChange={(e) => setCurrentLang(e.target.value)}
+                                style={{
+                                    padding: '4px 8px',
+                                    borderRadius: '4px',
+                                    backgroundColor: 'rgba(0,0,0,0.6)',
+                                    color: 'white',
+                                    border: '1px solid #e62b2b',
+                                    fontSize: '13px',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                <option value="de" style={{ color: 'black' }}>Deutsch</option>
+                                <option value="en" style={{ color: 'black' }}>English</option>
+                                <option value="it" style={{ color: 'black' }}>Italiano</option>
+                                <option value="fr" style={{ color: 'black' }}>Français</option>
+                                <option value="nl" style={{ color: 'black' }}>Nederlands</option>
+                            </select>
+                        </div>
+
                         <ul style={{
                             display: 'flex',
                             listStyle: 'none',
@@ -245,7 +263,7 @@ function Contatti({ lang }) {
                             <li><Link to="/chi-siamo" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}>Chi siamo</Link></li>
                             <li><Link to="/servizi" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}>Servizi</Link></li>
                             <li><Link to="/galleria" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}>Galleria</Link></li>
-                            <li><Link to="/contatti" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px', fontSize: '14px' }}>Contatti</Link></li>
+                            <li><Link to="/kontakte" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px', fontSize: '14px' }}>Contatti</Link></li>
                         </ul>
                     </nav>
 
@@ -369,8 +387,6 @@ function Contatti({ lang }) {
                             />
                         </div>
 
-
-
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                             <input
                                 type="checkbox"
@@ -378,7 +394,8 @@ function Contatti({ lang }) {
                                 checked={formData.privacy}
                                 onChange={handleChange}
                                 id="privacy-check"
-                                onFocus={()=>scrollToInput(checkboxRef)}
+                                ref={checkboxRef}
+                                onFocus={() => scrollToInput(checkboxRef)}
                             />
                             <label htmlFor="privacy-check" style={{ fontSize: '0.85rem', color: '#555' }}>
                                 Ho letto e accettato le condizioni della <Link to="/privacy" style={{ color: '#e62b2b', textDecoration: 'underline' }}>privacy policy</Link>
@@ -416,7 +433,7 @@ function Contatti({ lang }) {
                     </form>
                 </div>
 
-                {/* Rechte Spalte: Kontaktdaten & Einzelner Google Maps Iframe */}
+                {/* Rechte Spalte: Kontaktdaten & Google Maps Iframe */}
                 <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', gap: '30px', alignItems: 'flex-start' }}>
                     <div>
                         <h3 style={{ color: '#000', fontSize: '1.1rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>

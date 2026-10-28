@@ -13,6 +13,23 @@ const heroOverlayStyle = {
     color: 'white'
 };
 
+
+
+const Imobillienfilter = ["blue pant"
+    , "black pant"
+    , "blue shirt"
+    , "black shoes"
+    , "brown shoes"
+    , "white pant"
+    , "white shoes"
+    , "red shirt"
+    , "gray pant"
+    , "white shirt"
+    , "golden shoes"
+    , "dark pant"
+    , "pink shirt"
+    , "yellow pant"];
+
 const handleChange = (event) => {
     window.location.href = 'https://it.wikipedia.org/wiki/Fabbro';
 }
@@ -26,7 +43,7 @@ const textOverlayStyle = {
     zIndex: 5
 };
 
-export const TimelineSection = () => {
+export const TimelineSection = ({lang}) => {
     const navigate = useNavigate();
     const handleSubmit = (event) => {
         navigate('/servizi');

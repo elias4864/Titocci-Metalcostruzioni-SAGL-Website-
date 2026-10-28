@@ -135,17 +135,17 @@ Sabato / Domenica: Chiuso</b>
 
 
                     }}>
-                        <li><Link to="/" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }} onClick>Home</Link></li>
+                        <li><Link to="/" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }} >Home</Link></li>
                         <li><Link to="/chi-siamo" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Chi siamo</Link></li>
                         <li><Link to="/servizi" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Servizi</Link></li>
                         <li><Link to="/galeria"  onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Galleria</Link></li>
                         <li><Link to="/kontakte" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Contatti</Link></li>
-                        <li><Link to="/aboutus>" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>About Us</Link></li>
+                        <li><Link to="/aboutus" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>About Us</Link></li>
 
                     </ul>
 
-                    <select className="dropdown" for="language">Wähle bitte eine Sprache aus:▼</select>
-                    <select id="language" name="Languages">
+                    <select className="dropdown" fo="language">Wähle bitte eine Sprache aus:▼</select>
+                    <select id="language"  className="language-dropwdown" name="Languages">
                         <option value="de">Deutsch</option>
                         <option value="en">English</option>
                         <option value="it">Italienisch</option>

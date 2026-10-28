@@ -11,10 +11,20 @@
   background-color: #ffffff;
 }
 
+.red-btn{
+  color:'gold'
+}
+
+
+.formular{
+  float:'left';
+  display: 'flex';
+  color:'brown';
+}
 .newsletter{
   text-decoration: 2px 2px gold;
   font-size: 30px;
-  color:'brown';
+  color:'gold';
   text-shadow: 2px 2px green;
 }
 

@@ -74,7 +74,7 @@ const heroOverlayStyle = {
     pointerEvents: 'none'
 };
 
-function Home() {
+function Home({lang}) {
     const [currentIndex, setCurrentIndex] = useState(0);
 
     useEffect(() => {

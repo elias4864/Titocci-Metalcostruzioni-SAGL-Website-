@@ -26,9 +26,10 @@ const heroOverlayStyle = {
     pointerEvents: 'none'
 };
 
-function AboutUsPage() {
+function AboutUsPage({ lang }) {
     const [formData, setFormData] = useState({
-        message: ''
+        message: '',
+        turnstileToken: ''
     });
 
     const messagioRef = useRef(null);
@@ -39,17 +40,24 @@ function AboutUsPage() {
         }
     };
 
-    const handleSubmit = async (e) => {
+    const sendEmail = async (e) => {
         e.preventDefault();
 
         try {
+            // 1. Validierung der Nachrichtenlänge
             if (!formData.message || formData.message.trim().length < 10) {
                 if (messagioRef.current) {
                     messagioRef.current.focus();
                     scrollToInput(messagioRef);
                 }
                 alert("Die Nachricht ist zu kurz (mindestens 10 Zeichen)!");
-                throw new Error("Nachricht zu kurz.");
+                return;
+            }
+
+            // 2. Turnstile-Prüfung
+            if (!formData.turnstileToken) {
+                alert("Bitte bestätige, dass du kein Roboter bist (Turnstile).");
+                return;
             }
 
             const EmailJS_serviceID = 'service_qa3r1ej';
@@ -58,6 +66,7 @@ function AboutUsPage() {
 
             const templateParams = {
                 message: formData.message,
+                'g-recaptcha-response': formData.turnstileToken
             };
 
             const response = await emailjs.send(
@@ -70,12 +79,15 @@ function AboutUsPage() {
             console.log('SUCCESS!', response.status, response.text);
             alert('Vielen Dank! Deine Nachricht wurde erfolgreich versendet.');
 
+            // Formular zurücksetzen
             setFormData({
-                message: ''
+                message: '',
+                turnstileToken: ''
             });
 
         } catch (error) {
             console.error("Fehler beim Absenden des Formulars:", error.message);
+            alert("Fehler beim Senden der Nachricht.");
         }
     };
 
@@ -119,8 +131,10 @@ function AboutUsPage() {
                             <li><Link to="/" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}>Home</Link></li>
                             <li><Link to="/chi-siamo" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}>Chi siamo</Link></li>
                             <li><Link to="/servizi" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}>Servizi</Link></li>
-                            <li><Link to="/galleria" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px', fontSize: '14px' }}>Galleria</Link></li>
-                            <li><Link to="/contatti" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}>Contatti</Link></li>
+                            <li><Link to="/galeria" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}>Galleria</Link></li>
+                            <li><Link to="/kontakte" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}>Contatti</Link></li>
+                            <li><Link to="/privacy" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}>Contatti</Link></li>
+
                         </ul>
                     </nav>
 
@@ -161,19 +175,43 @@ function AboutUsPage() {
                 }}>
                     Alcuni dei nostri lavori & Storia
                 </h1>
-                <form>
-                    {/* Add your form inputs here */}
-                    <Turnstile
-                        siteKey="YOUR_CLOUDFLARE_SITE_KEY"
-                        onSuccess={(token) => {
-                            console.log('Verification token:', token);
-                            // Send this token to your backend to verify
-                        }}
-                    />
-                    <button type="submit">Submit</button>
+
+                {/* Integriertes E-MailJS Formular mit Turnstile */}
+                <form onSubmit={sendEmail} style={{ display: 'flex', flexDirection: 'column', gap: '15px', margin: '30px 0', padding: '25px', backgroundColor: '#fdfdfd', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+                    <h3 style={{ margin: 0, color: '#e62b2b' }}>Invia un messaggio</h3>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                        <label htmlFor="message" style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>Messaggio (min. 10 caratteri)*:</label>
+                        <textarea
+                            id="message"
+                            ref={messagioRef}
+                            value={formData.message}
+                            onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                            rows="5"
+                            placeholder="Scrivi qui il tuo messaggio..."
+                            style={{ padding: '10px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '1rem' }}
+                        />
+                    </div>
+
+                    <div style={{ margin: '10px 0' }}>
+                        <Turnstile
+                            siteKey="0x4AAAAAAFpm7ahS6lg9KOLG"
+                            onSuccess={(token) => {
+                                setFormData(prev => ({ ...prev, turnstileToken: token }));
+                            }}
+                            onError={() => {
+                                console.error("Turnstile Fehler");
+                            }}
+                            onExpire={() => {
+                                setFormData(prev => ({ ...prev, turnstileToken: '' }));
+                            }}
+                        />
+                    </div>
+
+                    <button type="submit" style={{ padding: '12px 20px', backgroundColor: '#e62b2b', color: 'white', fontWeight: 'bold', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '1rem' }}>
+                        Invia Messaggio
+                    </button>
                 </form>
-
-
 
                 <h2 className="about-us" style={{ color: '#e62b2b', fontSize: '1.5rem', marginBottom: '10px' }}>
                     Titocci Metalcostruzioni SAGL
@@ -200,8 +238,8 @@ function AboutUsPage() {
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '30px' }}>
-                        <h3 style={{ color: '#e62b2b', fontSize: '1.3rem', margin: 0 }}>Protezione dei Dati (nDSG / DSGVO)</h3>
-                        <UseAnimations animation={lock} size={32} strokeColor="#e62b2b" />
+                        <h3 style={{ fontSize: '1.3rem', margin: 0, color:'gold' }}>Protezione dei Dati (nDSG / DSGVO)</h3>
+                        <UseAnimations animation={lock} size={50} strokeColor="#e62b2b" />
                     </div>
 
                     <p style={{ marginTop: '10px' }}>

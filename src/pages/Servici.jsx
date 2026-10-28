@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 
-
 // Asset Imports
 import Schleifbild from '../assets/Schleifen.jpg';
 import Wand from '../assets/Wand.jfif';
@@ -29,16 +28,14 @@ import Gitter5 from '../assets/Gitter5.jpg';
 import Gitter6 from '../assets/Gitter6.jpg';
 import Innenhof from '../assets/Innenhof.jpg';
 
-
-
 import '../Styles/Servici.css';
 import '../Styles/TimeLineSection.css';
 
 const IMAGES = [
     { id: 1, url: Schleifbild, title: 'Schleifarbeiten', description: 'Lavorazione e finitura di alta precisione.' },
     { id: 2, url: Bauplan, title: 'Werkstatt', description: 'Progettazione e produzione artigianale.' },
-    { id: 3, url: PC, title: 'PC & Design', description: 'Pianificazione CAD e modellazione 3D.',},
-    {id: 4, url: Schraubenzieherbild    , title: 'Schraubenzieher',}
+    { id: 3, url: PC, title: 'PC & Design', description: 'Pianificazione CAD e modellazione 3D.' },
+    { id: 4, url: Schraubenzieherbild, title: 'Schraubenzieher', description: 'Strumenti di precisione.' }
 ];
 
 const SERVICE_CARDS = [
@@ -171,6 +168,9 @@ function Servizi() {
     const [indexParapetti, setIndexParapetti] = useState(0);
     const [indexCancelli, setIndexCancelli] = useState(0);
 
+    // State für den Suchfilter
+    const [searchTerm, setSearchTerm] = useState("");
+
     // States für die beiden unteren Slider getrennt steuerbar
     const [sliderIndex1, setSliderIndex1] = useState(0);
     const [sliderIndex2, setSliderIndex2] = useState(0);
@@ -178,15 +178,14 @@ function Servizi() {
     const navigate = useNavigate();
 
     const imagesParapetti = [Gitter, Wand];
-
     const imagesCancelli = [Fenster, Eingang];
 
-    // Bilder-Arrays für die beiden unteren Slider
-    const bottomImages1 = [Gitter3, Holztreppe, Stock,Dachterasse, Pflanzen,Steingarten];
-    const bottomImages2 = [Gitter3,Innenhof,Gitter5,Gitter4, Weiss, Steinhaus];
-    /**
-     * Use Effect Timer for dynamic change  of Images Slide-Show
-     */
+    // Gefilterte Bilder basierend auf dem Suchbegriff im Titel/Beschreibung
+    const filteredImages = IMAGES.filter(img =>
+        img.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (img.description && img.description.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+
     useEffect(() => {
         const timer = setTimeout(() => {
             setIsOpen(true);
@@ -208,11 +207,10 @@ function Servizi() {
         window.location.href = 'https://titocci.ch/a/locarno/cancellate-per-giardino-a-locarno/';
     };
 
-
-    let handleSubmit = (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         window.location.href = 'https://it.wikipedia.org/wiki/Arte';
-    }
+    };
 
     return (
         <div className="rot">
@@ -254,8 +252,10 @@ function Servizi() {
                             <li><Link to="/" style={{color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px'}}>Home</Link></li>
                             <li><Link to="/chi-siamo" style={{color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px'}}>Chi siamo</Link></li>
                             <li><Link to="/servizi" style={{color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px', fontSize: '14px'}}>Servizi</Link></li>
-                            <li><Link to="/galleria" style={{color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px'}}>Galleria</Link></li>
-                            <li><Link to="/contatti" style={{color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px'}}>Contatti</Link></li>
+                            <li><Link to="/galeria" style={{color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px'}}>Galleria</Link></li>
+                            <li><Link to="/aboutus" style={{color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px'}}></Link></li>
+                            <li><Link to="/kontakte" style={{color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px'}}>Contatti</Link></li>
+
                         </ul>
                     </nav>
 
@@ -295,6 +295,44 @@ function Servizi() {
                 </div>
             </div>
 
+            {/* --- BILDER-FILTER / SUCHLEISTE --- */}
+            <div style={{ maxWidth: '800px', margin: '40px auto 20px auto', padding: '0 20px', textAlign: 'center' }}>
+                <div style={{ backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #ddd' }}>
+                    <h3 style={{ color: '#e62b2b', marginBottom: '15px' }}>Filtra immagini</h3>
+                    <input
+                        type="text"
+                        placeholder="Cerca per titolo o descrizione (es. Schleifarbeiten, Werkstatt...)"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        style={{
+                            width: '100%',
+                            padding: '10px 15px',
+                            fontSize: '1rem',
+                            borderRadius: '4px',
+                            border: '1px solid #ccc',
+                            boxSizing: 'border-box'
+                        }}
+                    />
+                </div>
+
+                {/* Anzeige der gefilterten Bilder */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center', marginTop: '20px' }}>
+                    {filteredImages.length > 0 ? (
+                        filteredImages.map((img) => (
+                            <div key={img.id} style={{ width: '220px', background: '#fff', borderRadius: '6px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+                                <img src={img.url} alt={img.title} style={{ width: '100%', height: '140px', objectFit: 'cover' }} />
+                                <div style={{ padding: '10px', textAlign: 'left' }}>
+                                    <h4 style={{ margin: '0 0 5px 0', color: '#333', fontSize: '1rem' }}>{img.title}</h4>
+                                    <p style={{ margin: 0, fontSize: '0.85rem', color: '#666' }}>{img.description}</p>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <p style={{ color: '#666', fontStyle: 'italic' }}>Nessuna immagine trovata.</p>
+                    )}
+                </div>
+            </div>
+
             {/* --- KATEGORIEN-SLIDER SECTION (PARAPETTI & CANCELLI) --- */}
             <div style={{
                 maxWidth: '1100px',
@@ -313,7 +351,7 @@ function Servizi() {
                         <div style={{
                             position: 'relative',
                             display: 'flex',
-                            gap: '10px', /* Abstand zwischen den beiden Bildern */
+                            gap: '10px',
                             overflow: 'hidden',
                             borderRadius: '4px'
                         }}>
@@ -363,7 +401,7 @@ function Servizi() {
                         <div style={{
                             position: 'relative',
                             display: 'flex',
-                            gap: '10px', /* Abstand zwischen den beiden Bildern */
+                            gap: '10px',
                             overflow: 'hidden',
                             borderRadius: '4px'
                         }}>
@@ -448,7 +486,6 @@ function Servizi() {
                                                     fontSize: '1.35rem',
                                                     fontWeight: 'bold',
                                                     textDecoration: 'none',
-
                                                 }}
                                             >
                                                 {section.titleLocarno}
@@ -497,8 +534,7 @@ function Servizi() {
                                         flexDirection: 'column',
                                         flexGrow: 1
                                     }}>
-                                        <h3 style={{ marginTop: 0, marginBottom: '15px',
-                                        }}>
+                                        <h3 style={{ marginTop: 0, marginBottom: '15px' }}>
                                             <a
                                                 href={linkAvegno}
                                                 style={{
@@ -506,8 +542,6 @@ function Servizi() {
                                                     fontSize: '1.35rem',
                                                     fontWeight: 'bold',
                                                     textDecoration: 'none',
-
-
                                                 }}
                                             >
                                                 {section.titleAvegno}
@@ -537,9 +571,8 @@ function Servizi() {
             {/* --- TEXTSEKTION AM ENDE --- */}
             <section style={{maxWidth: '900px', margin: '60px auto', padding: '0 20px', textAlign: 'center'}}>
                 <h2 style={{fontSize: '1.8rem', marginBottom: '20px', color: '#f59e0b'}}>
-                   <b> Fabbro artigiano: mestiere e arte</b>
+                    <b>Fabbro artigiano: mestiere e arte</b>
                     <div className="yellow-divider"></div>
-
                 </h2>
                 <p style={{lineHeight: '1.6', fontSize: '1.05rem', color: '#333', marginBottom: '40px'}}>
                     Un <b>fabbro artigiano</b> è una figura professionale che ha le sue radici nei secoli passati,
@@ -561,77 +594,64 @@ function Servizi() {
                     elemento, il fabbro dà vita al metallo, plasmando la materia con maestria.
                 </p>
 
-
-
                 <section style={{maxWidth: '900px', margin: '60px auto', padding: '0 20px', textAlign: 'center'}}>
                     <h2 style={{fontSize: '1.8rem', marginBottom: '20px', color: '#f59e0b'}}>
                         Il fabbro: un’arte
-
                     </h2>
                     <p style={{lineHeight: '1.6', fontSize: '1.05rem', color: '#333', marginBottom: '40px'}}>
-                        La Titocci Metalcostruzioni <b>si distingue </b>  per i <b> suoi servizi realizzati ad </b><span  onClick={handleSubmit}style={{color:'red'}}>arte</span> è una figura professionale che ha le sue radici nei secoli passati,
-                        risudando i ferri caldi nella lavorazione dei metalli ma fondamentale per la sopravvivenza della
-                        comunità. Questo mestiere affascinante e versatile, ancora oggi di grande importanza, combina
-                        abilità artigianali con l'innovazione tecnologica per creare elementi unici, funzionali e altamente
-                        personalizzati.
+                        La Titocci Metalcostruzioni <b>si distingue </b> per i <b>suoi servizi realizzati ad </b><span onClick={handleSubmit} style={{color:'red', cursor: 'pointer'}}>arte</span> è una figura professionale che ha le sue radici nei secoli passati...
                     </p>
-
                 </section>
-
-
-
 
                 <h2 style={{fontSize: '1.8rem', marginBottom: '20px', color: '#f59e0b'}}>
                     I tipi di metallo
                 </h2>
                 <p style={{lineHeight: '1.6', fontSize: '1.05rem', marginBottom: '30px', color: '#333'}}>
-                    I diversi tipi di metallo utilizzati dai fabbri artigiani dipendono dalla lega e dalla destinazione
-                    d’uso.
+                    I diversi tipi di metallo utilizzati dai fabbri artigiani dipendono dalla lega e dalla destinazione d’uso.
                 </p>
 
-
-                    {/* 3 Spalten für Metall-Typen */}
+                {/* 3 Spalten für Metall-Typen */}
+                <div style={{
+                    display: 'flex',
+                    gap: '20px',
+                    flexWrap: 'nowrap',
+                    marginBottom: '50px',
+                    textAlign: 'left',
+                    justifyContent:'space-evenly'
+                }}>
                     <div style={{
-                        display: 'flex',
-                        gap: '20px',
-                        flexWrap: 'nowrap',
-                        marginBottom: '50px',
-                        textAlign: 'left',
-                        justifyContent:'space-evenly'
+                        flex: '1 1 250px',
+                        background: '#fff',
+                        padding: '20px',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
                     }}>
-                        <div style={{
-                            flex: '1 1 250px',
-                            background: '#fff',
-                            padding: '20px',
-                            borderRadius: '8px',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
-                        }}>
-                            <h3 style={{color: '#f59e0b', fontSize: '1.2rem', marginBottom: '10px'}}>L’acciaio al carbonio</h3>
-                            <p style={{fontSize: '0.95rem', color: '#666', lineHeight: '1.5', margin: 0}}>L’acciaio al carbonio è comunemente utilizzato dai fabbri perché forte e resistente.</p>
-                        </div>
-
-                        <div style={{
-                            flex: '1 1 250px',
-                            background: '#fff',
-                            padding: '20px',
-                            borderRadius: '8px',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
-                        }}>
-                            <h3 style={{color: '#f59e0b', fontSize: '1.2rem', marginBottom: '10px'}}>L’acciaio inossidabile</h3>
-                            <p style={{fontSize: '0.95rem', color: '#666', lineHeight: '1.5', margin: 0}}>L’acciaio inossidabile (o acciaio inox) è una lega a base di ferro, carbonio e altri elementi, tra cui cromo, nichel, titanio, ecc. È proprio la presenza di questi elementi che rende questo tipo di acciaio molto resistente alla corrosione.</p>
-                        </div>
-
-                        <div style={{
-                            flex: '1 1 250px',
-                            background: '#fff',
-                            padding: '20px',
-                            borderRadius: '8px',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
-                        }}>
-                            <h3 style={{color: '#f59e0b', fontSize: '1.2rem', marginBottom: '10px'}}>L’alluminio</h3>
-                            <p style={{fontSize: '0.95rem', color: '#666', lineHeight: '1.5', margin: 0}}>L’alluminio è un metallo più leggero dell’acciaio ma durevole e resistente alla corrosione. È riciclabile.</p>
-                        </div>
+                        <h3 style={{color: '#f59e0b', fontSize: '1.2rem', marginBottom: '10px'}}>L’acciaio al carbonio</h3>
+                        <p style={{fontSize: '0.95rem', color: '#666', lineHeight: '1.5', margin: 0}}>L’acciaio al carbonio è comunemente utilizzato dai fabbri perché forte e resistente.</p>
                     </div>
+
+                    <div style={{
+                        flex: '1 1 250px',
+                        background: '#fff',
+                        padding: '20px',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+                    }}>
+                        <h3 style={{color: '#f59e0b', fontSize: '1.2rem', marginBottom: '10px'}}>L’acciaio inossidabile</h3>
+                        <p style={{fontSize: '0.95rem', color: '#666', lineHeight: '1.5', margin: 0}}>L’acciaio inossidabile (o acciaio inox) è una lega a base di ferro, carbonio e altri elementi...</p>
+                    </div>
+
+                    <div style={{
+                        flex: '1 1 250px',
+                        background: '#fff',
+                        padding: '20px',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+                    }}>
+                        <h3 style={{color: '#f59e0b', fontSize: '1.2rem', marginBottom: '10px'}}>L’alluminio</h3>
+                        <p style={{fontSize: '0.95rem', color: '#666', lineHeight: '1.5', margin: 0}}>L’alluminio è un metallo più leggero dell’acciaio ma durevole e resistente alla corrosione.</p>
+                    </div>
+                </div>
 
                 <h2 style={{fontSize: '1.8rem', marginBottom: '30px', color: '#f59e0b'}}>
                     Lavorazione di svariati tipi di metalli
@@ -649,236 +669,7 @@ function Servizi() {
                         <img src={Briefkasten} alt="Briefkasten" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </div>
                 </div>
-
-
-
-                    <h2 style={{fontSize: '1.8rem', marginBottom: '20px', color: '#f59e0b'}}>
-                        Una famiglia di artigiani del metallo
-
-                    </h2>
-                    <p style={{lineHeight: '1.6', fontSize: '1.05rem', color: '#333', marginBottom: '40px'}}>
-                        Una ditta che rappresenta perfettamente la passione e l’abilità di un fabbro artigiano è la Titocci Metalcostruzioni. Il mestiere di fabbro artigiano è stato tramandato da Giovanni Titocci al figlio Marco. L’artigiano del metallo non solo possiede una conoscenza approfondita delle tecniche tradizionali, ma anche la creatività necessaria per creare pezzi personalizzati e unici. Ogni dettaglio è curato con attenzione, garantendo alta qualità e durata nel tempo. La lavorazione artigianale consente una maggiore flessibilità nella progettazione permettendo così di adattare l’opera alle esigenze specifiche del cliente. Ogni pezzo artigianale porta con sé un valore aggiunto, poiché rappresenta il lavoro, la passione e la maestria dell’artigiano, aggiungendo un tocco unico e autentico a qualsiasi ambiente.
-                    </p>
-
-
-                    <h2 style={{fontSize: '1.8rem', marginBottom: '20px', color: '#f59e0b'}}>
-                        Fabbro artigiano: l’evoluzione di un mestiere antico
-
-                    </h2>
-                    <p style={{lineHeight: '1.6', fontSize: '1.05rem', color: '#333', marginBottom: '40px'}}>
-                        Quello che rende la Titocci Metalcostruzioni davvero speciale è la capacità di fondere l’arte classica della lavorazione dei metalli del fabbro artigiano con le moderne tendenze e tecnologie. Pur rimanendo fedele alle tradizioni artigianali di fabbro, l’azienda ha abbracciato con entusiasmo nuovi materiali, design innovativi e metodi all’avanguardia. Questo equilibrio tra passato e presente si traduce in opere uniche e funzionali che uniscono l’estetica tradizionale alla praticità moderna.
-                    </p>
-
-                    <h2 style={{fontSize: '1.8rem', marginBottom: '20px', color: '#f59e0b'}}>
-                        Modernizzazione e alta qualità
-
-                    </h2>
-                    <p style={{lineHeight: '1.6', fontSize: '1.05rem', color: '#333', marginBottom: '40px'}}>
-                        La passione per il metallo e l’attenzione per i dettagli sono elementi che definiscono la Titocci Metalcostruzioni. La ditta continua a offrire servizi professionali di alta qualità, creando opere d’arte che resistono alla prova del tempo e soddisfano le esigenze e i gusti dei clienti. In un mondo in continua evoluzione, la Titocci Metalcostruzioni dimostra che il mestiere del fabbro è un connubio vincente tra tradizione e innovazione, plasmato dalla passione e dall’impegno di artigiani straordinari.
-                    </p>
-
-                    {/* --- UNTERER BILDER-SLIDER --- */}
-                    <div style={{ maxWidth: '1000px', margin: '0 auto 40px auto', position: 'relative' }}>
-                        <div style={{
-                            display: 'flex',
-                            gap: '20px',
-                            justifyContent: 'center',
-                            alignItems: 'flex-start',
-                            flexWrap: 'nowrap' // Stellt sicher, dass sie nebeneinander in einer Reihe bleiben
-                        }}>
-
-                            {/* Slider 1 */}
-                            <div style={{ flex: '1 1 50%', maxWidth: '480px', textAlign: 'center' }}>
-                                <p style={{
-                                    fontSize: '0.95rem',
-                                    fontWeight: 'bold',
-                                    color: '#333',
-                                    marginBottom: '15px',
-                                    minHeight: '48px',
-                                    lineHeight: '1.3'
-                                }}>
-                                    Costruzione e montaggio di ringhiere di ogni tipo, scale, serramenti, cancelli manuali o automatizzati, porte garage, bucalettere, recinzioni, ecc ....
-                                </p>
-                                <div style={{
-                                    position: 'relative',
-                                    overflow: 'hidden',
-                                    borderRadius: '2px',
-                                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                                }}>
-                                    {/* Pfeil links */}
-                                    <button
-                                        onClick={() => setSliderIndex1((prev) => (prev > 0 ? prev - 1 : bottomImages1.length - 1))}
-                                        style={{
-                                            position: 'absolute',
-                                            top: '50%',
-                                            left: '10px',
-                                            transform: 'translateY(-50%)',
-                                            background: 'transparent',
-                                            color: 'white',
-                                            border: 'none',
-                                            fontSize: '2rem',
-                                            cursor: 'pointer',
-                                            zIndex: 5,
-                                            textShadow: '0 0 5px rgba(0,0,0,0.8)',
-                                            padding: '0 5px'
-                                        }}
-                                    >
-                                        ‹
-                                    </button>
-
-                                    <img
-                                        src={bottomImages1[sliderIndex1]}
-                                        alt="Bottom Slider 1"
-                                        style={{ width: '100%', height: '320px', objectFit: 'cover', display: 'block' }}
-                                    />
-
-                                    {/* Pfeil rechts */}
-                                    <button
-                                        onClick={() => setSliderIndex1((prev) => (prev + 1) % bottomImages1.length)}
-                                        style={{
-                                            position: 'absolute',
-                                            top: '50%',
-                                            right: '10px',
-                                            transform: 'translateY(-50%)',
-                                            background: 'transparent',
-                                            color: 'white',
-                                            border: 'none',
-                                            fontSize: '2rem',
-                                            cursor: 'pointer',
-                                            zIndex: 5,
-                                            textShadow: '0 0 5px rgba(0,0,0,0.8)',
-                                            padding: '0 5px'
-                                        }}
-                                    >
-                                        ›
-                                    </button>
-                                </div>
-
-                                {/* Punkt-Indikatoren unten */}
-                                <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginTop: '10px' }}>
-                                    {bottomImages1.map((_, i) => (
-                                        <span
-                                            key={i}
-                                            style={{
-                                                width: '6px',
-                                                height: '6px',
-                                                borderRadius: '50%',
-                                                backgroundColor: i === sliderIndex1 ? '#000' : '#ccc',
-                                                display: 'inline-block'
-                                            }}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Slider 2 */}
-                            <div style={{ flex: '1 1 50%', maxWidth: '480px', textAlign: 'center' }}>
-                                <p style={{
-                                    fontSize: '0.95rem',
-                                    fontWeight: 'bold',
-                                    color: '#333',
-                                    marginBottom: '15px',
-                                    minHeight: '48px',
-                                    lineHeight: '1.3'
-                                }}>
-                                    Eseguiamo anche riparazioni, semplice lavorazione lamiere, taglio, piegatura, saldatura di acciaio Inox e alluminio, verniciatura semplice, ecc .....
-                                </p>
-                                <div style={{
-                                    position: 'relative',
-                                    overflow: 'hidden',
-                                    borderRadius: '2px',
-                                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                                }}>
-                                    {/* Pfeil links */}
-                                    <button
-                                        onClick={() => setSliderIndex2((prev) => (prev > 0 ? prev - 1 : bottomImages2.length - 1))}
-                                        style={{
-                                            position: 'absolute',
-                                            top: '50%',
-                                            left: '10px',
-                                            transform: 'translateY(-50%)',
-                                            background: 'transparent',
-                                            color: 'white',
-                                            border: 'none',
-                                            fontSize: '2rem',
-                                            cursor: 'pointer',
-                                            zIndex: 5,
-                                            textShadow: '0 0 5px rgba(0,0,0,0.8)',
-                                            padding: '0 5px'
-                                        }}
-                                    >
-                                        ‹
-                                    </button>
-
-                                    <img
-                                        src={bottomImages2[sliderIndex2]}
-                                        alt="Bottom Slider 2"
-                                        style={{ width: '100%', height: '320px', objectFit: 'cover', display: 'block' }}
-                                    />
-
-                                    {/* Pfeil rechts */}
-                                    <button
-                                        onClick={() => setSliderIndex2((prev) => (prev + 1) % bottomImages2.length)}
-                                        style={{
-                                            position: 'absolute',
-                                            top: '50%',
-                                            right: '10px',
-                                            transform: 'translateY(-50%)',
-                                            background: 'transparent',
-                                            color: 'white',
-                                            border: 'none',
-                                            fontSize: '2rem',
-                                            cursor: 'pointer',
-                                            zIndex: 5,
-                                            textShadow: '0 0 5px rgba(0,0,0,0.8)',
-                                            padding: '0 5px'
-                                        }}
-                                    >
-                                        ›
-                                    </button>
-                                </div>
-
-                                {/* Punkt-Indikatoren unten */}
-                                <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginTop: '10px' }}>
-                                    {bottomImages2.map((_, i) => (
-                                        <span
-                                            key={i}
-                                            style={{
-                                                width: '6px',
-                                                height: '6px',
-                                                borderRadius: '50%',
-                                                backgroundColor: i === sliderIndex2 ? '#000' : '#ccc',
-                                                display: 'inline-block'
-                                            }}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-
-
-                        <p style={{ fontSize: '1rem', color: '#555', marginTop: '50px' }}>
-                            Visitate la nostra pagina dei{' '}
-                            <a
-                                href="/kontakte"
-                                style={{
-                                    color: '#e62b2b',
-                                    fontWeight: 'bold',
-                                    textDecoration: 'underline'
-                                }}
-                            >
-                                contatti
-                            </a>{' '}
-                            per ottenere ulteriori informazioni
-                        </p>
-
-                        <div className="yellow-divider"></div>
-
-
-       </section>
+            </section>
         </div>
     );
 }
