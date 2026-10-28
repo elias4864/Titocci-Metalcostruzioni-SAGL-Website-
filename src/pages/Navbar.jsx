@@ -1,5 +1,6 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, {useState} from 'react';
+import { Link} from 'react-router-dom';
+
 import Logo from '../assets/Navicon.png';
 import Redfacebook from '../assets/Redfacebook.jfif';
 import Googlemapsimg from '../assets/RedGoogleMaps.jfif';
@@ -10,6 +11,16 @@ import Email from '../assets/Email.png';
 import '../Styles/Navbar.css';
 
 function Navbar() {
+
+    const[isOpen, setIsOpen] = useState(false);
+
+    const toggleMenu =()=>{
+        setIsOpen(!isOpen);
+    };
+
+    const  closeMenu=()=>{
+        setIsOpen(false);
+    }
     return (
         <header style={{
             width: '100%',
@@ -81,9 +92,35 @@ Sabato / Domenica: Chiuso</b>
 </span>
                     </div>
                 </div>
+                <div style={{ fontWeight: 'bold', fontSize: '1.1rem', color: '#e62b2b' }}>
+                    Titocci Metalcostruzioni
+                </div>
 
+                {/* Hamburger Button für mobile/kleine Ansichten */}
+                <button
+                    onClick={toggleMenu}
+                    aria-label="Toggle NavBar"
+                    style={{
+                        background: 'none',
+                        border: 'none',
+                        fontSize: '1.5rem',
+                        cursor: 'pointer',
+                        color: 'red',
+                        padding: '5px'
+
+                    }}
+                >
+                    {isOpen ? '✕' : '☰'}
+                </button>
                 {/* 3. Menüpunkte rechts */}
-                <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+                <div  className={`nav-dropdown ${isOpen ? 'open' : ''}`} style={{
+                    maxHeight: isOpen ? '300px' : '0px',
+                    overflow: 'hidden',
+                    transition: 'max-height 0.3s ease-in-out, opacity 0.3s ease-in-out',
+                    opacity: isOpen ? 1 : 0,
+                    width: '100%',
+                    backgroundColor:'green'
+                }}>
                     <ul className="nav-menu" style={{
                         display: 'flex',
                         listStyle: 'none',
@@ -91,16 +128,17 @@ Sabato / Domenica: Chiuso</b>
                         margin: 0,
                         padding: 0,
                         alignItems: 'center',
-                        fontSize: '0.85rem',
+                        fontSize: '0.9rem',
                         textDecoration:'underline',
-                        color:'blue'
+                        color:'blue',
+
 
                     }}>
-                        <li><Link to="/" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Home</Link></li>
-                        <li><Link to="/chi-siamo" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Chi siamo</Link></li>
-                        <li><Link to="/servizi" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Servizi</Link></li>
-                        <li><Link to="/galeria" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Galleria</Link></li>
-                        <li><Link to="/kontakte" style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Contatti</Link></li>
+                        <li><Link to="/" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }} onClick>Home</Link></li>
+                        <li><Link to="/chi-siamo" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Chi siamo</Link></li>
+                        <li><Link to="/servizi" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Servizi</Link></li>
+                        <li><Link to="/galeria"  onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Galleria</Link></li>
+                        <li><Link to="/kontakte" onClick={closeMenu}style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Contatti</Link></li>
                     </ul>
                 </div>
 
