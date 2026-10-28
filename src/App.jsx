@@ -50,6 +50,13 @@ function MainContent() {
     };
 
 
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        message: ''
+    });
+
+
 
     useEffect(() => {
         const cookieChoice = localStorage.getItem('cookieConsent');
@@ -78,6 +85,11 @@ function MainContent() {
     const sendEmail = async (e) => {
         e.preventDefault();
         alert("Nachricht wurde erfolgreich gesendet an die Titocci Metalconstruzione SAGL");
+
+
+        if(formData.email.length<8) {
+            alert("Bitte eine gültige E-Mail eingeben");
+        }
         navigate('/kontakte');
 
         try {
@@ -226,6 +238,13 @@ function MainContent() {
                         />
                         <span><label><b>E-Mail-Adresse*</b></label></span>
                         <input type="email" id="email" name="email"  required placeholder="elias.kaiser@gmx.ch" onFocus={()=>scrollToInput(emailInputRef)} ref={emailInputRef} />
+
+                        <span><label><b>Nachricht:*</b></label>
+                            <textarea id="message" name="message" rows="10" cols="100">
+
+                            </textarea>
+
+                        </span>
                     </form>
 
                     <button onClick={sendEmail} className="red-btn">

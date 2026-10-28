@@ -141,6 +141,7 @@ function Home({lang}) {
                             <li><Link to="/aboutus" style={{color:'white',textDecoration:'none',fontWeight:'bold'}}>About Us</Link></li>
                             <li><Link to="/galeria" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>Galleria</Link></li>
                             <li><Link to="/kontakte" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>Contatti</Link></li>
+                            <li><Link to="/calculatori"  style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Imobillien Preisrechner </Link> </li>
                         </ul>
                     </nav>
 

@@ -1,13 +1,12 @@
 import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Turnstile } from '@marsidev/react-turnstile';
-
-import Impressumbild from "../assets/Impressum.jpg";
+import emailjs from "@emailjs/browser";
 import UseAnimations from 'react-useanimations';
 import lock from 'react-useanimations/lib/lock';
 
+import Impressumbild from "../assets/Impressum.jpg";
 import "../Styles/AboutUs.css";
-import emailjs from "@emailjs/browser";
 
 const heroOverlayStyle = {
     position: 'absolute',
@@ -33,6 +32,7 @@ function AboutUsPage({ lang }) {
     });
 
     const messagioRef = useRef(null);
+    const turnstileRef = useRef(null);
 
     const scrollToInput = (inputRef) => {
         if (inputRef.current) {
@@ -79,11 +79,15 @@ function AboutUsPage({ lang }) {
             console.log('SUCCESS!', response.status, response.text);
             alert('Vielen Dank! Deine Nachricht wurde erfolgreich versendet.');
 
-            // Formular zurücksetzen
+            // Formular und Turnstile zurücksetzen
             setFormData({
                 message: '',
                 turnstileToken: ''
             });
+
+            if (turnstileRef.current) {
+                turnstileRef.current.reset();
+            }
 
         } catch (error) {
             console.error("Fehler beim Absenden des Formulars:", error.message);
@@ -133,8 +137,7 @@ function AboutUsPage({ lang }) {
                             <li><Link to="/servizi" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}>Servizi</Link></li>
                             <li><Link to="/galeria" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}>Galleria</Link></li>
                             <li><Link to="/kontakte" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}>Contatti</Link></li>
-                            <li><Link to="/privacy" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}>Contatti</Link></li>
-
+                            <li><Link to="/privacy" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}>Datenschutzrichtlinien</Link></li>
                         </ul>
                     </nav>
 
@@ -195,12 +198,14 @@ function AboutUsPage({ lang }) {
 
                     <div style={{ margin: '10px 0' }}>
                         <Turnstile
+                            ref={turnstileRef}
                             siteKey="0x4AAAAAAFpm7ahS6lg9KOLG"
                             onSuccess={(token) => {
                                 setFormData(prev => ({ ...prev, turnstileToken: token }));
                             }}
                             onError={() => {
                                 console.error("Turnstile Fehler");
+                                setFormData(prev => ({ ...prev, turnstileToken: '' }));
                             }}
                             onExpire={() => {
                                 setFormData(prev => ({ ...prev, turnstileToken: '' }));

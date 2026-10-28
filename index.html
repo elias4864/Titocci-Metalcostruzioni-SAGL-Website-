@@ -1,53 +1,55 @@
 <!doctype html>
-<html lang="en">
+<html lang="de">
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" type="image/png" href="/src/assets/Navicon.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" id="meta-description" content="Ihr Experte für Metallbau und Schmiedearbeiten – Titocci Metalcostruzioni SAGL." />
 
   <script>
-    function updateTitle() {
+    function updateMetaData() {
       const path = window.location.pathname;
-      let title = "Home - Titocci Metalcostruzioni SAGL";
+      let title = "Startseite - Titocci Metalcostruzioni SAGL";
+      let description = "Ihr Experte für hochwertige Metallbau- und Schmiedearbeiten – Titocci Metalcostruzioni SAGL.";
 
-      if (path.includes('/chi-siamo')) {
-        title = "Fabbro: Creazioni Uniche in Metalconstruzioni SAGL";
-      } else if (path.includes('/servizi')) {
-        title = "Il Fabbro artigiano numero 1 de";
+      if (path.includes('/home')) {
+        title = "Schmied: Einzigartige Metallbau-Kreationen SAGL";
+        description = "Lernen Sie unser Handwerksunternehmen kennen. Wir fertigen einzigartige Metallbau-Kreationen nach Maß.";
+      } else if (path.includes('/chi-siamo')) {
+        title = "Der Metallbau-Handwerker Nr. 1";
+        description = "Entdecken Sie unsere umfassenden Dienstleistungen im Bereich Metallbau, Schlosserei und Schmiedekunst.";
       } else if (path.includes('/galeria')) {
-        title = "Il Fabbro: creazioni personalizzate";
+        title = "Der Schmied: Massgeschneiderte Kreationen";
+        description = "Einblick in unsere Projekte und Arbeiten: Lassen Sie sich von unseren maßgeschneiderten Metall-Projekten inspirieren.";
+      } else if (path.includes('/kontakte')) {
+        title = "Kontakt - Titocci Metalcostruzioni SAGL";
+        description = "Nehmen Sie Kontakt mit uns auf. Wir beraten Sie gerne zu Ihren Wünschen und Projekten im Metallbau.";
+      } else if (path.includes('/impressum')) {
+        title = "Impressum - Titocci Metalcostruzioni SAGL";
+        description = "Rechtliche Informationen und Impressum von Titocci Metalcostruzioni SAGL.";
+      } else if (path.includes('/privacy')) {
+        title = "Datenschutz - Titocci Metalcostruzioni SAGL";
+        description = "Informationen zum Datenschutz und Umgang mit Ihren Daten bei Titocci Metalcostruzioni SAGL.";
       }
 
-      else if(path.includes('/kontakte')) {
-        title = "Contatti  - Titocci Metalcostruzioni SAGL";
-      }
-
-      else if(path.includes('/impressum')) {
-        title = "Impressum- Titocci Metalcostruzioni SAGL";
-      }
-      else if(path.includes('/privacy')) {
-        title = "Privacy - Titocci Metalcostruzioni SAGL";
-      }
-
-
-
-
-
-
-
-
-      // Titel im Browser-Tab aktualisieren
+      // Browser-Tab Titel aktualisieren
       document.title = title;
+
+      // Meta Description Tag aktualisieren
+      let metaDesc = document.querySelector('meta[name="description"]');
+      if (!metaDesc) {
+        metaDesc = document.createElement('meta');
+        metaDesc.name = 'description';
+        document.head.appendChild(metaDesc);
+      }
+      metaDesc.setAttribute('content', description);
     }
 
-    // 1. Richtige Funktionsreferenz ohne () übergeben
-    window.addEventListener('popstate', updateTitle);
+    // Event-Listener für Navigation und SPA-Routing
+    window.addEventListener('popstate', updateMetaData);
+    document.addEventListener('DOMContentLoaded', updateMetaData);
 
-    // 2. Ausführen, sobald DOM bereit ist
-    document.addEventListener('DOMContentLoaded', updateTitle);
-
-    // 3. Observer für React Router SPAs
-    const observer = new MutationObserver(updateTitle);
+    const observer = new MutationObserver(updateMetaData);
     document.addEventListener('DOMContentLoaded', () => {
       const root = document.getElementById('root');
       if (root) {
