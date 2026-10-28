@@ -33,13 +33,15 @@ const heroOverlayStyle = {
 
 function Contatti({ lang }) {
     // 1. Sicheres Handling der Sprache & Mapping für Google Maps Embed
-    const currentLang =lang|| "de";
+    const currentLang = lang || "de";
     const mapLangMap = {
         de: "de",
         en: "en",
         it: "it",
         fr: "fr"
     };
+
+    const form = useRef();
 
     const currentMapLang = mapLangMap[currentLang] || "de";
     const mapUrl = `https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d11043.906817275687!2d8.742987830688485!3d46.21091841923832!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4785b75776b14f6b%3A0x1a856f78a38373de!2sTitocci%20Metalcostruzioni%20SAGL!5e0!3m2!1s${currentMapLang}!2sch!4v1792586980608!5m2!1s${currentMapLang}!2sch`;
@@ -53,8 +55,18 @@ function Contatti({ lang }) {
     const [isHovered, setIsHovered] = useState(false);
     const [captchaToken, setCaptchaToken] = useState(null);
 
+    // Input- und Container-Refs für reibungsloses Scrollen im Browser
     const emailInputRef = useRef(null);
     const recaptchaRef = useRef(null);
+    const messagioRef = useRef(null);
+    const nomeInputRef = useRef(null);
+    const containerRef = useRef(null);
+
+    const scrollToInput = (inputRef) => {
+        if (inputRef.current) {
+            inputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    };
 
     // reCAPTCHA v2 Site Key mit direktem Fallback
     const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY || "6Le-tQQuAAAAADd4dqSkP1Q06wIH8RyzRN5wtAzb";
@@ -86,24 +98,43 @@ function Contatti({ lang }) {
             }
 
             if (!formData.nome.trim() || !formData.email.trim() || !formData.messaggio.trim()) {
-                if (!formData.email.trim() && emailInputRef.current) {
+                if (!formData.nome.trim() && nomeInputRef.current) {
+                    nomeInputRef.current.focus();
+                    scrollToInput(nomeInputRef);
+                } else if (!formData.email.trim() && emailInputRef.current) {
                     emailInputRef.current.focus();
+                    scrollToInput(emailInputRef);
+                } else if (!formData.messaggio.trim() && messagioRef.current) {
+                    messagioRef.current.focus();
+                    scrollToInput(messagioRef);
                 }
                 alert("Bitte fülle alle Pflichtfelder aus!");
                 throw new Error("Pflichtfelder fehlen.");
             }
 
             if (formData.nome.trim().length < 7) {
+                if (nomeInputRef.current) {
+                    nomeInputRef.current.focus();
+                    scrollToInput(nomeInputRef);
+                }
                 alert("Bitte gib einen gültigen Namen ein (mindestens 7 Zeichen)!");
                 throw new Error("Name zu kurz.");
             }
 
             if (formData.messaggio.trim().length < 10) {
+                if (messagioRef.current) {
+                    messagioRef.current.focus();
+                    scrollToInput(messagioRef);
+                }
                 alert("Die Nachricht ist zu kurz (mindestens 10 Zeichen)!");
                 throw new Error("Nachricht zu kurz.");
             }
 
             if (formData.email.trim().length < 10) {
+                if (emailInputRef.current) {
+                    emailInputRef.current.focus();
+                    scrollToInput(emailInputRef);
+                }
                 alert("Bitte gib eine gültige E-Mail-Adresse ein!");
                 throw new Error("E-Mail ungültig.");
             }
@@ -149,7 +180,7 @@ function Contatti({ lang }) {
     };
 
     return (
-        <div className="rot" style={{ backgroundColor: '#ffffff', minHeight: '100vh' }}>
+        <div ref={containerRef} className="rot" style={{ backgroundColor: '#ffffff', minHeight: '100vh' }}>
             {/* Hero Header Section */}
             <div style={{
                 width: '100vw',
@@ -230,7 +261,7 @@ function Contatti({ lang }) {
             }}>
                 {/* Linke Spalte: Formular */}
                 <div style={{ flex: '1 1 500px' }}>
-                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    <form ref={form} onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                         <div>
                             <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '5px' }}>Nome*</label>
                             <input
@@ -240,6 +271,8 @@ function Contatti({ lang }) {
                                 placeholder="Alex"
                                 value={formData.nome}
                                 onChange={handleChange}
+                                ref={nomeInputRef}
+                                onFocus={() => scrollToInput(nomeInputRef)}
                                 style={{
                                     width: '100%',
                                     padding: '10px 12px',
@@ -260,6 +293,7 @@ function Contatti({ lang }) {
                                 required
                                 placeholder="alex@gmail.com"
                                 onChange={handleChange}
+                                onFocus={() => scrollToInput(emailInputRef)}
                                 style={{
                                     width: '100%',
                                     padding: '10px 12px',
@@ -278,6 +312,8 @@ function Contatti({ lang }) {
                                 rows="5"
                                 value={formData.messaggio}
                                 onChange={handleChange}
+                                onFocus={() => scrollToInput(messagioRef)}
+                                ref={messagioRef}
                                 placeholder="Ich möchte Auskunft über die Dienstleistungen der Titocci Metalcostruzioni SAGL erhalten..."
                                 style={{
                                     width: '100%',
@@ -328,7 +364,6 @@ function Contatti({ lang }) {
                                 boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
                                 boxSizing: 'border-box',
                                 marginBottom: '40px',
-
                             }}
                         >
                             INVIO
