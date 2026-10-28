@@ -12,29 +12,40 @@
 }
 
 .red-btn{
-  color:'gold';
+  color:gold;
   border-radius: 50px;
   border-color: blue;
+  background-color: brown;
 }
 
 
 .formular{
-  float:'left';
-  display: 'flex';
-  color:'brown';
-  text-wrap: wrap;
+  display: flex;
+  flex-direction: column; /* Bringt alle Elemente untereinander */
+  gap: 12px;              /* Sorgt für saubere Abstände zwischen den Feldern */
+  color: brown;
+  width: 100%;            /* Optional: passt sich dem Container an */
+  max-width: 600px;
+}
+
+/* Optional, damit die Textarea und Inputs schön sauber untereinander sitzen */
+.formular input,
+.formular textarea,
+.formular span {
+  width: 100%;
 }
 .newsletter{
-  text-decoration: 2px 2px gold;
+
   font-size: 30px;
-  color:'gold';
+  color:gold;
   text-shadow: 2px 2px green;
 }
 
 .instagram{
-  width:'20px';
-  max-width: '16px';
-  height: '30px';
+  width:60px;
+  max-width: 60px;
+  height: 70px;
+  max-height: 300px;
   object-fit: cover;
 
 }

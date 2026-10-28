@@ -30,6 +30,7 @@ function MainContent() {
     // Refs für Newsletter-Formular
     const nameInputRef = useRef(null);
     const emailInputRef = useRef(null);
+    const messageInputRef = useRef(null);
 
     // Funktion zum Nach-oben-Scrollen
     const scrollToTop = () => {
@@ -234,13 +235,13 @@ function MainContent() {
 
                     <form className="formular">
                         <span><label><b>Nome:*</b></label></span>
-                        <input type="text" id="name" placeholder="Elias" name="name" ref={nameInputRef} onFocus={() => scrollToInput(nomeInputRef)}
+                        <input type="text" id="name" placeholder="Elias" name="name" ref={nameInputRef} onFocus={() => scrollToInput(nameInputRef)}
                         />
                         <span><label><b>E-Mail-Adresse*</b></label></span>
                         <input type="email" id="email" name="email"  required placeholder="elias.kaiser@gmx.ch" onFocus={()=>scrollToInput(emailInputRef)} ref={emailInputRef} />
 
                         <span><label><b>Nachricht:*</b></label>
-                            <textarea id="message" name="message" rows="10" cols="100">
+                            <textarea id="message" name="message" ref={messageInputRef} onFocus={()=>scrollToInput(messageInputRef)} rows="10" cols="100">
 
                             </textarea>
 
