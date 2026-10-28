@@ -1,9 +1,11 @@
 import React, { useState, useRef } from 'react';
 import { Link } from "react-router-dom";
 import emailjs from "@emailjs/browser";
-import ReCAPTCHA from "react-google-recaptcha"; // <-- reCAPTCHA Import
 
-// Asset Imports
+/**
+ * Import Google Recaptcha  für SEO
+ */
+import ReCAPTCHA from "react-google-recaptcha";
 import ContactBg from "../assets/Schleifen.jpg";
 import "../Styles/Kontakt.css";
 import Streifen from "../assets/Streifen.jfif";
@@ -39,9 +41,14 @@ function Contatti() {
         privacy: false
     });
     const [isHovered, setIsHovered] = useState(false);
-    const [captchaToken, setCaptchaToken] = useState(null); // <-- State für das Captcha Token
 
-    // Ref für das E-Mail Eingabefeld
+    /**
+     * Captcha Token initalisieren für GoogleRecaptcha UseState
+     */
+    const [captchaToken, setCaptchaToken] = useState(null);
+    /**
+     * Recaptcha InputRef UseState
+     */
     const emailInputRef = useRef(null);
     const recaptchaRef = useRef(null);
 
@@ -52,6 +59,11 @@ function Contatti() {
             [name]: type === 'checkbox' ? checked : value
         });
     };
+
+    /**
+     * Function for GoogleRecaptcha implemented
+     * @param token
+     */
 
     let handleChangeCaptcha = (token)=>{
         setCaptchaToken(token);
@@ -323,8 +335,9 @@ function Contatti() {
                         <div style={{ marginTop: '10px' }}>
                             <ReCAPTCHA
                                 ref={recaptchaRef}
-                                sitekey="6LdXXXXX_DEIN_GOOGLE_RECAPTCHA_SITE_KEY_HIER"
-                                onChange={handleChangeCaptcha()}
+                                sitekey="6LcBoAQuAAAAAH6Cz6ixXGHX3wAgHZ8A291wSTUG"
+
+                                onChange={(token)=>handleChangeCaptcha(token)}
                             />
                         </div>
                         <button
