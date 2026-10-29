@@ -93,6 +93,7 @@ function Privacy({lang}) {
                         <li><Link to="/servizi" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}>Servizi</Link></li>
                         <li><Link to="/galeria" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}>Galleria</Link></li>
                         <li><Link to="/kontakte" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}>Contatti</Link></li>
+                        <li><Link to="/aboutus"  style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}></Link> </li>
                     </ul>
                 </nav>
 

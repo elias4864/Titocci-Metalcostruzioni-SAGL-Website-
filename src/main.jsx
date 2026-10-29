@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client';
 import ReactDOM from 'react-dom/client';
 import React from 'react';
-import { BrowserRouter} from 'react-router-dom'; // Wichtig: HashRouter statt BrowserRouter
+import { BrowserRouter} from 'react-router-dom'; // Wichtig: HashRouter statt BrowserRout   er
 import './index.css'
 import App from './App.jsx'
 

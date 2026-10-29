@@ -2,55 +2,82 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/png" href="/src/assets/Navicon.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" id="meta-description" content="Ihr Experte für Metallbau und Schmiedearbeiten – Titocci Metalcostruzioni SAGL." />
 
+  <!-- Basis-Titel & Meta Description für Suchmaschinen -->
+  <title>Titocci Metalcostruzioni SAGL – Metallbau &amp; Schmiedearbeiten im Tessin</title>
+  <meta name="description" id="meta-description" content="Ihr Experte für hochwertige Metallbau-, Schlosserei- und Schmiedearbeiten nach Maß – Titocci Metalcostruzioni SAGL." />
+  <meta name="keywords" content="Metallbau, Schmied, Schlosserei, Metallkonstruktionen, Tessin, Titocci, Geländer, Treppen, Metallbauarbeiten" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://titoccimetal.ch/" />
+
+  <!-- Favicons & Touch Icons -->
+  <link rel="icon" type="image/png" href="/src/assets/Navicon.png" />
+  <link rel="apple-touch-icon" href="/src/assets/Navicon.png" />
+
+  <!-- Open Graph / Facebook / WhatsApp (Social Media SEO) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="de_CH" />
+  <meta property="og:site_name" content="Titocci Metalcostruzioni SAGL" />
+  <meta property="og:title" id="og-title" content="Titocci Metalcostruzioni SAGL – Metallbau &amp; Schmiedearbeiten" />
+  <meta property="og:description" id="og-description" content="Ihr Experte für hochwertige Metallbau-, Schlosserei- und Schmiedearbeiten nach Maß." />
+  <meta property="og:image" content="/src/assets/Navicon.png" />
+
+  <!-- Twitter Cards -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" id="twitter-title" content="Titocci Metalcostruzioni SAGL" />
+  <meta name="twitter:description" id="twitter-description" content="Ihr Experte für hochwertige Metallbau- und Schmiedearbeiten." />
+
+  <!-- Strukturtierte Daten (JSON-LD für Google Rich Results) -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "Titocci Metalcostruzioni SAGL",
+      "description": "Exklusive Metallbau- und Schmiedearbeiten nach Maß.",
+      "url": "https://titoccimetal.ch/",
+      "logo": "https://titoccimetal.ch/src/assets/Navicon.png",
+      "priceRange": "$$"
+    }
+  </script>
+
+  <!-- Dynamisches SEO-Skript für SPA-Routing -->
   <script>
     function updateMetaData() {
-      const path = window.location.pathname;
-      let title = "Startseite - Titocci Metalcostruzioni SAGL";
-      let description = "Ihr Experte für hochwertige Metallbau- und Schmiedearbeiten – Titocci Metalcostruzioni SAGL.";
+      const path = window.location.pathname.toLowerCase();
 
-      if (path.includes('/home')) {
-        title = "Schmied: Einzigartige Metallbau-Kreationen SAGL";
-        description = "Lernen Sie unser Handwerksunternehmen kennen. Wir fertigen einzigartige Metallbau-Kreationen nach Maß.";
-      } else if (path.includes('/chi-siamo')) {
-        title = "Der Metallbau-Handwerker Nr. 1";
-        description = "Entdecken Sie unsere umfassenden Dienstleistungen im Bereich Metallbau, Schlosserei und Schmiedekunst.";
+      let title = "Titocci Metalcostruzioni SAGL – Metallbau & Schmiedearbeiten";
+      let description = "Ihr Experte für hochwertige Metallbau- und Schmiedearbeiten nach Maß – Titocci Metalcostruzioni SAGL.";
+
+      if (path.includes('/home') || path === '/') {
+        title = "Startseite | Titocci Metalcostruzioni SAGL – Metallbau & Schmiedekunst";
+        description = "Willkommen bei Titocci Metalcostruzioni. Wir fertigen einzigartige Metallbau-Kreationen, Geländer und Treppen nach Maß.";
+      } else if (path.includes('/chi-siamo') || path.includes('/aboutus')) {
+        title = "Über uns | Titocci Metalcostruzioni SAGL";
+        description = "Entdecken Sie unser Handwerksunternehmen und unsere Erfahrung in Metallbau, Schlosserei und individuellem Schmiedehandwerk.";
       } else if (path.includes('/galeria')) {
-        title = "Der Schmied: Massgeschneiderte Kreationen";
-        description = "Einblick in unsere Projekte und Arbeiten: Lassen Sie sich von unseren maßgeschneiderten Metall-Projekten inspirieren.";
+        title = "Galerie & Referenzen | Titocci Metalcostruzioni SAGL";
+        description = "Lassen Sie sich von unseren maßgeschneiderten Metallbau-Projekten, Schmiedearbeiten und Geländern inspirieren.";
       } else if (path.includes('/kontakte')) {
-        title = "Kontakt - Titocci Metalcostruzioni SAGL";
-        description = "Nehmen Sie Kontakt mit uns auf. Wir beraten Sie gerne zu Ihren Wünschen und Projekten im Metallbau.";
+        title = "Kontakt & Beratung | Titocci Metalcostruzioni SAGL";
+        description = "Nehmen Sie Kontakt mit uns auf. Wir beraten Sie gerne individuell zu Ihren Bau- und Metallbauprojekten.";
+      } else if (path.includes('/calculatori')) {
+        title = "Baukosten-Rechner | Titocci Metalcostruzioni SAGL";
+        description = "Nutzen Sie unseren Online-Rechner für eine erste Schätzung Ihrer Metallbau- und Konstruktionsprojekte.";
+      } else if (path.includes('/sitemap')) {
+        title = "Sitemap | Titocci Metalcostruzioni SAGL";
+        description = "Übersicht aller Seiten und Bereiche von Titocci Metalcostruzioni SAGL.";
       } else if (path.includes('/impressum')) {
-        title = "Impressum - Titocci Metalcostruzioni SAGL";
+        title = "Impressum | Titocci Metalcostruzioni SAGL";
         description = "Rechtliche Informationen und Impressum von Titocci Metalcostruzioni SAGL.";
       } else if (path.includes('/privacy')) {
-        title = "Datenschutz - Titocci Metalcostruzioni SAGL";
-        description = "Informationen zum Datenschutz und Umgang mit Ihren Daten bei Titocci Metalcostruzioni SAGL.";
+        title = "Datenschutz | Titocci Metalcostruzioni SAGL";
+        description = "Informationen zum Datenschutz und der Verarbeitung personenbezogener Daten bei Titocci Metalcostruzioni SAGL.";
       }
 
-      else if(path.includes('/calculatori')){
-        title = "Calculatori -Titocci Metalcostruzioni SAGL";
-        description = "Taschenrechner unsere Calculatori  Metalconstruzione SAGL.";
-      }
-
-      else if(path.includes('/sitemap')) {
-        title = "Sitemap -Titocci Metalconstruzione SAGL";
-        description = "Sitemap unsere Calculatori SAGL.";
-      }
-
-      else if(path.includes('/aboutus')) {
-        title = "Über Uns Page- Titocci Metalconstruzione SAGL";
-        description = "Aboutus unsere Calculatori SAGL.";
-      }
-
-      // Browser-Tab Titel aktualisieren
+      // Title & Meta Description im DOM setzen
       document.title = title;
 
-      // Meta Description Tag aktualisieren
       let metaDesc = document.querySelector('meta[name="description"]');
       if (!metaDesc) {
         metaDesc = document.createElement('meta');
@@ -58,9 +85,20 @@
         document.head.appendChild(metaDesc);
       }
       metaDesc.setAttribute('content', description);
+
+      // Social Media Open Graph & Twitter Tags synchronisieren
+      const ogTitle = document.getElementById('og-title');
+      const ogDesc = document.getElementById('og-description');
+      const twTitle = document.getElementById('twitter-title');
+      const twDesc = document.getElementById('twitter-description');
+
+      if (ogTitle) ogTitle.setAttribute('content', title);
+      if (ogDesc) ogDesc.setAttribute('content', description);
+      if (twTitle) twTitle.setAttribute('content', title);
+      if (twDesc) twDesc.setAttribute('content', description);
     }
 
-    // Event-Listener für Navigation und SPA-Routing
+    // Event-Listener für Client-Side Routing
     window.addEventListener('popstate', updateMetaData);
     document.addEventListener('DOMContentLoaded', updateMetaData);
 
@@ -75,7 +113,14 @@
 </head>
 
 <body>
-<div id="root"></div>
+<!-- Barrierefreiheit: Tastatur-Navigation direkt zum Hauptinhalt -->
+<a href="#main-content" style="position:absolute; left:-9999px; top:auto; width:1px; height:1px; overflow:hidden;" onfocus="this.style.position='static'; this.style.width='auto'; this.style.height='auto';">
+  Zum Hauptinhalt springen
+</a>
+
+<!-- Haupt-Container für React App -->
+<div id="root" role="main"></div>
+
 <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>

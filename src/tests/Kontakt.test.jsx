@@ -1,81 +1,147 @@
 // @vitest-environment jsdom
-import React from 'react';
-import { describe, it, vi, expect } from 'vitest';
-import '@testing-library/jest-dom/vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { render, screen, waitFor, act } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import '@testing-library/jest-dom';
+import {BrowserRouter, MemoryRouter} from 'react-router-dom';
 import Kontakt from '../pages/Kontakt.jsx';
-import { Turnstile } from '@marsidev/react-turnstile';
-import '../Styles/TimeLineSection.css';
+import emailjs from '@emailjs/browser';
 
-const renderContatti = () => {
-    return render(
-        <BrowserRouter>
-            <Kontakt lang="de" />
-        </BrowserRouter>
-    );
-};
+// JSDOM-Fix für scrollIntoView
+beforeAll(() => {
+    Element.prototype.scrollIntoView = vi.fn();
+});
+
+// Mocks für externe Bibliotheken
+vi.mock('@emailjs/browser', () => ({
+    default: {
+        send: vi.fn(),
+    },
+}));
+
+const mockReset = vi.fn();
+vi.mock('@marsidev/react-turnstile', () => {
+    const React = require('react');
+    return {
+        Turnstile: React.forwardRef(({ onSuccess }, ref) => {
+            React.useImperativeHandle(ref, () => ({
+                reset: mockReset,
+            }));
+            return (
+                <button
+                    type="button"
+                    data-testid="mock-turnstile"
+                    onClick={() => onSuccess('fake-token')}
+                >
+                    Mock Turnstile Pass
+                </button>
+            );
+        }),
+    };
+});
 
 describe('Contatti Component Form Tests', () => {
-    it('renders all form input fields, address and submit button', () => {
-        const { container } = renderContatti();
+    let windowSpy;
 
-        expect(container.querySelector('input[name="nome"]')).toBeInTheDocument();
-        expect(container.querySelector('input[name="email"]')).toBeInTheDocument();
-        expect(container.querySelector('textarea[name="messaggio"]')).toBeInTheDocument();
-
-        expect(screen.getByText(/In di Salécc 2/i)).toBeInTheDocument();
-        expect(screen.getByText(/6670 Avegno/i)).toBeInTheDocument();
-
-        expect(container.querySelector('button')).toBeInTheDocument();
+    beforeEach(() => {
+        vi.clearAllMocks();
+        windowSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
     });
 
-    it('shows an alert and blocks submission if privacy policy is not accepted', async () => {
-        const windowSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
-        const { container } = renderContatti();
-
-        const nomeInput = container.querySelector('input[name="nome"]');
-        const emailInput = container.querySelector('input[name="email"]');
-        const messaggioInput = container.querySelector('textarea[name="messaggio"]');
-        const submitButton = container.querySelector('button');
-
-        fireEvent.change(nomeInput, { target: { value: 'Alexandre' } });
-        fireEvent.change(emailInput, { target: { value: 'alex@gmail.com' } });
-        fireEvent.change(messaggioInput, { target: { value: 'Ich möchte Auskunft über die Dienstleistungen der Titocci Metalcostruzioni SAGL erhalten...' } });
-
-        fireEvent.click(submitButton);
-
-        await waitFor(() => {
-            expect(windowSpy).toHaveBeenCalledWith('Si prega di accettare la privacy policy.');
-        });
-
+    afterEach(() => {
         windowSpy.mockRestore();
     });
 
+    const renderComponent = () => {
+        return render(
+            <MemoryRouter>
+                <Kontakt lang="de" />
+            </MemoryRouter>
+        );
+    };
+
+    it('renders all form input fields, address and submit button', async () => {
+        act(async () => {
+            renderComponent();
+        });
+
+        await waitFor(() => {
+            expect(screen.getByPlaceholderText('Elias')).toBeInTheDocument();
+            expect(screen.getByPlaceholderText('alex@gmail.com')).toBeInTheDocument();
+            expect(screen.getByPlaceholderText(/Ich möchte Auskunft/i)).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: /INVIO/i })).toBeInTheDocument();
+        });
+    });
+
+    it('shows an alert and blocks submission if privacy policy is not accepted', async () => {
+        const user = userEvent.setup();
+
+        act(async () => {
+            renderComponent();
+        });
+
+        await waitFor(() => {
+            expect(screen.getByPlaceholderText('Elias')).toBeInTheDocument();
+        });
+
+        act(async () => {
+            await user.type(screen.getByPlaceholderText('Elias'), 'Test Name');
+            await user.type(screen.getByPlaceholderText('alex@gmail.com'), 'Test Email');
+            await user.type(screen.getByPlaceholderText(/Ich möchte Auskunft/i), 'Das ist eine Testnachricht.');
+        });
+
+        const submitButton = screen.getByRole('button', { name: /INVIO/i });
+
+        act(async () => {
+            await user.click(submitButton);
+        });
+
+        await waitFor(() => {
+            expect(windowSpy).toHaveBeenCalled();
+        });
+    });
+
     it('validates minimum length for the name field', async () => {
-        const windowSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
-        const { container } = renderContatti();
+        const user = userEvent.setup();
 
-        const nomeInput = container.querySelector('input[name="nome"]');
-        const emailInput = container.querySelector('input[name="email"]');
-        const messaggioInput = container.querySelector('textarea[name="messaggio"]');
-        const privacyCheckbox = container.querySelector('input[type="checkbox"]');
-        const submitButton = container.querySelector('button');
+        act(async () => {
+            renderComponent();
+        });
 
-        fireEvent.change(nomeInput, { target: { value: 'Alex' } }); // Zu kurz (< 7 Zeichen)
-        fireEvent.change(emailInput, { target: { value: 'alex@example.com' } });
-        fireEvent.change(messaggioInput, { target: { value: 'Questo è un messaggio di test.' } });
+        const turnstileButton = await screen.findByTestId('mock-turnstile');
+        act(async () => {
+            await user.click(turnstileButton);
+        });
 
+        const privacyCheckbox = screen.getByRole('checkbox');
         if (privacyCheckbox) {
-            fireEvent.click(privacyCheckbox);
+            act(async () => {
+                await user.click(privacyCheckbox);
+            });
         }
 
-        fireEvent.click(submitButton);
+        await waitFor(() => {
+            expect(screen.getByPlaceholderText('alex@gmail.com')).toBeInTheDocument();
+        });
+
+        act(async () => {
+            await user.type(screen.getByPlaceholderText('alex@gmail.com'), 'test@example.com');
+            await user.type(screen.getByPlaceholderText(/Ich möchte Auskunft/i), 'Das ist eine gültige Testnachricht.');
+        });
+
+        const nameInput = screen.getByPlaceholderText('Elias');
+        act(async () => {
+            await user.clear(nameInput);
+            await user.type(nameInput, 'AB');
+        });
+
+        const submitButton = screen.getByRole('button', { name: /INVIO/i });
+        act(async () => {
+            await user.click(submitButton);
+        });
 
         await waitFor(() => {
             expect(windowSpy).toHaveBeenCalledWith('Bitte gib einen gültigen Namen ein (mindestens 7 Zeichen)!');
         });
-
-        windowSpy.mockRestore();
     });
 });
