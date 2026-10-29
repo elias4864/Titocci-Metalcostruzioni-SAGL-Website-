@@ -2,7 +2,7 @@
 
 # Rebuild of Titocci Metalcostruzioni SAGL - Website
 
-Offizielle Website für den Schweizer Metallbau- und Schlosserbetrieb Titocci Metalcostruzioni SAGL (titocci.ch) möglichst genau nachgebaut. Das Vite-Projekt verwendet ein modernes Frontend-Setup basierend auf React 19 und Vite, gekapselt in einer Docker-Umgebung(Docker-Compose) für konsistente Deployments sowie automatisiert über GitHub Actions für moderne DevOps-Praktiken(CI/CD)
+Offizielle Website für den Schweizer Metallbau- und Schlosserbetrieb Titocci Metalcostruzioni SAGL (titocci.ch) möglichst genau nachgebaut inklusive und  ist zusätzlich mit einem Imobillienrechner und einer Sitemap aller Links der Navbar ausgestattet. Das Vite-Projekt verwendet ein modernes Frontend-Setup basierend auf React 19 und Vite, gekapselt in einer Docker-Umgebung(Docker-Compose) für konsistente Deployments sowie automatisiert über GitHub Actions für moderne DevOps-Praktiken(CI/CD).
 
 ---
 
@@ -12,7 +12,7 @@ Offizielle Website für den Schweizer Metallbau- und Schlosserbetrieb Titocci Me
 - **UI & Animationen:** React CountUp, React Intersection Observer,
 - - **UI Component Library:** Material UI (`@mui/lab`, `@mui/material`)
 - **Build-Tool:** Vite (v8) und Npm-Libaries
-- **Styling:** CSS3,Emotion (`@emotion/react`, `@emotion/styled`) (Responsive Design, Custom Properties)
+- **Styling:** CSS3,Emotion (`@emotion/react`, `@emotion/styled`) (Responsive Design, Custom Properties) und teilweise TailwindCSS
 - **Deployment:** Docker und Docker-Compose Node.js Runtime
 - **Orchestrierung:**  Docker Container(Docker Swarm)
 -  **Automatisierung:**  GitHub Actions(Github Worfklow-Pipeline)
@@ -27,12 +27,18 @@ Diese Website  umfasst folgende Routes+Seitenlinks in der Navbar
 - **`/servizi`**: Detaillierte Übersicht aller Dienstleistungen (*Progettazione, Costruzione, Montaggio, Assistenza*)
 - **`/kontakte`**: Kontaktinformationen, Anfahrtskarte & Kontaktformular über Titocci Metalconstruzione SAGL
 - **`/impressum`**: Impressum nach DSGVO+DSG
-- **`/galeria`**: Galerie-Karte
+- **`/galeria`**: Galerie-Karte mit Referenzprojekten
 - 
+- **`/sitemap`**: Sitemap mit der gesamten Navbar mit allen Pages übersichtlich aufgeführt
 - **`/privacy`**: Datenschutzbestimmungen (Privacy Policy) gemäss DSG+DSGVO
 
 
 ---
+
+
+## Key Features 
+
+
 
 
 ## 🧪 Tests & Qualitätssicherung (Vitest / React Testing Library)
@@ -65,6 +71,7 @@ Vor dem lokalen Deployment  müssen folgende Tools  bereits installiert sein:
 -Node.js (Version 20 LTS empfohlen)
 
 -Git
+
 -CMD/Powershell(Git Bash CLI für Deployment Vitserver
 
 -Docker Compose Depdendencies installiert
@@ -114,7 +121,7 @@ Dependencies & Linting: Installiert die Npm-Dependencies sauber über npm ci.
 
 Vite Production Build: Testet den Build-Prozess (npm run build) auf Syntax- und CSS-Fehler.
 
-Docker Build & Push: Baut das Docker-Image und stellt es auf dem Zielserver / der Container Registry(/Pull )  bereit
+Docker Build & Push: Baut das Docker-Image und stellt es auf dem Zielserver / der Container Registry(/Pull )  bereit und pullt es vom Github Repository
 
 🚀 ###  CI/CD Pipeline für  automatisierte Deloyment der Github Page: 
 1GitHub Pages DeploymentDieses Repository nutzt einen automatisierten GitHub Actions Workflow (deploy.yml). 
@@ -150,7 +157,6 @@ Falls du das Deployment einmal manuell vom Terminal aus durchführen möchtest:
 
 
 
-
 4.npm install gh-pages --save-dev --legacy-peer-deps
 In der package.json überprüfen, ob die Skripte hinterlegt sind:
 
@@ -172,7 +178,7 @@ In der package.json überprüfen, ob die Skripte hinterlegt sind:
 8. Füge im vite.config.js folgenden Eintrag am Ende hinzu:
     base: '/Titocci-Metalcostruzioni-SAGL-Website-/' //Name des exakten Github Repositories mit Base-Url hinzufügen
   
-9. Lade das Disk Directory herunter fürs Deployment der Github Page:
+9. Lade das Disk Directory herunter und Published die eigene Website ins öffentliche Netzwerk:
     npm run deploy
 
 
