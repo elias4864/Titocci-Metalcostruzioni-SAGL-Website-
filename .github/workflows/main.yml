@@ -12,7 +12,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: 'pages'
+  group: pages
   cancel-in-progress: true
 
 jobs:
@@ -21,34 +21,31 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    
-    # WICHTIG: Hier geben wir den Unterordner an, in dem dein React-Projekt liegt!
-    # (Falls der Ordner anders heißt, passe "my-react-app" entsprechend an)
-    defaults:
-      run:
-        working-directory: ./my-react-app/Titocci-Metalcostruzioni-SAGL-Website-
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Node.js einrichten
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
 
-      - name: Abhängigkeiten installieren
+      - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Projekt bauen (Build)
+      - name: Build project
         run: npm run build
 
-      - name: Build-Artefakt(Docker Image) hochladen
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Da wir im Unterordner sind, muss der Pfad zum dist-Ordner angepasst werden:
-          path: './my-react-app/dist'
+          path: ./dist
 
-      - name: Auf GitHub Pages deployen
+      - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
