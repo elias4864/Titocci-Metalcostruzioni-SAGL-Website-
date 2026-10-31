@@ -25,11 +25,22 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: dev
+
+      - name: Verify package.json exists
+        shell: bash
+        run: |
+          if [ ! -f package.json ]; then
+            echo "package.json not found in checked-out branch."
+            exit 1
+          fi
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
 
       - name: Install dependencies
         run: npm install --legacy-peer-deps
