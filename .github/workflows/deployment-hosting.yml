@@ -16,30 +16,50 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      has_app: ${{ steps.check_app.outputs.has_app }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Check for Node app
+        id: check_app
+        shell: bash
+        run: |
+          if [ -f package.json ]; then
+            echo "has_app=true" >> "$GITHUB_OUTPUT"
+            echo "package.json found at repository root."
+          else
+            echo "has_app=false" >> "$GITHUB_OUTPUT"
+            echo "No package.json found at repository root. Skipping npm install/build."
+          fi
+
       - name: Set up Node.js
+        if: steps.check_app.outputs.has_app == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: "20"
 
       - name: Install dependencies
+        if: steps.check_app.outputs.has_app == 'true'
         run: npm install
 
       - name: Build project
+        if: steps.check_app.outputs.has_app == 'true'
         run: npm run build
 
       - name: Setup Pages
+        if: steps.check_app.outputs.has_app == 'true'
         uses: actions/configure-pages@v4
 
       - name: Upload artifact
+        if: steps.check_app.outputs.has_app == 'true'
         uses: actions/upload-pages-artifact@v3
         with:
           path: "./dist"
 
   deploy:
+    if: ${{ needs.build.outputs.has_app == 'true' }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.output_url }}
