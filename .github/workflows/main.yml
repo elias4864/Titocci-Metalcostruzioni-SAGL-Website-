@@ -36,9 +36,10 @@ jobs:
             exit 0
           fi
 
-          APP_DIR=$(find . -name package.json -not -path '*/node_modules/*' | head -n 1 | xargs dirname)
+          PACKAGE_JSON_PATH=$(find . -path '*/node_modules/*' -prune -o -name package.json -print -quit)
 
-          if [ -n "$APP_DIR" ] && [ "$APP_DIR" != "." ]; then
+          if [ -n "$PACKAGE_JSON_PATH" ]; then
+            APP_DIR=$(dirname "$PACKAGE_JSON_PATH")
             echo "has_package_json=true" >> "$GITHUB_OUTPUT"
             echo "app_dir=$APP_DIR" >> "$GITHUB_OUTPUT"
           else
