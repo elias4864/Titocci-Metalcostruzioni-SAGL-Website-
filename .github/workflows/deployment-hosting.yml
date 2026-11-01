@@ -2,15 +2,13 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: ["main","dev"] # Passe den Branch an, falls er 'master' heisst
+    branches: ["main", "dev"]
 
-# Berechtigungen für GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Verhindert, dass mehrere Deploys gleichzeitig laufen
 concurrency:
   group: "pages"
   cancel-in-progress: true
@@ -29,11 +27,10 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Build project
         run: npm run build
-        # Falls Umgebungsvariablen nötig sind, kannst du sie hier übergeben
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -41,7 +38,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "./dist" # Ersetze './dist' durch './build' falls du Create React App / Webpack nutzt
+          path: "./dist"
 
   deploy:
     environment:
