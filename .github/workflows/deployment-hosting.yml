@@ -17,51 +17,69 @@ jobs:
   build:
     runs-on: ubuntu-latest
     outputs:
-      has_app: ${{ steps.check_app.outputs.has_app }}
+      has_app: ${{ steps.detect_app.outputs.has_app }}
+      app_dir: ${{ steps.detect_app.outputs.app_dir }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Check for Node app
-        id: check_app
+      - name: Find Node app
+        id: detect_app
         shell: bash
         run: |
-          if [ -f package.json ]; then
-            echo "has_app=true" >> "$GITHUB_OUTPUT"
-            echo "package.json found at repository root."
-          else
+          package_json_path=$(find . -path '*/node_modules/*' -prune -o -path '*/.git/*' -prune -o -name package.json -print -quit)
+          if [ -z "$package_json_path" ]; then
             echo "has_app=false" >> "$GITHUB_OUTPUT"
-            echo "No package.json found at repository root. Skipping npm install/build."
+            echo "app_dir=." >> "$GITHUB_OUTPUT"
+            echo "No package.json found; Pages build and deployment will be skipped."
+            exit 0
           fi
 
+          app_dir=$(dirname "$package_json_path")
+          echo "has_app=true" >> "$GITHUB_OUTPUT"
+          echo "app_dir=$app_dir" >> "$GITHUB_OUTPUT"
+          echo "Found Node app in: $app_dir"
+
       - name: Set up Node.js
-        if: steps.check_app.outputs.has_app == 'true'
+        if: steps.detect_app.outputs.has_app == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: "20"
 
       - name: Install dependencies
-        if: steps.check_app.outputs.has_app == 'true'
-        run: npm install
+        if: steps.detect_app.outputs.has_app == 'true'
+        working-directory: ${{ steps.detect_app.outputs.app_dir }}
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci --legacy-peer-deps
+          else
+            npm install --legacy-peer-deps
+          fi
 
       - name: Build project
-        if: steps.check_app.outputs.has_app == 'true'
-        run: npm run build
+        if: steps.detect_app.outputs.has_app == 'true'
+        working-directory: ${{ steps.detect_app.outputs.app_dir }}
+        run: npm run build -- --base="/${{ github.event.repository.name }}/"
+
+      - name: Verify build output
+        if: steps.detect_app.outputs.has_app == 'true'
+        working-directory: ${{ steps.detect_app.outputs.app_dir }}
+        run: test -f dist/index.html
 
       - name: Setup Pages
-        if: steps.check_app.outputs.has_app == 'true'
-        uses: actions/configure-pages@v4
+        if: steps.detect_app.outputs.has_app == 'true'
+        uses: actions/configure-pages@v5
 
       - name: Upload artifact
-        if: steps.check_app.outputs.has_app == 'true'
+        if: steps.detect_app.outputs.has_app == 'true'
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "./dist"
+          path: ${{ steps.detect_app.outputs.app_dir }}/dist
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
-    if: ${{ !cancelled() && needs.build.result == 'success' }}
+    if: needs.build.outputs.has_app == 'true'
 
     permissions:
       pages: write
