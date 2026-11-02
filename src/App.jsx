@@ -450,8 +450,17 @@ function MainContent() {
 
 function App() {
     return (
-        <BrowserRouter basename="/Titocci-Metalcostruzioni-SAGL-Website-">
+        <BrowserRouter
+            basename={import.meta.env.BASE_URL}
+            future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true
+        }}
+            >
+
             <MainContent />
+
+
         </BrowserRouter>
     );
 }

@@ -29,6 +29,7 @@ export default function HousePriceCalculator() {
     const [year, setYear] = useState(2000);
     const [estimatedPrice, setEstimatedPrice] = useState(null);
     const [qm, setQm] = useState(75);
+    const [personen, setPersonen] = useState(1);
 
     /**
      * Calculate Size
@@ -125,6 +126,20 @@ const { pricePerQm, totalPrice } = calculatePrice();
                 </div>
 
                 <hr />
+
+                <div>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color:'orange' }}>Anzahl Personen:</label>
+                    <input
+                        type="number"
+                        value={personen}
+                        onChange={(e) => setPersonen(e.target.value)}
+                        min="1"
+                        required
+                        placeholder="4 Personen"
+                        style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                    />
+                </div>
+
 
 
 

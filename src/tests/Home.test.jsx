@@ -47,5 +47,20 @@ describe('Home Component Slider', () => {
             .toBeInTheDocument();
 
 
+
+
+
+
+        const nextButton3 = screen.getAllByRole('button', {
+            name: '▶'
+        });
+
+        fireEvent.click(nextButton2[nextButton.length - 1]);
+
+        expect(screen.getByAltText("Metallgiter Haus"))
+            .toBeInTheDocument();
+
+
+
     });
 });
