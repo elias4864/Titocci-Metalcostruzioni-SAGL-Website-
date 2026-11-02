@@ -18,7 +18,8 @@ const GROESSE = {
     small: { name: 'Klein (bis 45 m²)', min: 0, max: 45, multiplier: 1.15 },       // Kleinere Wohnungen haben oft höheren m²-Preis
     medium: { name: 'Mittel (46 - 90 m²)', min: 46, max: 90, multiplier: 1.0 },    // Standard
     large: { name: 'Groß (91 - 150 m²)', min: 91, max: 150, multiplier: 0.95 },    // Leicht degressiver m²-Preis
-    extra_large: { name: 'Sehr groß (> 150 m²)', min: 151, max: 999, multiplier: 0.90 }
+    extra_large: { name: 'Sehr groß (> 150 m²)', min: 151, max: 999, multiplier: 0.90 },
+
 };
 
 export default function HousePriceCalculator() {
@@ -38,6 +39,7 @@ export default function HousePriceCalculator() {
         if (qmValue <= 45) return GROESSE.small;
         if (qmValue <= 90) return GROESSE.medium;
         if (qmValue <= 150) return GROESSE.large;
+        if(qmValue <= 220) return GROESSE.extra_large;
         return GROESSE.extra_large;
     };
 
@@ -47,8 +49,9 @@ export default function HousePriceCalculator() {
         const base = LOCATION_FACTORS[location].basePrice;
         const conditionMult = CONDITION_FACTORS[condition].multiplier;
         const groesseFactor = getGroesseCategory(qm).multiplier;
+        const personenFactor = 1 + (personen - 1) * 0.02;
 
-        const pricePerQm = base * conditionMult * groesseFactor;
+        const pricePerQm = base * conditionMult * groesseFactor*personenFactor;
         const totalPrice = pricePerQm * qm;
 
         return {
@@ -106,7 +109,7 @@ const { pricePerQm, totalPrice } = calculatePrice();
 
 
 
-                <div style={{ marginBottom: '15px' }}>
+                <div style={{ marginBottom: '15px', color:'gold', fontWeight: 'bold' }}>
                     <label>Wohnfläche (m²): </label>
                     <input
                         type="number"

@@ -6,5 +6,6 @@ export default defineConfig({
     test: {
         environment: 'jsdom', // ODER 'happy-dom'
         globals: true,
+        setupFiles: ['./src/setupTests.js'], // Pfad zu deiner Setup-Datei
     },
 });
