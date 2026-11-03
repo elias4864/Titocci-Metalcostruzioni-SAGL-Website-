@@ -63,4 +63,73 @@ describe('Home Component Slider', () => {
 
 
     });
+
+    it('alle vier Arbeitsbereiche anzeigen', () => {
+        renderComponent();
+
+        expect(screen.getByAltText('Progettazione'))
+            .toBeInTheDocument();
+
+        expect(screen.getByAltText('Costruzione'))
+            .toBeInTheDocument();
+
+        expect(screen.getByAltText('Montaggio'))
+            .toBeInTheDocument();
+
+        expect(screen.getByAltText('Assistenza'))
+            .toBeInTheDocument();
+    });
+
+    it('zeigt unsere Stärken an', () => {
+        renderComponent();
+
+        expect(screen.getByText('I NOSTRI PUNTI DI FORZA'))
+            .toBeInTheDocument();
+
+        expect(screen.getByText('Personale qualificato'))
+            .toBeInTheDocument();
+
+        expect(screen.getByText('Tantissimi clienti soddisfatti'))
+            .toBeInTheDocument();
+
+        expect(screen.getByText('Officina ultra attrezzata'))
+            .toBeInTheDocument();
+    });
+
+    it('zeigt unsere Arbeitsprojekte an', () => {
+        renderComponent();
+
+        expect(screen.getByText('I NOSTRI PUNTI DI LAVORI'))
+            .toBeInTheDocument();
+
+        expect(screen.getByText('Progetti realizzati'))
+            .toBeInTheDocument();
+
+        expect(screen.getByText('Clienti soddisfatti'))
+            .toBeInTheDocument();
+
+        expect(screen.getByText('Progetti attivi'))
+            .toBeInTheDocument();
+
+        expect(screen.getByText('Progetti in attesa'))
+            .toBeInTheDocument();
+    });
+
+    it('zeigt die vier Bereichsbilder an', () => {
+        renderComponent();
+
+        expect(screen.getByAltText('Progettazione'))
+            .toBeInTheDocument();
+
+        expect(screen.getByAltText('Costruzione'))
+            .toBeInTheDocument();
+
+        expect(screen.getByAltText('Montaggio'))
+            .toBeInTheDocument();
+
+        expect(screen.getByAltText('Assistenza'))
+            .toBeInTheDocument();
+    });
+
+
 });

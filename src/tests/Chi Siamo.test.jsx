@@ -137,6 +137,19 @@ describe('Chi Siamo Component', () => {
 
 
 
+        expect(
+            screen.getByText((content) => {
+                return content.includes(
+                    " Nel 1982 viene costruito il capannone presso la zona industriale di Avegno. Qui la ditta trova la sua sede ideale ed è qui che tuttora continua la sua attività."
+                );
+            })
+        ).toBeInTheDocument();
+
+
+
+
+
+
 
 
     });

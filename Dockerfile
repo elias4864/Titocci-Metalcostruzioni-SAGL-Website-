@@ -15,6 +15,16 @@ COPY . .
 # Produktion-Build ausführen
 RUN npm run build
 
+
+CMD ["sh", "-c", "echo ' _       __          __        __' && \
+    echo '| |     / /___  ____/ /__     / /' && \
+    echo '| | /| / / __ \\/ __  / _ \\   / /' && \
+    echo '| |/ |/ / /_/ / /_/ /  __/  /_/' && \
+    echo '|__/|__/\\____/\\__,_/\\___/  (_)' && \
+    echo '' && \
+    echo '🚀 WOC Frontend (World of Chewing Gum) Frontend wurde  gestartet!' && \
+    exec java -jar app.jar"]
+
 # Stage 2: Nginx Webserver für das Hosting
 FROM nginx:alpine
 

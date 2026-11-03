@@ -1,14 +1,23 @@
+
 services:
+  banner:
+    image: alpine:3.21
+    container_name: titocci-banner
+    volumes:
+      - "./src/Titocci ASCII.txt:/Titocci ASCII.txt:ro"
+    command: ["cat", "/Titocci ASCII.txt"]
+    restart: "no"
+
   frontend:
     build:
       context: .
+      dockerfile: Dockerfile
     container_name: titocci-container
     restart: unless-stopped
     ports:
       - "5174:80"
-    volumes:
-      - .:/app
-      - /app/node_modules
+    depends_on:
+      - banner
 
 volumes:
   carosserie_mysql_data:
