@@ -111,7 +111,33 @@ describe('Chi Siamo Component', () => {
             return content.includes("Passato qualche anno, visto il costante aumento della mole di lavoro");
         });
 
+
+
         expect(elements3.length).toBeGreaterThan(0);
         expect(elements3[0]).toBeInTheDocument();
+
+
+        expect(
+            screen.getByText((content) => {
+                return content.includes(
+                    "La nostra ditta è stata fondata nel 1973 da Titocci Giovanni, la prima sede era ubicata in un piccolo magazzino a Ponte Brolla, frazione del comune di Tegna."
+                );
+            })
+        ).toBeInTheDocument();
+
+
+
+        expect(
+            screen.getByText((content) => {
+                return content.includes(
+                    "Passato qualche anno, visto il costante aumento della mole di lavoro e l'inserimento di personale, sorge l'esigenza di trasferirsi in un'officina più grande."
+                );
+            })
+        ).toBeInTheDocument();
+
+
+
+
+
     });
 });

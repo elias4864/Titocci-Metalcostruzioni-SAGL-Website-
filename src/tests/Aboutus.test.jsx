@@ -77,6 +77,7 @@ describe('AboutUsPage Component Tests', () => {
         await waitFor(() => {
             expect(screen.getByRole('heading', { level: 1, name: /Alcuni dei nostri lavori & Storia/i })).toBeInTheDocument();
             expect(screen.getByRole('heading', { level: 2, name: /Titocci Metalcostruzioni SAGL/i })).toBeInTheDocument();
+
             expect(screen.getByPlaceholderText('Scrivi qui il tuo messaggio...')).toBeInTheDocument();
         });
     });
@@ -108,6 +109,9 @@ describe('AboutUsPage Component Tests', () => {
         expect(alertSpy).toHaveBeenCalledWith('Bitte bestätige, dass du kein Roboter bist (Turnstile).');
         expect(emailjs.send).not.toHaveBeenCalled();
     });
+
+
+
 
     it('sendet die E-Mail erfolgreich ab und setzt das Formular sowie Turnstile zurück', async () => {
         const user = userEvent.setup();

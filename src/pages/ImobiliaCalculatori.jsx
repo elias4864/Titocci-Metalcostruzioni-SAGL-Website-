@@ -132,7 +132,7 @@ const { pricePerQm, totalPrice } = calculatePrice();
                     <input
                         type="number"
                         value={personen}
-                        onChange={(e) => setPersonen(e.target.value)}
+                        onChange={(e) => setPersonen(Number(e.target.value))}
                         min="1"
                         required
                         placeholder="4 Personen"
