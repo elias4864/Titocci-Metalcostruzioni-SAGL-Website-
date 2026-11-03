@@ -1,3 +1,4 @@
+
 name: Deploy to GitHub Pages
 
 on:
@@ -14,44 +15,63 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: false # Verhindert das automatische Abbrechen, falls gewünscht
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     outputs:
-      has_app: ${{ steps.detect_app.outputs.has_app }}
+      artifact_path: ${{ steps.detect.outputs.artifact_path }}
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Find Node app
-        id: detect_app
+      - name: Detect Application
+        id: detect
         shell: bash
         run: |
-          package_json_path=$(find . -path '*/node_modules/*' -prune -o -path '*/.git/*' -prune -o -name package.json -print -quit)
+          package_json_path=$(find . \
+            -path './node_modules' -prune -o \
+            -path './.git' -prune -o \
+            -path './.github' -prune -o \
+            -name package.json -print -quit)
 
-          if [ -z "$package_json_path" ]; then
+          if [ -n "$package_json_path" ]; then
+            app_dir=$(dirname "$package_json_path")
+
+            echo "has_app=true" >> "$GITHUB_OUTPUT"
+            echo "app_dir=$app_dir" >> "$GITHUB_OUTPUT"
+            echo "artifact_path=$app_dir/dist" >> "$GITHUB_OUTPUT"
+
+            echo "Node.js application found: $app_dir"
+
+          else
             echo "has_app=false" >> "$GITHUB_OUTPUT"
-            echo "No package.json found; skipping the Node.js build and Pages deployment."
-            exit 0
+
+            if [ -f "index.html" ]; then
+              echo "static_dir=." >> "$GITHUB_OUTPUT"
+            elif [ -f "docs/index.html" ]; then
+              echo "static_dir=docs" >> "$GITHUB_OUTPUT"
+            else
+              echo "ERROR: No index.html found!"
+              exit 1
+            fi
+
+            echo "artifact_path=_site" >> "$GITHUB_OUTPUT"
+            echo "Static website detected."
           fi
 
-          app_dir=$(dirname "$package_json_path")
-          echo "has_app=true" >> "$GITHUB_OUTPUT"
-          echo "app_dir=$app_dir" >> "$GITHUB_OUTPUT"
-          echo "App found: $app_dir"
-
       - name: Setup Node.js
-        if: steps.detect_app.outputs.has_app == 'true'
+        if: steps.detect.outputs.has_app == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: "20"
 
-      - name: Install dependencies
-        if: steps.detect_app.outputs.has_app == 'true'
-        working-directory: ${{ steps.detect_app.outputs.app_dir }}
+      - name: Install Dependencies
+        if: steps.detect.outputs.has_app == 'true'
+        working-directory: ${{ steps.detect.outputs.app_dir }}
         run: |
           if [ -f package-lock.json ]; then
             npm ci --legacy-peer-deps
@@ -59,30 +79,46 @@ jobs:
             npm install --legacy-peer-deps
           fi
 
-      - name: Build project
-        if: steps.detect_app.outputs.has_app == 'true'
-        working-directory: ${{ steps.detect_app.outputs.app_dir }}
+      - name: Build Application
+        if: steps.detect.outputs.has_app == 'true'
+        working-directory: ${{ steps.detect.outputs.app_dir }}
         run: npm run build -- --base="/${{ github.event.repository.name }}/"
 
-      - name: Verify build output
-        if: steps.detect_app.outputs.has_app == 'true'
-        working-directory: ${{ steps.detect_app.outputs.app_dir }}
+      - name: Verify Build
+        if: steps.detect.outputs.has_app == 'true'
+        working-directory: ${{ steps.detect.outputs.app_dir }}
         run: test -f dist/index.html
 
+      - name: Prepare Static Website
+        if: steps.detect.outputs.has_app != 'true'
+        shell: bash
+        run: |
+          mkdir -p _site
+
+          if [ "${{ steps.detect.outputs.static_dir }}" = "." ]; then
+            rsync -av \
+              --exclude='.git' \
+              --exclude='.github' \
+              --exclude='node_modules' \
+              --exclude='_site' \
+              ./ _site/
+          else
+            cp -a docs/. _site/
+          fi
+
+          touch _site/.nojekyll
+
       - name: Setup Pages
-        if: steps.detect_app.outputs.has_app == 'true'
         uses: actions/configure-pages@v5
 
-      - name: Upload artifact
-        if: steps.detect_app.outputs.has_app == 'true'
+      - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ${{ steps.detect_app.outputs.app_dir }}/dist
+          path: ${{ steps.detect.outputs.artifact_path }}
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
-    if: needs.build.outputs.has_app == 'true'
 
     environment:
       name: github-pages
