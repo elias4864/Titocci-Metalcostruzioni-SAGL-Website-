@@ -55,6 +55,8 @@ export default function HousePriceCalculator() {
         const pricePerQm = base * conditionMult * groesseFactor*personenFactor;
         const totalPrice = pricePerQm * qm;
         alert("Der totale Preis ist " + totalPrice);
+        alert("Der Preis pro Quadratmeter ist"+pricePerQm);
+        setEstimatedPrice(Math.round(totalPrice));
 
         return {
 
@@ -164,6 +166,7 @@ const { pricePerQm, totalPrice } = calculatePrice();
                     Imobillienwert schätzen
                 </button>
             </form>
+
 
             {estimatedPrice !== null && (
                 <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: '6px', textAlign: 'center' }}>

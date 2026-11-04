@@ -19,7 +19,9 @@ import Instagram from "./assets/Insagram.jfif";
 import Google from "./assets/Google.png";
 import Verifizierungbild from "./assets/Verifizierung.gif";
 import Impressumpage from "./pages/Impressum.jsx";
+import  Avegno from "./pages/Avegno.jsx";
 import emailjs from "@emailjs/browser";
+
 
 // Innere Komponente, die Zugriff auf den Router-Kontext (useNavigate) hat
 function MainContent() {
@@ -91,6 +93,17 @@ function MainContent() {
         if(formData.email.length<8) {
             alert("Bitte eine gültige E-Mail eingeben");
         }
+
+
+        if(formData.name.length<7) {
+            alert("Bitte einen gültigen Namen eingeben");
+        }
+
+        if(formData.message.length<7) {
+            alert("Bitte eine gültige E-Mail Nachricht eingeben");
+        }
+
+
         navigate('/kontakte');
 
         try {
@@ -99,9 +112,20 @@ function MainContent() {
             const EmailJS_publicKey = 'dFpVpt98rEIko4TLa';
 
             const templateParams = {
-                from_name: "Newsletter Abonnent",
-                from_email: "info@titocci.ch",
+                // Welches Formular/Betreff
+                subject: "Neue Newsletter-Anmeldung",
 
+                // Daten des Absenders aus dem React-State (formData)
+                from_name: formData.name || "Newsletter-Abonnent",
+                from_email: formData.email,
+                message: formData.message || "Interesse an News und Angeboten",
+
+                // Optional: Empfänger-Adresse (falls im EmailJS-Template genutzt)
+                to_email: "info@titocci.ch",
+
+                // Optional: Zusatzdaten wie Datum oder Sprache
+                signup_date: new Date().toLocaleDateString('de-CH'),
+                language: language
             };
 
             const response = await emailjs.send(
@@ -318,10 +342,13 @@ function MainContent() {
                         <Route path="/galeria" element={<Galeria lang={language} />} />
                         <Route path="/aboutus" element={<AboutUs lang={language} />} />
                         <Route path="/sitemap" element={<Sitemap  lang={language}/>} />
-                        <Route path="/calculatori" element={<Imobiliacalculatori />} />
+                        <Route path="/calculatori" element={<Imobiliacalculatori/>} />
                         <Route path="/kontakte" element={<Kontakte lang={language} />} />
                         <Route path="/impressum" element={<Impressumpage lang={language} />} />
                         <Route path="/privacy" element={<Privacy lang={language} />} />
+                        <Route path="/avegno" element={<Avegno lang={language} />} />
+
+
                         <Route path="*" element={<Navigate to="/" replace />} />
                     </Routes>
                 </div>
@@ -377,7 +404,7 @@ function MainContent() {
                     <p className="text-column title-aree">Aree</p>
                     <div className="aree-row">
                         <span><a className="footer-red-link" href="https://titocci.ch/a/locarno/">Locarno</a></span>
-                        <span><a className="footer-red-link" href="https://titocci.ch/a/avegno/">Avegno</a></span>
+                        <span><a className="footer-red-link" href="/avegno">Avegno</a></span>
                     </div>
                 </section>
 
