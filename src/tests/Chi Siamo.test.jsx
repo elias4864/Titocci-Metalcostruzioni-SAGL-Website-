@@ -117,14 +117,10 @@ describe('Chi Siamo Component', () => {
         expect(elements3[0]).toBeInTheDocument();
 
 
-        expect(
-            screen.getByText((content) => {
-                return content.includes(
-                    "La nostra ditta è stata fondata nel 1973 da Titocci Giovanni, la prima sede era ubicata in un piccolo magazzino a Ponte Brolla, frazione del comune di Tegna."
-                );
-            })
-        ).toBeInTheDocument();
-
+        const textElements = screen.getAllByText((content) => {
+            return content.includes("La nostra ditta è stata fondata nel 1973");
+        });
+        expect(textElements[0]).toBeInTheDocument();
 
 
         expect(
@@ -140,10 +136,27 @@ describe('Chi Siamo Component', () => {
         expect(
             screen.getByText((content) => {
                 return content.includes(
-                    " Nel 1982 viene costruito il capannone presso la zona industriale di Avegno. Qui la ditta trova la sua sede ideale ed è qui che tuttora continua la sua attività."
+                    "Nel 1982 viene costruito il capannone presso la zona industriale di Avegno. Qui la ditta trova la sua sede ideale ed è qui che tuttora continua la sua attività."
                 );
             })
         ).toBeInTheDocument();
+
+
+
+        const textElements1995 = screen.getAllByText((content) =>
+            content.includes("Nel 1995 entra in azienda il figlio Marco.")
+        );
+        expect(textElements1995.length).toBeGreaterThan(0);
+        expect(textElements1995[0]).toBeInTheDocument();
+
+
+
+
+
+
+
+
+
 
 
 

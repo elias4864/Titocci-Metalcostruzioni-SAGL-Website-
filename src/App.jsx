@@ -68,7 +68,7 @@ function MainContent() {
 
     const handleAcceptCookies = () => {
         localStorage.setItem('cookieConsent', 'accepted');
-        alert("Die Cookies wurden akzeptiert");
+        alert("Die Cookies wurden erfolgreich akzeptiert");
         setShowBanner(false);
     };
 
@@ -128,10 +128,11 @@ function MainContent() {
             navAufbereitung: "Autoaufbereitung",
             navAufbereitungTitle:"Aufbereitung",
             navKontakt: "Kontakt",
-            navLackierei: "Autolackiererei",
-            navAnfrage: "Anfrage",
-            navChatbot: "Chatbot",
-            navTermin: "Termin",
+            navImpressum: "Impressum",
+            navServizi: "Leistungen",
+            navChiSiamo: "CHi Siamo",
+            navGaleria: "Galeria",
+            navImobiliaCalculatori:"Imobillienrechner",
 
             navLackierereititle:"Lackierei",
             navDatenschutzerklärung: "Datenschutzerklärung",
@@ -316,7 +317,7 @@ function MainContent() {
                         <Route path="/chi-siamo" element={<ChisiamoPage lang={language} />} />
                         <Route path="/galeria" element={<Galeria lang={language} />} />
                         <Route path="/aboutus" element={<AboutUs lang={language} />} />
-                        <Route path="/sitemap" element={<Sitemap />} />
+                        <Route path="/sitemap" element={<Sitemap  lang={language}/>} />
                         <Route path="/calculatori" element={<Imobiliacalculatori />} />
                         <Route path="/kontakte" element={<Kontakte lang={language} />} />
                         <Route path="/impressum" element={<Impressumpage lang={language} />} />

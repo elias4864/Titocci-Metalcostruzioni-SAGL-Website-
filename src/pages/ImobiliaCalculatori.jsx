@@ -54,10 +54,13 @@ export default function HousePriceCalculator() {
 
         const pricePerQm = base * conditionMult * groesseFactor*personenFactor;
         const totalPrice = pricePerQm * qm;
+        alert("Der totale Preis ist " + totalPrice);
 
         return {
+
             pricePerQm: Math.round(pricePerQm),
-            totalPrice: Math.round(totalPrice)
+            totalPrice: Math.round(totalPrice),
+
         };
     };
 
@@ -157,7 +160,7 @@ const { pricePerQm, totalPrice } = calculatePrice();
                     />
                 </div>
 
-                <button type="submit" style={{ padding: '10px', backgroundColor: '#0070f3', color: 'brown', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+                <button type="submit"  onClick={calculatePrice} style={{ padding: '10px', backgroundColor: '#0070f3', color: 'brown', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
                     Imobillienwert schätzen
                 </button>
             </form>

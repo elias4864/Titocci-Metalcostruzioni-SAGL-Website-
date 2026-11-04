@@ -22,6 +22,8 @@ function Navbar() {
     const  closeMenu=()=>{
         setIsOpen(false);
     }
+
+    const [language, setLanguage] = useState('e');
     return (
         <header style={{
             width: '100%',
@@ -141,21 +143,33 @@ Sabato / Domenica: Chiuso</b>
                         <li><Link to="/galeria"  onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Galleria</Link></li>
                         <li><Link to="/kontakte" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Contatti</Link></li>
                         <li><Link to="/aboutus" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>About Us</Link></li>
-                        <li><Link to="/calculatori" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Online Preisrechner</Link></li>
+                        <li><Link to="/calculatori" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Online Imobillien Preisrechner</Link></li>
 
 
 
                     </ul>
 
-                    <select className="dropdown" form="language">Wähle bitte eine Sprache aus:▼</select>
-                    <select id="language"  className="language-dropwdown" name="Languages">
-                        <option value="de">Deutsch</option>
-                        <option value="en">English</option>
-                        <option value="it">Italienisch</option>
-                        <option value="fr">Französisch</option>
-                        <option value="nl">Holländisch</option>
-                    </select>
-                </div>
+                    {/* Sprachauswahl Dropdown */}
+                    <div className="language-select-wrapper">
+                        <label htmlFor="language-select" style={{ marginRight: '8px', fontWeight: 'bold' }}>
+                            {language === 'de' && 'Bitte wählen Sie eine Sprache aus:'}
+                            {language === 'en' && 'Please select a language:'}
+                            {language === 'it' && 'Seleziona una lingua:'}
+                            {language === 'fr' && 'Veuillez choisir une langue:'}
+                        </label>
+                        <select
+                            id="language-select"
+                            className="language-dropdown"
+                            name="Languages"
+                            value={language}
+                            onChange={(e) => setLanguage(e.target.value)}
+                        >
+                            <option value="de">Deutsch</option>
+                            <option value="en">English</option>
+                            <option value="it">Italiano</option>
+                            <option value="fr">Français</option>
+                        </select>
+                    </div>
 
 
                     {/* Social Icons */}
@@ -172,6 +186,7 @@ Sabato / Domenica: Chiuso</b>
                         </a>
                     </div>
                 </div>
+            </div>
 
         </header>
     );
