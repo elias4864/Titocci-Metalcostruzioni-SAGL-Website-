@@ -1,5 +1,8 @@
 import { Link } from "react-router-dom";
 import Schleifbild from "../assets/Schleifen3.jpg";
+import Impressumbild from "../assets/Impressum.jpg";
+import Holztreppe from "../assets/Holztreppe.jpg";
+import '../Styles/Avegno.css';
 import React from "react";
 
 const heroOverlayStyle = {
@@ -152,6 +155,26 @@ function Avegno({ lang = "de" }) {
                     </div>
                 </div>
             </div>
+
+            <div className="sections">
+
+            <div className="impressum">
+                <img  alt="Impressum" className="impressum-img" src={Impressumbild}/>
+                <h1 className="impressum-title">Parapetti ad Avegno</h1>
+                <p className="impressum-text">I parapetti sono componenti architettonici essenziali che conferiscono un tocco di stile agli edifici, definiscono gli spazi e creano un'estetica piacevole ma, al tempo stesso, svolgono anche un ruolo fondamentale per la sicurezza fungendo da barriera protettiva per la prevenzione di cadute accidentali.​</p>
+
+            </div>
+
+
+            <div className="impressum">
+                <img  alt="Impressum" className="impressum-img" src={Holztreppe}/>
+                <h1 className="impressum-title">Ringhiere ad Avegno</h1>
+                <p className="impressum-text">Le ringhiere sono sistemi di protezione che si trovano nella maggioranza degli edifici. Oltre ad essere componenti importanti per la sicurezza, le ringhiere diventano parte integrante dell’architettura aggiungendo un tocco di stile e carattere per creare un ambiente che rifletta i tuoi gusti e la tua personalità.​</p>
+
+            </div>
+
+            </div>
+
         </div>
     );
 }
