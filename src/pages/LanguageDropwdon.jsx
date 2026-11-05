@@ -17,7 +17,7 @@ function LanguageSwitcher({ lang, onLanguageChange }) {
                     borderRadius: '4px',
                     border: '1px solid #ccc',
                     backgroundColor: '#0dd21e',
-                    color: '#333',
+                    color: '#0dd21',
                     fontSize: '14px',
                     cursor: 'pointer'
                 }}

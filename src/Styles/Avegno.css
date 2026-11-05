@@ -1,36 +1,4 @@
-.impressum {
-    display: flex;
-    flex-direction: column; /* Bild oben, Text darunter */
-    align-items: center; /* Horizontal zentrieren */
-    justify-content: center; /* Vertikal zentrieren */
-    width: 44%;
-    min-width: 300px; /* Gute Lesbarkeit auf Handys */
-    height: 250px;
-    margin: 0 auto; /* Zentriert den ganzen Block auf der Seite */
-    box-sizing: border-box;
-    padding: 20px;
-    position: relative; /* Wichtig für die absolute Positionierung des Textes */
 
-    overflow: hidden;   /* Verhindert Überlappen */
-    border-radius: 8px;
-}
-
-
-.impressum-title  {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%); /* Exakte Zentrierung vertikal & horizontal */
-    margin: 0;
-    color: white;
-    font-size: 2rem;
-    font-weight: bold;
-    text-align: left;
-    width: 90%; /* Verhindert, dass langer Text am Rand klebt */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Erhöht die Lesbarkeit */
-    pointer-events: none;
-    display: flex;
-}
 
 
 h1{
@@ -40,28 +8,94 @@ h1{
     text-align: center;
 }
 
-.sections{
-    display: flex; /* Aktiviert Flexbox – Kindelemente rutschen nebeneinander */
-    gap: 10px;
+/* Container für die Grid-Ansicht (2 Spalten nebeneinander) */
+.sections {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-.impressum-text{
-    margin-top: 15px;
-    font-size: 1rem;
-    line-height: 1.6;
-    color: #333333;
-    padding: 0 10px;
-    text-align: justify;
+/* Jede einzelne Karte */
+.impressum-card {
+    position: relative;
+    width: 100%;
+    height: 350px; /* Höhe der Kachel anpassen falls nötig */
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
+/* Bild füllt die Karte aus und wird abgedunkelt */
 .impressum-img {
     width: 100%;
-    object-fit: cover;  /* Passt das Bild sauber in die 250px Höhe ein */
+    height: 1000px;
+    object-fit: cover;
     display: block;
-    max-width: 100%;
-    filter: brightness(70%);
-    height: 300px;
-    background-size: cover;       /* Passt das Bild füllend an */
-    background-position: center;  /* Zentriert das Bild */
-    background-repeat: no-repeat;
+    filter: brightness(55%);
+    transition: transform 0.3s ease; /* Macht die Vergrößerung flüssig */
+    cursor: pointer
+}
+
+.impressum-img:hover {
+    transform: scale(1.1); /* 1.2 bedeutet 120% der Originalgröße (20% Zoom) */
+
+}
+
+/* Container für den mittigen Text (Titel + Beschreibung) */
+.overlay-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 85%;
+    text-align: center;
+    color: #ffffff;
+    pointer-events: auto;
+}
+
+/* Titel direkt im Bild */
+.impressum-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9);
+    color:white;
+
+    display: inline-block; /* Wichtig, damit transform richtig funktioniert */
+    transition: transform 0.3s ease; /* Macht die Vergrößerung flüssig */
+    cursor: pointer;
+
+}
+
+.impressum-title:hover {
+    transform: scale(1.1); /* 1.2 bedeutet 120% der Originalgröße (20% Zoom) */
+
+}
+
+/* Fließtext zentriert unter dem Titel */
+.impressum-text {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #f1f1f1;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.9);
+    margin: 0;
+    display: inline-block; /* Wichtig, damit transform richtig funktioniert */
+    transition: transform 0.3s ease; /* Macht die Vergrößerung flüssig */
+    cursor: pointer;
+
+}
+
+.impressum-text:hover {
+    transform: scale(1.05);
+
+}
+
+/* Responsive Anpassung für kleinere Bildschirme (Handys) */
+@media (max-width: 768px) {
+    .sections {
+        grid-template-columns: 1fr;
+    }
 }

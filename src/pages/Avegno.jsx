@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import Schleifbild from "../assets/Schleifen3.jpg";
 import Impressumbild from "../assets/Impressum.jpg";
 import Holztreppe from "../assets/Holztreppe.jpg";
+import Seitengitter from "../assets/Seitengitter.jpg";
+import Gitter4 from "../assets/Gitter4.jpg";
 import '../Styles/Avegno.css';
 import React from "react";
 
@@ -158,20 +160,37 @@ function Avegno({ lang = "de" }) {
 
             <div className="sections">
 
-            <div className="impressum">
-                <img  alt="Impressum" className="impressum-img" src={Impressumbild}/>
-                <h1 className="impressum-title">Parapetti ad Avegno</h1>
-                <p className="impressum-text">I parapetti sono componenti architettonici essenziali che conferiscono un tocco di stile agli edifici, definiscono gli spazi e creano un'estetica piacevole ma, al tempo stesso, svolgono anche un ruolo fondamentale per la sicurezza fungendo da barriera protettiva per la prevenzione di cadute accidentali.​</p>
+                <div className="impressum-card">
+                    <img alt="Parapetti" className="impressum-img" src={Impressumbild}/>
+                    <div className="overlay-content">
+                        <h1 className="impressum-title">Parapetti ad Avegno</h1>
+                        <p className="impressum-text">I parapetti sono componenti architettonici essenziali che conferiscono un tocco di stile agli edifici, definiscono gli spazi e creano un'estetica piacevole ma, al tempo stesso, svolgono anche un ruolo fondamentale per la sicurezza fungendo da barriera protettiva per la prevenzione di cadute accidentali.​</p>
+                    </div>
+                </div>
 
-            </div>
+                <div className="impressum-card">
+                    <img alt="Ringhiere" className="impressum-img" src={Holztreppe}/>
+                    <div className="overlay-content">
+                        <h1 className="impressum-title">Ringhiere ad Avegno</h1>
+                        <p className="impressum-text">Le ringhiere sono sistemi di protezione che si trovano nella maggioranza degli edifici. Oltre ad essere componenti importanti per la sicurezza, le ringhiere diventano parte integrante dell’architettura aggiungendo un tocco di stile e carattere per creare un ambiente che rifletta i tuoi gusti e la tua personalità.​</p>
+                    </div>
+                </div>
 
+                <div className="impressum-card">
+                    <img alt="Cancellate in ferro" className="impressum-img" src={Gitter4}/>
+                    <div className="overlay-content">
+                        <h1 className="impressum-title">Cancellate in ferro ad Avegno</h1>
+                        <p className="impressum-text">Le migliori soluzioni per le tue cancellate in ferro ad Avegno sono quelle che uniscono funzionalità e design. Scegli una soluzione personalizzata, creata su misura per la tua proprietà, una soluzione che fonde robustezza, garanzia di protezione e sicurezza, e stile. Scopri la gamma completa dei nostri servizi e lasciati ispirare dalla bellezza e dalla qualità delle nostre creazioni in ferro.</p>
+                    </div>
+                </div>
 
-            <div className="impressum">
-                <img  alt="Impressum" className="impressum-img" src={Holztreppe}/>
-                <h1 className="impressum-title">Ringhiere ad Avegno</h1>
-                <p className="impressum-text">Le ringhiere sono sistemi di protezione che si trovano nella maggioranza degli edifici. Oltre ad essere componenti importanti per la sicurezza, le ringhiere diventano parte integrante dell’architettura aggiungendo un tocco di stile e carattere per creare un ambiente che rifletta i tuoi gusti e la tua personalità.​</p>
-
-            </div>
+                <div className="impressum-card">
+                    <img alt="Cancellate per giardino" className="impressum-img" src={Seitengitter}/>
+                    <div className="overlay-content">
+                        <h1 className="impressum-title">Cancellate per giardino ad Avegno</h1>
+                        <p className="impressum-text">Proteggi la tua casa e il tuo giardino con stile installando le cancellate per giardino ad Avegno. Potrai limitare l’accesso degli estranei e tenere al sicuro la tua famiglia e i tuoi animali domestici. Esiste un’ampia varietà di tipologie e di stili di cancelli. L’artigiano realizza cancelli personalizzati e unici che si adattano allo stile del tuo giardino e che rispondono alle tue aspettative.</p>
+                    </div>
+                </div>
 
             </div>
 

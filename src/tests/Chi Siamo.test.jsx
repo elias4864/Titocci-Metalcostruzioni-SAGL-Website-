@@ -150,6 +150,13 @@ describe('Chi Siamo Component', () => {
         expect(textElements1995[0]).toBeInTheDocument();
 
 
+        const header3 = screen.getAllByText((content) =>
+            content.includes("Dopo quattro anni di apprendistato e ulteriori 13 anni di esperienza come operaio, nel 2012 Marco Titocci subentra come titolare.")
+        );
+
+        expect(header3.length).toBeGreaterThan(0);
+        expect(header3[0]).toBeInTheDocument();
+
 
 
 
