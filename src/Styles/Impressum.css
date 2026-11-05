@@ -7,6 +7,14 @@ h1 {
     text-align: center;
 }
 
+.gold-text {
+    color: gold;
+    font-weight: bold;
+    font-size: 40px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
 /* Zwischenüberschriften (PERSONE AUTORIZZATE, CONTATTI, etc.) */
 h2 {
     color: grey;
@@ -43,7 +51,7 @@ h2 {
 }
 
 /* Normaler Text (Disclaimer / Rechtliches) */
-p {
+p  {
     font-weight: normal;
     font-size: 14px;
     color: gray;

@@ -4,7 +4,7 @@ const LOCATION_FACTORS = {
     city: { name: 'Großstadt / Top-Lage', basePrice: 4500 },
     suburb: { name: 'Speckgürtel / Vorort', basePrice: 3200 },
     rural: { name: 'Ländliche Region', basePrice: 2100 },
-    country:{name:'Switzerland',basePrice:5000}
+    country: { name: 'Schweiz', basePrice: 5000 }
 };
 
 const CONDITION_FACTORS = {
@@ -13,87 +13,119 @@ const CONDITION_FACTORS = {
     need_repair: { name: 'Renovierungsbedürftig', multiplier: 0.75 },
 };
 
-// Erweiterung für die Größenkategorien mit prozentualem Anpassungsfaktor
 const GROESSE = {
-    small: { name: 'Klein (bis 45 m²)', min: 0, max: 45, multiplier: 1.15 },       // Kleinere Wohnungen haben oft höheren m²-Preis
-    medium: { name: 'Mittel (46 - 90 m²)', min: 46, max: 90, multiplier: 1.0 },    // Standard
-    large: { name: 'Groß (91 - 150 m²)', min: 91, max: 150, multiplier: 0.95 },    // Leicht degressiver m²-Preis
+    small: { name: 'Klein (bis 45 m²)', min: 0, max: 45, multiplier: 1.15 },
+    medium: { name: 'Mittel (46 - 90 m²)', min: 46, max: 90, multiplier: 1.0 },
+    large: { name: 'Groß (91 - 150 m²)', min: 91, max: 150, multiplier: 0.95 },
     extra_large: { name: 'Sehr groß (> 150 m²)', min: 151, max: 999, multiplier: 0.90 },
-
 };
 
+
+
+
 export default function HousePriceCalculator() {
-    const [area, setArea] = useState(120);
+    const [qm, setQm] = useState(75);
     const [location, setLocation] = useState('suburb');
     const [condition, setCondition] = useState('good');
     const [year, setYear] = useState(2000);
-    const [estimatedPrice, setEstimatedPrice] = useState(null);
-    const [qm, setQm] = useState(75);
     const [personen, setPersonen] = useState(1);
+    const [result, setResult] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
 
-    /**
-     * Calculate Size
-     * @param qmValue
-     * @returns {{name: string, min: number, max: number, multiplier: number}}
-     */
     const getGroesseCategory = (qmValue) => {
         if (qmValue <= 45) return GROESSE.small;
         if (qmValue <= 90) return GROESSE.medium;
         if (qmValue <= 150) return GROESSE.large;
-        if(qmValue <= 220) return GROESSE.extra_large;
         return GROESSE.extra_large;
     };
 
 
-    const calculatePrice = () => {
-        // KEIN e.preventDefault() hier!
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleRemoveImage = () => {
+        setImagePreview(null);
+    };
+    const handleCalculate = (e) => {
+        e.preventDefault(); // Verhindert das Neuladen der Seite
+
         const base = LOCATION_FACTORS[location].basePrice;
         const conditionMult = CONDITION_FACTORS[condition].multiplier;
         const groesseFactor = getGroesseCategory(qm).multiplier;
         const personenFactor = 1 + (personen - 1) * 0.02;
 
-        const pricePerQm = base * conditionMult * groesseFactor*personenFactor;
+        // Alter-Faktor basierend auf Baujahr berechnet
+        const currentYear = new Date().getFullYear();
+        const age = Math.max(0, currentYear - year);
+        const buildyear = Math.max(0.6, 1 - age * 0.005);
+
+        const pricePerQm = base * conditionMult * groesseFactor * personenFactor*buildyear;
         const totalPrice = pricePerQm * qm;
-        alert("Der totale Preis ist " + totalPrice);
-        alert("Der Preis pro Quadratmeter ist"+pricePerQm);
-        setEstimatedPrice(Math.round(totalPrice));
+        alert("Der Gesamtpreis pro Quadratmeter beträgt beträgt "+pricePerQm+"CHF etwa!");
+        alert("Der Gesamtpreis des Grundstücks beträgt"+totalPrice+"CHF etwa!");
 
-        return {
 
+        setResult({
             pricePerQm: Math.round(pricePerQm),
             totalPrice: Math.round(totalPrice),
-
-        };
+        });
     };
 
-
-
-const { pricePerQm, totalPrice } = calculatePrice();
     const currentGroesse = getGroesseCategory(qm);
 
     return (
         <div style={{ maxWidth: '500px', margin: '20px auto', padding: '20px', fontFamily: 'Arial, sans-serif', border: '1px solid #ccc', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
-            <h2 style={{ textAlign: 'center', color: 'gold',textShadow:'30px',fontWeight:'bold',fontSize:'30px' }}>Gratis Imobillienrechner</h2>
+            <h2 style={{ textAlign: 'center', color: '#d4af37', fontSize: '26px', fontWeight: 'bold' }}>Gratis Immobilienrechner</h2>
 
-            <form onSubmit={calculatePrice} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            <form onSubmit={handleCalculate} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+
+                <div>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Foto der Immobilie / Wohnung hochladen:</label>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
+                    />
+                    {imagePreview && (
+                        <div style={{ marginTop: '10px', position: 'relative', textAlign: 'center' }}>
+                            <img
+                                src={imagePreview}
+                                alt="Immobilien Vorschau"
+                                style={{ width: '100%', maxHeight: '220px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #ddd' }}
+                            />
+                            <button
+                                type="button"
+                                onClick={handleRemoveImage}
+                                style={{ position: 'absolute', top: '8px', right: '8px', backgroundColor: 'rgba(230, 43, 43, 0.85)', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer', fontSize: '12px' }}
+                            >
+                                Bild entfernen
+                            </button>
+                        </div>
+                    )}
+                </div>
                 <div>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Wohnfläche (m²):</label>
                     <input
                         type="number"
-                        value={area}
-                        onChange={(e) => setArea(Number(e.target.value))}
+                        value={qm}
+                        onChange={(e) => setQm(Number(e.target.value))}
                         min="10"
                         required
-                        placeholder="100m**2"
-                        style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                        style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
                     />
+                    <span style={{ fontSize: '0.85em', color: '#666', marginTop: '4px', display: 'block' }}>
+                        Kategorie: {currentGroesse.name}
+                    </span>
                 </div>
-
-
-
-
-
-
 
                 <div>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Lage:</label>
@@ -113,43 +145,20 @@ const { pricePerQm, totalPrice } = calculatePrice();
                     </select>
                 </div>
 
-
-
-                <div style={{ marginBottom: '15px', color:'gold', fontWeight: 'bold' }}>
-                    <label>Wohnfläche (m²): </label>
-                    <input
-                        type="number"
-                        value={qm}
-                        onChange={(e) => setQm(Number(e.target.value))}
-                        min="10"
-                        required
-                        placeholder="300m**"
-                    />
-                    <span style={{ fontSize: '0.85em', color: '#666', marginLeft: '10px' }}>
-                    Kategorie: {currentGroesse.name}
-                </span>
-                </div>
-
-                <hr />
-
                 <div>
-                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color:'orange' }}>Anzahl Personen:</label>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Anzahl Personen:</label>
                     <input
                         type="number"
                         value={personen}
                         onChange={(e) => setPersonen(Number(e.target.value))}
                         min="1"
                         required
-                        placeholder="4 Personen"
-                        style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                        style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
                     />
                 </div>
 
-
-
-
                 <div>
-                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color:'orange' }}>Baujahr:</label>
+                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Baujahr:</label>
                     <input
                         type="number"
                         value={year}
@@ -157,24 +166,25 @@ const { pricePerQm, totalPrice } = calculatePrice();
                         min="1900"
                         max={new Date().getFullYear()}
                         required
-                        placeholder="Baujahr: 2023"
-                        style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                        style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
                     />
                 </div>
 
-                <button type="submit"  onClick={calculatePrice} style={{ padding: '10px', backgroundColor: '#0070f3', color: 'brown', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
-                    Imobillienwert schätzen
+                <button type="submit" style={{ padding: '12px', backgroundColor: '#0070f3', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px' }}>
+                    Immobilienwert schätzen
                 </button>
             </form>
 
-
-            {estimatedPrice !== null && (
+            {result && (
                 <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: '6px', textAlign: 'center' }}>
                     <h3 style={{ margin: '0 0 5px 0', color: '#0369a1' }}>Geschätzter Marktwert:</h3>
-                    <p style={{ fontSize: '24px', fontWeight: 'bold', margin: 0, color: '#0c4a6e' }}>
-                        {estimatedPrice.toLocaleString('de-DE')} €
+                    <p style={{ fontSize: '24px', fontWeight: 'bold', margin: '5px 0', color: '#0c4a6e' }}>
+                        {result.totalPrice.toLocaleString('de-DE')} CHF
                     </p>
-                    <small style={{ color: '#666' }}>*Dies ist eine unverbindliche mathematische Schätzung.</small>
+                    <p style={{ fontSize: '14px', color: '#0369a1', margin: '0 0 10px 0' }}>
+                        ({result.pricePerQm.toLocaleString('de-DE')} CHF / m²)
+                    </p>
+                    <small style={{ color: '#666' }}><marquee>*Dies ist eine unverbindliche mathematische Schätzung</marquee>.</small>
                 </div>
             )}
         </div>

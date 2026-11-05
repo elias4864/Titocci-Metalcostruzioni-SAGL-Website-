@@ -1,0 +1,101 @@
+
+
+
+h1{
+    color: #333;
+    font-size: 1.8rem;
+    margin-top: 15px;
+    text-align: center;
+}
+
+/* Container für die Grid-Ansicht (2 Spalten nebeneinander) */
+.sections {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Jede einzelne Karte */
+.impressum-card {
+    position: relative;
+    width: 100%;
+    height: 350px; /* Höhe der Kachel anpassen falls nötig */
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* Bild füllt die Karte aus und wird abgedunkelt */
+.impressum-img {
+    width: 100%;
+    height: 1000px;
+    object-fit: cover;
+    display: block;
+    filter: brightness(55%);
+    transition: transform 0.3s ease; /* Macht die Vergrößerung flüssig */
+    cursor: pointer
+}
+
+.impressum-img:hover {
+    transform: scale(1.1); /* 1.2 bedeutet 120% der Originalgröße (20% Zoom) */
+
+}
+
+/* Container für den mittigen Text (Titel + Beschreibung) */
+.overlay-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 85%;
+    text-align: center;
+    color: #ffffff;
+    pointer-events: auto;
+}
+
+/* Titel direkt im Bild */
+.impressum-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9);
+    color:white;
+
+    display: inline-block; /* Wichtig, damit transform richtig funktioniert */
+    transition: transform 0.3s ease; /* Macht die Vergrößerung flüssig */
+    cursor: pointer;
+
+}
+
+.impressum-title:hover {
+    transform: scale(1.1); /* 1.2 bedeutet 120% der Originalgröße (20% Zoom) */
+
+}
+
+/* Fließtext zentriert unter dem Titel */
+.impressum-text {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #f1f1f1;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.9);
+    margin: 0;
+    display: inline-block; /* Wichtig, damit transform richtig funktioniert */
+    transition: transform 0.3s ease; /* Macht die Vergrößerung flüssig */
+    cursor: pointer;
+
+}
+
+.impressum-text:hover {
+    transform: scale(1.05);
+
+}
+
+/* Responsive Anpassung für kleinere Bildschirme (Handys) */
+@media (max-width: 768px) {
+    .sections {
+        grid-template-columns: 1fr;
+    }
+}

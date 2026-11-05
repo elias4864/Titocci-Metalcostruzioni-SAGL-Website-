@@ -167,12 +167,15 @@ function Impressum ({lang}){
 
             </div>
             <div style={{textAlign: 'center'}}>
-                <h1>Titocci Metalcostruzioni Sagl</h1>
+                <h1 className="gold-text">Titocci Metalcostruzioni Sagl</h1>
 
                 <p className="black-text">Zona Industriale 2<br/>6670 Avegno</p>
+                <br></br>
 
                 <h2>PERSONE AUTORIZZATE:</h2>
                 <p className="black-text">Titocci Marco - Socio e Gerente</p>
+
+                <br></br>
 
                 <h2>CONTATTI:</h2>
                 <a href="mailto:info@titocci.ch" className="highlight-red">info@titocci.ch</a>

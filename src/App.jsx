@@ -9,6 +9,7 @@ import Servizi from "./pages/Servici.jsx";
 import AboutUs from "./pages/AboutUs.jsx";
 import Kontakte from "./pages/Kontakt.jsx";
 import Sitemap from "./pages/Sitemap.jsx";
+
 import './Styles/App.css';
 import LanguageSwitcher from "./pages/LanguageDropwdon.jsx";
 import Imobiliacalculatori from "./pages/ImobiliaCalculatori.jsx";
@@ -21,6 +22,7 @@ import Verifizierungbild from "./assets/Verifizierung.gif";
 import Impressumpage from "./pages/Impressum.jsx";
 import  Avegno from "./pages/Avegno.jsx";
 import emailjs from "@emailjs/browser";
+import Locarno from "./pages/Locarno.jsx";
 
 
 // Innere Komponente, die Zugriff auf den Router-Kontext (useNavigate) hat
@@ -342,11 +344,12 @@ function MainContent() {
                         <Route path="/galeria" element={<Galeria lang={language} />} />
                         <Route path="/aboutus" element={<AboutUs lang={language} />} />
                         <Route path="/sitemap" element={<Sitemap  lang={language}/>} />
-                        <Route path="/calculatori" element={<Imobiliacalculatori/>} />
+                        <Route path="/calculatori" element={<Imobiliacalculatori lang={language}/>} />
                         <Route path="/kontakte" element={<Kontakte lang={language} />} />
                         <Route path="/impressum" element={<Impressumpage lang={language} />} />
                         <Route path="/privacy" element={<Privacy lang={language} />} />
                         <Route path="/avegno" element={<Avegno lang={language} />} />
+                        <Route path="/locarno" element={<Locarno lang={language} />} />
 
 
                         <Route path="*" element={<Navigate to="/" replace />} />
@@ -403,7 +406,7 @@ function MainContent() {
                     <p className="text-column">Assistenza</p>
                     <p className="text-column title-aree">Aree</p>
                     <div className="aree-row">
-                        <span><a className="footer-red-link" href="https://titocci.ch/a/locarno/">Locarno</a></span>
+                        <span><a className="footer-red-link" href="/locarno">Locarno</a></span>
                         <span><a className="footer-red-link" href="/avegno">Avegno</a></span>
                     </div>
                 </section>

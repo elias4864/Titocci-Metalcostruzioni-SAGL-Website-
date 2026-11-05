@@ -76,8 +76,7 @@ function Navbar() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexShrink: 1, overflow: 'hidden' }}>
                         <img src={Zeit} alt="Orari" style={{ width: '14px', height: '14px', objectFit: 'contain', flexShrink: 0 }} />
                         <span style={{ whiteSpace: 'nowrap', fontSize: '10px',textWrap:'nowrap' }}>
-        <b>Lunedì - Venerdì: 7:30 - 12:00 / 13:15 - 17:00;​
-Sabato / Domenica: Chiuso</b>
+        <b>Lunedì - Venerdì: 7:30 - 12:00 / 13:15 - 17:00; Sabato / Domenica: Chiuso</b>
     </span>
                     </div>
 
@@ -85,11 +84,11 @@ Sabato / Domenica: Chiuso</b>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexShrink: 0 }}>
                         <img src={Email} alt="Kontakt" style={{ width: '14px', height: '14px', objectFit: 'contain' }} />
                         <span style={{ whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-    <a href="mailto:info@titocci.ch" style={{ color: '#e62b2b', textDecoration: 'none' }}>
+    <a href="mailto:info@titocci.ch" style={{ color: '#e62b2b', textDecoration: 'none', textWrap:'nowrap' }}>
         info@titocci.ch
     </a>
     <span style={{ color: '#ccc' }}>|</span>
-    <a href="tel:+41917962369" style={{ color: '#333', textDecoration: 'none', fontWeight: 'bold' }}>
+    <a href="tel:+41917962369" style={{ color: '#333', textDecoration: 'none', fontWeight: 'bold' ,textWrap:'nowrap'}}>
         +41 91 796 23 69
     </a>
 </span>

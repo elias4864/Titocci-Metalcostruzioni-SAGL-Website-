@@ -5,6 +5,9 @@ import Holztreppe from "../assets/Holztreppe.jpg";
 import Seitengitter from "../assets/Seitengitter.jpg";
 import Gitter4 from "../assets/Gitter4.jpg";
 import '../Styles/Avegno.css';
+
+import Calculator from '../pages/ImobiliaCalculatori.jsx';
+import {useNavigate} from 'react-router-dom';
 import React from "react";
 
 const heroOverlayStyle = {
@@ -34,7 +37,8 @@ function Avegno({ lang = "de" }) {
             kontakte: "Kontakt",
             aboutUs: "Über uns",
             calculatori: "Online Preisrechner",
-            title: "Avegno "
+            title: "Avegno ",
+
         },
         en: {
             home: "Home",
@@ -69,6 +73,39 @@ function Avegno({ lang = "de" }) {
     };
 
     const t = translations[lang] || translations.de;
+
+
+
+    const hanldeSubmit1=(e)=>{
+        e.preventDefault();
+        window.location.href='https://titocci.ch/a/avegno/parapetti-ad-avegno/';
+
+    }
+
+    const hanldeSubmit2=(e)=>{
+        e.preventDefault();
+        window.location.href='https://titocci.ch/a/avegno/ringhiere-ad-avegno/';
+
+    }
+
+    const hanldeSubmit3=(e)=>{
+        e.preventDefault();
+        window.location.href='https://titocci.ch/a/avegno/cancellate-in-ferro-ad-avegno/';
+
+    }
+
+    const hanldeSubmit4=(e)=>{
+        e.preventDefault();
+        window.location.href='https://titocci.ch/a/avegno/cancellate-per-giardino-ad-avegno/';
+
+    }
+
+
+
+
+
+
+
 
     return (
         <div className="rot">
@@ -115,7 +152,7 @@ function Avegno({ lang = "de" }) {
                             <li><Link to="/galeria" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px', fontSize: '14px' }}>{t.galeria}</Link></li>
                             <li><Link to="/kontakte" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}>{t.kontakte}</Link></li>
                             <li><Link to="/aboutus" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}>{t.aboutUs}</Link></li>
-                            <li><Link to="/calculatori" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}>{t.calculatori}</Link></li>
+                            <li><Link to="#rechner" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' }}>{t.calculatori}</Link></li>
                         </ul>
                     </nav>
 
@@ -124,7 +161,7 @@ function Avegno({ lang = "de" }) {
                         alt="Schleifbild"
                         style={{
                             width: '100vw',
-                            height: '450px',
+                            height: '800px',
                             objectFit: 'cover',
                             display: 'block',
                             imageRendering: '-webkit-optimize-contrast',
@@ -163,35 +200,42 @@ function Avegno({ lang = "de" }) {
                 <div className="impressum-card">
                     <img alt="Parapetti" className="impressum-img" src={Impressumbild}/>
                     <div className="overlay-content">
-                        <h1 className="impressum-title">Parapetti ad Avegno</h1>
-                        <p className="impressum-text">I parapetti sono componenti architettonici essenziali che conferiscono un tocco di stile agli edifici, definiscono gli spazi e creano un'estetica piacevole ma, al tempo stesso, svolgono anche un ruolo fondamentale per la sicurezza fungendo da barriera protettiva per la prevenzione di cadute accidentali.​</p>
+                        <h1  onClick={hanldeSubmit1} className="impressum-title">Parapetti ad Avegno</h1>
+                        <p  onClick={hanldeSubmit1} className="impressum-text">I parapetti sono componenti architettonici essenziali che conferiscono un tocco di stile agli edifici, definiscono gli spazi e creano un'estetica piacevole ma, al tempo stesso, svolgono anche un ruolo fondamentale per la sicurezza fungendo da barriera protettiva per la prevenzione di cadute accidentali.​</p>
                     </div>
                 </div>
 
                 <div className="impressum-card">
                     <img alt="Ringhiere" className="impressum-img" src={Holztreppe}/>
                     <div className="overlay-content">
-                        <h1 className="impressum-title">Ringhiere ad Avegno</h1>
-                        <p className="impressum-text">Le ringhiere sono sistemi di protezione che si trovano nella maggioranza degli edifici. Oltre ad essere componenti importanti per la sicurezza, le ringhiere diventano parte integrante dell’architettura aggiungendo un tocco di stile e carattere per creare un ambiente che rifletta i tuoi gusti e la tua personalità.​</p>
+                        <h1 onClick={hanldeSubmit2}  className="impressum-title">Ringhiere ad Avegno</h1>
+                        <p onClick={hanldeSubmit2}  className="impressum-text">Le ringhiere sono sistemi di protezione che si trovano nella maggioranza degli edifici. Oltre ad essere componenti importanti per la sicurezza, le ringhiere diventano parte integrante dell’architettura aggiungendo un tocco di stile e carattere per creare un ambiente che rifletta i tuoi gusti e la tua personalità.​</p>
                     </div>
                 </div>
 
                 <div className="impressum-card">
                     <img alt="Cancellate in ferro" className="impressum-img" src={Gitter4}/>
                     <div className="overlay-content">
-                        <h1 className="impressum-title">Cancellate in ferro ad Avegno</h1>
-                        <p className="impressum-text">Le migliori soluzioni per le tue cancellate in ferro ad Avegno sono quelle che uniscono funzionalità e design. Scegli una soluzione personalizzata, creata su misura per la tua proprietà, una soluzione che fonde robustezza, garanzia di protezione e sicurezza, e stile. Scopri la gamma completa dei nostri servizi e lasciati ispirare dalla bellezza e dalla qualità delle nostre creazioni in ferro.</p>
+                        <h1 onClick={hanldeSubmit3} className="impressum-title">Cancellate in ferro ad Avegno</h1>
+
+                        <p  onClick={hanldeSubmit3} className="impressum-text">Le migliori soluzioni per le tue cancellate in ferro ad Avegno sono quelle che uniscono funzionalità e design. Scegli una soluzione personalizzata, creata su misura per la tua proprietà, una soluzione che fonde robustezza, garanzia di protezione e sicurezza, e stile. Scopri la gamma completa dei nostri servizi e lasciati ispirare dalla bellezza e dalla qualità delle nostre creazioni in ferro.</p>
                     </div>
                 </div>
 
                 <div className="impressum-card">
                     <img alt="Cancellate per giardino" className="impressum-img" src={Seitengitter}/>
                     <div className="overlay-content">
-                        <h1 className="impressum-title">Cancellate per giardino ad Avegno</h1>
-                        <p className="impressum-text">Proteggi la tua casa e il tuo giardino con stile installando le cancellate per giardino ad Avegno. Potrai limitare l’accesso degli estranei e tenere al sicuro la tua famiglia e i tuoi animali domestici. Esiste un’ampia varietà di tipologie e di stili di cancelli. L’artigiano realizza cancelli personalizzati e unici che si adattano allo stile del tuo giardino e che rispondono alle tue aspettative.</p>
+                        <h1 onClick={hanldeSubmit4} className="impressum-title">Cancellate per giardino ad Avegno</h1>
+
+                        <p  onClick={hanldeSubmit4} className="impressum-text">Proteggi la tua casa e il tuo giardino con stile installando le cancellate per giardino ad Avegno. Potrai limitare l’accesso degli estranei e tenere al sicuro la tua famiglia e i tuoi animali domestici. Esiste un’ampia varietà di tipologie e di stili di cancelli. L’artigiano realizza cancelli personalizzati e unici che si adattano allo stile del tuo giardino e che rispondono alle tue aspettative.</p>
                     </div>
                 </div>
 
+            </div>
+
+
+            <div id="rechner" style={{ padding: '40px 20px' }}>
+                <Calculator />
             </div>
 
         </div>
