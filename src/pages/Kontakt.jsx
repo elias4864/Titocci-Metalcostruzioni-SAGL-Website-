@@ -97,9 +97,11 @@ function Contatti({ lang: externalLang }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+
         try {
             if (!formData.privacy) {
-                alert('Si prega di accettare la privacy policy.');
+                alert('Bitte akzeptiere die Datenschutzbedingungen!.');
+                console.log('Bitte akzeptiere die DSG-Richtlinien');
                 throw new Error("Datenschutzbestimmungen nicht akzeptiert.");
             }
 
@@ -273,11 +275,14 @@ function Contatti({ lang: externalLang }) {
                         src={Kontakt}
                         alt="Contatti"
                         style={{
-                            width: '100vw',
-                            height: '400px',
+                            width: '100%', // Hinweis: 300vw ist oft extrem breit, passe es nach Bedarf an
+                            height: '700px',
                             objectFit: 'cover',
                             display: 'block',
-                            filter: 'brightness(0.5)'
+                            filter: 'brightness(0.8)' // Statt 0.5 hier 0.8 oder 1 (100% Originalhelligkeit)
+                            // Hier wird der State-Wert dynamisch eingesetzt:
+
+
                         }}
                     />
 
@@ -347,7 +352,9 @@ function Contatti({ lang: externalLang }) {
                                     border: '1px solid #ccc',
                                     borderRadius: '4px',
                                     fontSize: '1rem',
-                                    boxSizing: 'border-box'
+                                    boxSizing: 'border-box',
+                                    borderColor:'red',
+                                    borderWeight:'bold'
                                 }}
                             />
                         </div>

@@ -171,13 +171,13 @@ export default function HousePriceCalculator() {
                 </div>
 
                 <button type="submit" style={{ padding: '12px', backgroundColor: '#0070f3', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px' }}>
-                    Immobilienwert schätzen
+                    Immobilienwert jetzt schätzen
                 </button>
             </form>
 
             {result && (
                 <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: '6px', textAlign: 'center' }}>
-                    <h3 style={{ margin: '0 0 5px 0', color: '#0369a1' }}>Geschätzter Marktwert:</h3>
+                    <h3 style={{ margin: '0 0 5px 0', color: '#0369a1',fontSize:'50px', textwrap:'wrap' }}><span>Geschätzter Marktwert:</span></h3>
                     <p style={{ fontSize: '24px', fontWeight: 'bold', margin: '5px 0', color: '#0c4a6e' }}>
                         {result.totalPrice.toLocaleString('de-DE')} CHF
                     </p>
