@@ -368,6 +368,8 @@ function MainContent() {
                         <Route path="/avegno" element={<Avegno lang={language} />} />
                         <Route path="/locarno" element={<Locarno lang={language} />} />
                         <Route path="/chatbot" element={<Chatbot />} />
+                        <Route path="/chatmessage" element={<ChatMessages />}/>
+                        <Route path="/chatinput" element={<ChatInput />}/>
 
 
                         <Route path="*" element={<Navigate to="/" replace />} />

@@ -1,8 +1,10 @@
+
 import { useState } from 'react';
 import { useImmer } from 'use-immer';
 
 import ChatInput from '../pages/ChatInput.jsx';
 import ChatMessages from '../pages/ChatMessages.jsx';
+import '../Styles/Chatbot.css';
 
 function Chatbot() {
     const [messages, setMessages] = useImmer([]);
@@ -17,45 +19,48 @@ function Chatbot() {
 
         setNewMessage('');
 
-        // 1. Nachrichten im State aktualisieren (User-Nachricht + Loader für Assistant)
+        const currentMessages = [
+            ...messages.filter(m => !m.error && !m.loading),
+            { role: 'user', content: messageText }
+        ];
+
         setMessages(draft => {
-            draft.push({ role: 'user', content: messageText });
-            draft.push({ role: 'assistant', content: '', loading: true, error: false });
+            draft.push({
+                role: 'user',
+                content: messageText
+            });
+
+            draft.push({
+                role: 'assistant',
+                content: '',
+                loading: true,
+                error: false
+            });
         });
 
         try {
-            // Aktuellen Verlauf inklusive der neuen Nachricht holen
-            // Wichtig: Wir filtern 'loading' und 'error' heraus, damit Ollama saubere Daten bekommt!
-            const currentMessages = messages.concat({ role: 'user', content: messageText });
-            const apiMessages = currentMessages.map(m => ({
-                role: m.role,
-                content: m.content
-            }));
-
-            // Direkter fetch an den lokalen Ollama-Server
-            const response = await fetch('http://localhost:11434/api/chat', {
+            const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    model: 'qwen2.5', // Dein lokales Modell (z.B. gemma2 oder qwen2.5)
-                    messages: apiMessages,
-                    stream: false
+                    messages: currentMessages
                 })
             });
 
             if (!response.ok) {
-                throw new Error('Ollama Server Fehler');
+                throw new Error('Gemini Server Fehler');
             }
 
             const data = await response.json();
-            const replyText = data.message?.content || 'Keine Antwort erhalten.';
 
-            // Letzte Nachricht (Assistant) mit der echten Antwort füllen
             setMessages(draft => {
                 const lastMessage = draft[draft.length - 1];
-                lastMessage.content = replyText;
+
+                lastMessage.content =
+                    data.reply || 'Keine Antwort erhalten.';
+
                 lastMessage.loading = false;
             });
 
@@ -64,9 +69,11 @@ function Chatbot() {
 
             setMessages(draft => {
                 const lastMessage = draft[draft.length - 1];
+
                 lastMessage.loading = false;
                 lastMessage.error = true;
-                lastMessage.content = 'Die Verbindung zu Ollama konnte nicht hergestellt werden.';
+                lastMessage.content =
+                    'Die Verbindung zu Gemini konnte nicht hergestellt werden.';
             });
         }
     }
