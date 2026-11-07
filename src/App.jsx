@@ -9,6 +9,9 @@ import Servizi from "./pages/Servici.jsx";
 import AboutUs from "./pages/AboutUs.jsx";
 import Kontakte from "./pages/Kontakt.jsx";
 import Sitemap from "./pages/Sitemap.jsx";
+import Chatbot from "./pages/Chatbot.jsx";
+import ChatInput from "./pages/ChatInput.jsx";
+import ChatMessages from "./pages/ChatMessages.jsx";
 
 import './Styles/App.css';
 import LanguageSwitcher from "./pages/LanguageDropwdon.jsx";
@@ -54,12 +57,26 @@ function MainContent() {
         }
     };
 
-
+    const [focusedField, setFocusedField] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         message: ''
     });
+
+    const getInputStyle = (fieldName) => ({
+        width: '100%',
+        padding: '12px 16px',
+        fontSize: '15px',
+        borderRadius: '6px',
+        border: focusedField === fieldName ? '2px solid #e62b2b' : '1px solid #ccc',
+        outline: 'none',
+        boxShadow: focusedField === fieldName ? '0 0 8px rgba(230, 43, 43, 0.4)' : 'none',
+        transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
+        boxSizing: 'border-box'
+    });
+
+
 
 
 
@@ -350,6 +367,7 @@ function MainContent() {
                         <Route path="/privacy" element={<Privacy lang={language} />} />
                         <Route path="/avegno" element={<Avegno lang={language} />} />
                         <Route path="/locarno" element={<Locarno lang={language} />} />
+                        <Route path="/chatbot" element={<Chatbot />} />
 
 
                         <Route path="*" element={<Navigate to="/" replace />} />
@@ -378,6 +396,9 @@ function MainContent() {
             >
                 <img className="dropdown-img" src={Dropdown} alt="Nach oben" />
             </button>
+
+
+
 
             <footer className="footer-div">
                 <section className="footer-section section-center">
@@ -440,13 +461,19 @@ function MainContent() {
 
                     <form className="formular">
                         <span><label><b>Nome:*</b></label></span>
-                        <input type="text" id="name" placeholder="Elias" name="name" ref={nameInputRef} onFocus={() => scrollToInput(nameInputRef)}
+                        <input type="text" id="name" placeholder="Elias" name="name" ref={nameInputRef} onFocus={() => setFocusedField('nome')}
+                               onBlur={() => setFocusedField(null)}
+                               style={getInputStyle('nome')}
                         />
                         <span><label><b>E-Mail-Adresse*</b></label></span>
-                        <input type="email" id="email" name="email"  required placeholder="elias.kaiser@gmx.ch" onFocus={()=>scrollToInput(emailInputRef)} ref={emailInputRef} />
+                        <input type="email" id="email" name="email"  required placeholder="elias.kaiser@gmx.ch" onFocus={() => setFocusedField('email')}
+                               onBlur={() => setFocusedField(null)}
+                               style={getInputStyle('nome')} ref={emailInputRef} />
 
                         <span><label><b>Nachricht:*</b></label>
-                            <textarea id="message" name="message" ref={messageInputRef} onFocus={()=>scrollToInput(messageInputRef)} rows="10" cols="100">
+                            <textarea id="message" name="message" ref={messageInputRef} onFocus={() => setFocusedField('messagio')}
+                                      onBlur={() => setFocusedField(null)}
+                                      style={getInputStyle('nome')} rows="10" cols="100">
 
                             </textarea>
 
