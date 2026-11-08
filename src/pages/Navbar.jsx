@@ -179,10 +179,9 @@ function Navbar() {
                         </select>
                     </div>
 
+                    <div className="navbar-social-icons">
 
-                    {/* Social Icons */}
-                    <div style={{ display: 'flex', alignItems: 'right', gap: '8px', borderLeft: '1px solid #ddd', paddingLeft: '12px',float:'right'}}>
-                        <a href="https://facebook.com" target="_blank" rel="noreferrer">
+                    <a href="https://facebook.com" target="_blank" rel="noreferrer">
                             <img src={Redfacebook} alt="Facebook" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
                         </a>
                         <a href="https://maps.google.com" target="_blank" rel="noreferrer">

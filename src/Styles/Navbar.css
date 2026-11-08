@@ -98,6 +98,23 @@
     display: block;
 }
 
+
+
+.navbar-social-icons {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    padding-right: 20px;
+}
+
+.navbar-social-icons img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+}
+
+
 .nav-links {
     color: #ffffff;
     text-decoration: none;

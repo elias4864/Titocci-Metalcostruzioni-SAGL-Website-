@@ -469,21 +469,38 @@ function MainContent() {
 
                     <form className="formular">
                         <span><label><b>Nome:*</b></label></span>
-                        <input type="text" id="name" placeholder="Elias" name="name" ref={nameInputRef} onFocus={() => setFocusedField('nome')}
+                        <input type="text" id="name" placeholder="Elias" name="name" ref={nameInputRef}   onFocus={() => {
+                            setFocusedField('name');
+                            scrollToInput(nameInputRef);
+                        }}
                                onBlur={() => setFocusedField(null)}
-                               style={getInputStyle('nome')}
+                               style={getInputStyle('name')}
+
                         />
                         <span><label><b>E-Mail-Adresse*</b></label></span>
-                        <input type="email" id="email" name="email"  required placeholder="elias.kaiser@gmx.ch" onFocus={() => setFocusedField('email')}
+                        <input type="email" id="email" name="email"  required placeholder="elias.kaiser@gmx.ch" onFocus={() => {
+                            setFocusedField('email');
+                            scrollToInput(emailInputRef);
+                        }}
                                onBlur={() => setFocusedField(null)}
-                               style={getInputStyle('nome')} ref={emailInputRef} />
+                               style={getInputStyle('email')} ref={emailInputRef} />
 
                         <span><label><b>Nachricht:*</b></label>
-                            <textarea id="message" name="message" ref={messageInputRef} onFocus={() => setFocusedField('messagio')}
-                                      onBlur={() => setFocusedField(null)}
-                                      style={getInputStyle('nome')} rows="10" cols="100">
+                            <textarea
+                                id="message"
+                                name="message"
+                                ref={messageInputRef}
+                                onFocus={() => {
+                                    setFocusedField('message');
+                                    scrollToInput(messageInputRef);
+                                }}
+                                onBlur={() => setFocusedField(null)}
+                                style={getInputStyle('messagio')}
+                                rows="10"
+                                cols="100"
+                            />
 
-                            </textarea>
+
 
                         </span>
                     </form>
