@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import  {  useEffect, useRef } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate } from 'react-router-dom';
 import Home from "./pages/Home.jsx";
 import Navbar from "./pages/Navbar.jsx";
@@ -12,6 +12,7 @@ import Sitemap from "./pages/Sitemap.jsx";
 import Chatbot from "./pages/Chatbot.jsx";
 import ChatInput from "./pages/ChatInput.jsx";
 import ChatMessages from "./pages/ChatMessages.jsx";
+import Calculator from "./pages/Calculator.jsx";
 
 import './Styles/App.css';
 import LanguageSwitcher from "./pages/LanguageDropwdon.jsx";
@@ -27,8 +28,12 @@ import  Avegno from "./pages/Avegno.jsx";
 import emailjs from "@emailjs/browser";
 import Locarno from "./pages/Locarno.jsx";
 
+import React, { createContext, useState } from "react";
 
-// Innere Komponente, die Zugriff auf den Router-Kontext (useNavigate) hat
+
+export const ThemeContext = createContext();
+
+
 function MainContent() {
     const [showBanner, setShowBanner] = useState(false);
     const [language, setLanguage] = useState("de");
@@ -367,9 +372,10 @@ function MainContent() {
                         <Route path="/privacy" element={<Privacy lang={language} />} />
                         <Route path="/avegno" element={<Avegno lang={language} />} />
                         <Route path="/locarno" element={<Locarno lang={language} />} />
-                        <Route path="/chatbot" element={<Chatbot />} />
-                        <Route path="/chatmessage" element={<ChatMessages />}/>
-                        <Route path="/chatinput" element={<ChatInput />}/>
+                        <Route path="/chatbot" element={<Chatbot lang={language} />} />
+                        <Route path="/chatmessage" element={<ChatMessages lang={language}/>}/>
+                        <Route path="/chatinput" element={<ChatInput lang={language} />}/>
+                        <Route path="/calculator" element={<Calculator lang={language} />} />
 
 
                         <Route path="*" element={<Navigate to="/" replace />} />

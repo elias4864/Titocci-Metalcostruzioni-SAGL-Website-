@@ -1,11 +1,13 @@
 import useAutosize from '../hooks/useAutoSize.js';
 import Sendbutton from '../assets/Send.jpg';
+import '../Styles/ChatInput.css';
+
 
 function ChatInput({
                        newMessage,
                        isLoading,
                        setNewMessage,
-                       submitNewMessage
+                       submitNewMessage,lang
                    }) {
     const textareaRef = useAutosize(newMessage);
 
@@ -30,9 +32,9 @@ function ChatInput({
 
             <button
                 onClick={submitNewMessage}
-                disabled={isLoading || !newMessage.trim()}
+                disabled={isLoading || !(newMessage || "").trim()}
             >
-                <img src={Sendbutton} alt="Senden" />
+                <img className="send-btn" src={Sendbutton} alt="Senden" />
             </button>
         </div>
     );

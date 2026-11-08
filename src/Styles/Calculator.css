@@ -1,0 +1,173 @@
+/* Layout Basis */
+.calc-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 16px;
+    min-height: 80vh;
+    transition: background-color 0.3s ease;
+}
+
+.calc-container {
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Header & Theme Switcher */
+.calc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.header-logo {
+    font-size: 32px;
+    font-weight: 700;
+    color:orange;
+}
+
+.header-switch {
+    display: flex;
+    align-items: flex-end;
+    gap: 24px;
+}
+
+.header-switch-prompt {
+    font-size: 12px;
+    letter-spacing: 1px;
+}
+
+.header-switch-container {
+    position: relative;
+    width: 70px;
+    height: 26px;
+    border-radius: 13px;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.header-switch-toggle {
+    position: absolute;
+    top: 5px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    transition: left 0.2s ease;
+}
+
+.ghost {
+    position: absolute;
+    top: 0;
+    width: 23px;
+    height: 100%;
+    cursor: pointer;
+    z-index: 5;
+}
+
+.ghost-1 { left: 0; }
+.ghost-2 { left: 23px; }
+.ghost-3 { left: 46px; }
+
+.header-switch-positions {
+    position: absolute;
+    top: -22px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* Display */
+.display {
+    width: 100%;
+    height: 100px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0 24px;
+    box-sizing: border-box;
+}
+
+.display-text {
+    font-size: 44px;
+    font-weight: 700;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+/* Keypad Grid (Das löst die vertikale Liste!) */
+.keypad {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    padding: 24px;
+    border-radius: 10px;
+    box-sizing: border-box;
+}
+
+.key {
+    height: 56px;
+    border: none;
+    border-radius: 8px;
+    font-size: 28px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.05s ease, opacity 0.2s ease;
+}
+
+.key:active {
+    transform: translateY(2px);
+}
+
+.key-area-reset {
+    grid-column: span 2;
+    font-size: 18px;
+}
+
+.key-area-equals {
+    grid-column: span 2;
+    font-size: 20px;
+}
+
+/* --- THEME 1 (Dunkelblau / Red Accent) --- */
+.theme-1-main { background-color: hsl(222, 26%, 31%); color: #fff; }
+.theme-1-header-logo, .theme-1-header-switch-prompt, .theme-1-header-switch-position { color: orange; }
+.theme-1-header-switch-container { background-color: hsl(223, 31%, 20%); }
+.theme-1-header-switch-toggle { background-color: hsl(6, 63%, 50%); }
+.theme-1-display { background-color: hsl(224, 36%, 15%); color: #fff; }
+.theme-1-keypad { background-color: hsl(223, 31%, 20%); }
+.theme-1-key { background-color: hsl(30, 25%, 89%); color: hsl(221, 14%, 31%); box-shadow: 0 4px 0 hsl(28, 16%, 65%); }
+.theme-1-key-type-1 { background-color: hsl(225, 21%, 49%); color: #fff; box-shadow: 0 4px 0 hsl(224, 28%, 35%); }
+.theme-1-key-type-2 { background-color: hsl(6, 63%, 50%); color: #fff; box-shadow: 0 4px 0 hsl(6, 70%, 34%); }
+
+/* --- THEME 2 (Hellgrau / Orange Accent) --- */
+.theme-2-main { background-color: hsl(0, 0%, 90%); color: hsl(60, 10%, 19%); }
+.theme-2-header-logo, .theme-2-header-switch-prompt, .theme-2-header-switch-position { color: hsl(60, 10%, 19%); }
+.theme-2-header-switch-container { background-color: hsl(0, 5%, 81%); }
+.theme-2-header-switch-toggle { background-color: hsl(25, 98%, 40%); }
+.theme-2-display { background-color: hsl(0, 0%, 93%); color: hsl(60, 10%, 19%); }
+.theme-2-keypad { background-color: hsl(0, 5%, 81%); }
+.theme-2-key { background-color: hsl(45, 7%, 89%); color: hsl(60, 10%, 19%); box-shadow: 0 4px 0 hsl(35, 11%, 61%); }
+.theme-2-key-type-1 { background-color: hsl(185, 42%, 37%); color: #fff; box-shadow: 0 4px 0 hsl(185, 58%, 25%); }
+.theme-2-key-type-2 { background-color: hsl(25, 98%, 40%); color: #fff; box-shadow: 0 4px 0 hsl(25, 99%, 27%); }
+
+/* --- THEME 3 (Neon Violett / Cyan Accent) --- */
+.theme-3-main { background-color: hsl(268, 75%, 9%); color: hsl(52, 100%, 62%); }
+.theme-3-header-logo, .theme-3-header-switch-prompt, .theme-3-header-switch-position { color: hsl(52, 100%, 62%); }
+.theme-3-header-switch-container { background-color: hsl(268, 71%, 12%); }
+.theme-3-header-switch-toggle { background-color: hsl(176, 100%, 44%); }
+.theme-3-display { background-color: hsl(268, 71%, 12%); color: hsl(52, 100%, 62%); }
+.theme-3-keypad { background-color: hsl(268, 71%, 12%); }
+.theme-3-key { background-color: hsl(268, 47%, 21%); color: hsl(52, 100%, 62%); box-shadow: 0 4px 0 hsl(290, 70%, 36%); }
+.theme-3-key-type-1 { background-color: hsl(281, 89%, 26%); color: #fff; box-shadow: 0 4px 0 hsl(285, 91%, 52%); }
+.theme-3-key-type-2 { background-color: hsl(176, 100%, 44%); color: hsl(198, 20%, 13%); box-shadow: 0 4px 0 hsl(177, 92%, 70%); }

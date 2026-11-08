@@ -6,9 +6,9 @@ import ChatInput from '../pages/ChatInput.jsx';
 import ChatMessages from '../pages/ChatMessages.jsx';
 import '../Styles/Chatbot.css';
 
-function Chatbot() {
+function Chatbot({lang}) {
     const [messages, setMessages] = useImmer([]);
-    const [newMessage, setNewMessage] = useState('');
+    const [newMessage, setNewMessage] = useState(""); // Richtig: Startet als leerer String
 
     const isLoading = messages.some(message => message.loading);
 

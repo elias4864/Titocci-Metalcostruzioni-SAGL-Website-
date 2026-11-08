@@ -1,41 +1,41 @@
-
 import ReactMarkdown from 'react-markdown';
 import Spinner from '../pages/Spinner.jsx';
 import useAutoScroll from '../hooks/useAutoScroll.js';
 import UserIcon from '../assets/robot-assistant.png';
 import Error from '../assets/Error.png';
 
-
-function ChatMessages({ messages }) {
+function ChatMessages({ messages, lang }) {
     const scrollContentRef = useAutoScroll(messages);
 
     return (
-        <div>
-            {messages.map(({ role, content, loading, error }, idx) => (
-                <div key={idx}>
+        <div className="chat-messages-container">
+            {messages?.map(({ role, content, loading, error }, idx) => (
+                <div key={idx} className={`message-item ${role}`}>
+                    {/* User Icon */}
                     {role === 'user' && (
                         <img src={UserIcon} alt="user icon" />
                     )}
 
-                    <div>
-                        {loading && !content ? (
-                            <Spinner />
-                        ) : role === 'assistant' ? (
-                            <ReactMarkdown>{content || ''}</ReactMarkdown>
-                        ) : (
-                            <div>{content}</div>
-                        )}
+                    {/* Inhalt / Ladezustand / Antwort */}
+                    {loading && !content ? (
+                        <Spinner />
+                    ) : role === 'assistant' ? (
+                        <ReactMarkdown>{content || ''}</ReactMarkdown>
+                    ) : (
+                        <div>{content}</div>
+                    )}
 
-                        {error && (
-                            <div>
-                                <img src={Error} alt="error icon" />
-                                <span>Fehler beim Erstellen der Antwort</span>
-                            </div>
-                        )}
-                    </div>
+                    {/* Fehleranzeige */}
+                    {error && (
+                        <div className="error-container">
+                            <img src={Error} alt="error icon" />
+                            <span>Fehler beim Erstellen der Antwort</span>
+                        </div>
+                    )}
                 </div>
             ))}
 
+            {/* Referenz für automatisches Scrollen */}
             <div ref={scrollContentRef} />
         </div>
     );
