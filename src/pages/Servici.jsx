@@ -32,11 +32,99 @@ import '../Styles/Servici.css';
 import '../Styles/TimeLineSection.css';
 
 const IMAGES = [
-    { id: 1, url: Schleifbild, title: 'Schleifarbeiten', description: 'Lavorazione e finitura di alta precisione.' },
-    { id: 2, url: Bauplan, title: 'Werkstatt', description: 'Progettazione e produzione artigianale.' },
-    { id: 3, url: PC, title: 'PC & Design', description: 'Pianificazione CAD e modellazione 3D.' },
-    { id: 4, url: Schraubenzieherbild, title: 'Schraubenzieher', description: 'Strumenti di precisione.' }
+    {
+        id: 1,
+        url: Schleifbild,
+        title: 'Schleifarbeiten',
+        description: 'Lavorazione e finitura di alta precisione.',
+        keywords: [
+            'Schleifen',
+            'Schleifarbeiten',
+            'Schleifmaschine',
+            'Metallverarbeitung',
+            'Oberflächenbearbeitung',
+            'Oberflächenarbeit',
+            'Metall schleifen',
+            'Industrie',
+            'Handarbeit',
+            'Schleifwerkzeuge',
+            'Fabrikation',
+            'Produktion',
+            'Metallbau',
+            'Polieren',
+            'Metallbearbeitung'
+        ]
+    },
+    {
+        id: 2,
+        url: Bauplan,
+        title: 'Werkstatt',
+        description: 'Progettazione e produzione artigianale.',
+        keywords: [
+            'Werkstatt',
+            'Metallwerkstatt',
+            'Planung',
+            'Konstruktion',
+            'Bauplan',
+            'Technische Zeichnung',
+            'Produktion',
+            'Handwerk',
+            'Metallbau',
+            'Fertigung',
+            'Werkzeug',
+            'Maschinen',
+            'Montage',
+            'Industrie',
+            'Handwerker'
+        ]
+    },
+    {
+        id: 3,
+        url: PC,
+        title: 'PC & Design',
+        description: 'Pianificazione CAD e modellazione 3D.',
+        keywords: [
+            'PC',
+            'Computer',
+            'CAD',
+            '3D',
+            '3D Modellierung',
+            'Design',
+            'Konstruktion',
+            'Planung',
+            'Technische Planung',
+            'Zeichnung',
+            'Architektur',
+            'Metallkonstruktion',
+            'Digitalisierung',
+            'Engineering',
+            'Entwurf'
+        ]
+    },
+    {
+        id: 4,
+        url: Schraubenzieherbild,
+        title: 'Schraubenzieher',
+        description: 'Strumenti di precisione.',
+        keywords: [
+            'Schraubenzieher',
+            'Schraubendreher',
+            'Werkzeug',
+            'Werkzeuge',
+            'Handwerkzeug',
+            'Montage',
+            'Reparatur',
+            'Metallbau',
+            'Handarbeit',
+            'Schrauben',
+            'Werkstatt',
+            'Präzisionswerkzeug',
+            'Mechanik',
+            'Handwerker'
+        ]
+    }
 ];
+
 
 const SERVICE_CARDS = [
     {
@@ -47,7 +135,29 @@ const SERVICE_CARDS = [
         slugAvegno: 'cancellate-per-giardino-ad-avegno',
         image: Gitter,
         textLocarno: 'Proteggi la tua casa e il tuo giardino con stile installando le cancellate per giardino. Potrai limitare l’accesso degli estranei e tenere al sicuro la tua famiglia e i tuoi animali domestici.',
-        textAvegno: 'Proteggi la tua casa e il tuo giardino con stile installando le cancellate per giardino ad Avegno. Potrai limitare l’accesso degli estranei e tenere al sicuro la tua famiglia e i tuoi animali domestici.'
+        textAvegno: 'Proteggi la tua casa e il tuo giardino con stile installando le cancellate per giardino ad Avegno. Potrai limitare l’accesso degli estranei e tenere al sicuro la tua famiglia e i tuoi animali domestici.',
+        keywords: [
+            'Garten',
+            'Gartenzaun',
+            'Gartentor',
+            'Tor',
+            'Tore',
+            'Garteneingang',
+            'Eingangstor',
+            'Einfahrt',
+            'Einfahrtstor',
+            'Metallzaun',
+            'Zaun',
+            'Stahlzaun',
+            'Schmiedeeisen',
+            'Sicherheit',
+            'Grundstück',
+            'Gartenmetallbau',
+            'Cancellate',
+            'Cancello',
+            'Locarno',
+            'Avegno'
+        ]
     },
     {
         id: 'cancellate-ferro',
@@ -57,7 +167,29 @@ const SERVICE_CARDS = [
         slugAvegno: 'cancellate-in-ferro-ad-avegno',
         image: Fenster,
         textLocarno: 'Le migliori soluzioni per le tue cancellate in ferro sono quelle che uniscono funzionalità e design. Scegli una soluzione personalizzata, creata su misura per la tua proprietà.',
-        textAvegno: 'Le migliori soluzioni per le tue cancellate in ferro ad Avegno sono quelle che uniscono funzionalità e design. Scegli una soluzione personalizzata, creata su misura per la tua proprietà.'
+        textAvegno: 'Le migliori soluzioni per le tue cancellate in ferro ad Avegno sono quelle che uniscono funzionalità e design. Scegli una soluzione personalizzata, creata su misura per la tua proprietà.',
+        keywords: [
+            'Eisen',
+            'Eisentor',
+            'Eisengitter',
+            'Metalltor',
+            'Metallgitter',
+            'Stahl',
+            'Stahlkonstruktion',
+            'Metallkonstruktion',
+            'Schmiedeeisen',
+            'Gitter',
+            'Gittertor',
+            'Fenstergitter',
+            'Sicherheitsgitter',
+            'Metallarbeiten',
+            'Metallbau',
+            'Eisenarbeiten',
+            'Cancellate in ferro',
+            'Ferro',
+            'Locarno',
+            'Avegno'
+        ]
     },
     {
         id: 'ringhiere',
@@ -67,7 +199,29 @@ const SERVICE_CARDS = [
         slugAvegno: 'ringhiere-ad-avegno',
         image: Wand,
         textLocarno: 'Le ringhiere sono sistemi di protezione che si trovano nella maggioranza degli edifici. Oltre ad essere componenti importanti per la sicurezza, le ringhiere diventano parte integrante dell’architettura.',
-        textAvegno: 'Le ringhiere sono sistemi di protezione che si trovano nella maggioranza degli edifici. Oltre ad essere componenti importanti per la sicurezza, le ringhiere diventano parte integrante dell’architettura.'
+        textAvegno: 'Le ringhiere sono sistemi di protezione che si trovano nella maggioranza degli edifici. Oltre ad essere componenti importanti per la sicurezza, le ringhiere diventano parte integrante dell’architettura.',
+        keywords: [
+            'Geländer',
+            'Treppengeländer',
+            'Balkongeländer',
+            'Terrassengeländer',
+            'Handlauf',
+            'Brüstung',
+            'Metallgeländer',
+            'Eisengeländer',
+            'Stahlgeländer',
+            'Absturzsicherung',
+            'Balkon',
+            'Treppe',
+            'Terrasse',
+            'Haus',
+            'Gebäude',
+            'Sicherheit',
+            'Architektur',
+            'Ringhiere',
+            'Locarno',
+            'Avegno'
+        ]
     },
     {
         id: 'parapetti',
@@ -77,9 +231,32 @@ const SERVICE_CARDS = [
         slugAvegno: 'parapetti-ad-avegno',
         image: Locarno,
         textLocarno: 'I parapetti sono componenti architettonici essenziali che conferiscono un tocco di stile agli edifici, definiscono gli spazi e creano un’estetica piacevole.',
-        textAvegno: 'I parapetti sono componenti architettonici essenziali che conferiscono un tocco di stile agli edifici, definiscono gli spazi e creano un’estetica piacevole.'
+        textAvegno: 'I parapetti sono componenti architettonici essenziali che conferiscono un tocco di stile agli edifici, definiscono gli spazi e creano un’estetica piacevole.',
+        keywords: [
+            'Parapett',
+            'Parapetts',
+            'Brüstung',
+            'Balkonbrüstung',
+            'Terrassenbrüstung',
+            'Absturzsicherung',
+            'Balkon',
+            'Terrasse',
+            'Metallbrüstung',
+            'Glasgeländer',
+            'Stahl',
+            'Edelstahl',
+            'Metallbau',
+            'Architektur',
+            'Haus',
+            'Gebäude',
+            'Sicherheit',
+            'Design',
+            'Locarno',
+            'Avegno'
+        ]
     }
 ];
+
 
 const navButtonStyle = {
     position: 'absolute',
@@ -169,7 +346,6 @@ function Servizi() {
     const [indexCancelli, setIndexCancelli] = useState(0);
 
     // State für den Suchfilter
-    const [searchTerm, setSearchTerm] = useState("");
 
     // States für die beiden unteren Slider getrennt steuerbar
     const [sliderIndex1, setSliderIndex1] = useState(0);
@@ -179,12 +355,46 @@ function Servizi() {
 
     const imagesParapetti = [Gitter, Wand];
     const imagesCancelli = [Fenster, Eingang];
+    const [searchTerm, setSearchTerm] = useState("");
 
-    // Gefilterte Bilder basierend auf dem Suchbegriff im Titel/Beschreibung
-    const filteredImages = IMAGES.filter(img =>
-        img.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (img.description && img.description.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
+    const normalizeText = (text) => {
+        return String(text ?? "")
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .trim();
+    };
+
+// Bilder nach Titel, Beschreibung und Keywords filtern
+    const filteredImages = [
+        ...IMAGES.map(img => ({
+            ...img,
+            type: 'image'
+        })),
+
+        ...SERVICE_CARDS.map(card => ({
+            id: card.id,
+            url: card.image,
+            title: card.titleLocarno,
+            description: card.textLocarno,
+            keywords: card.keywords,
+            type: 'service'
+        }))
+    ].filter((img) => {
+        const search = normalizeText(searchTerm);
+
+        if (!search) return true;
+
+        const searchableText = [
+            img.title,
+            img.description,
+            ...(img.keywords || [])
+        ];
+
+        return searchableText.some(word =>
+            normalizeText(word).includes(search)
+        );
+    });
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -249,13 +459,13 @@ function Servizi() {
                             margin: 0,
                             padding: 0
                         }}>
-                            <li><Link to="/" style={{color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px'}}>Home</Link></li>
-                            <li><Link to="/chi-siamo" style={{color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px'}}>Chi siamo</Link></li>
+                            <li><Link to="/" style={{color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px',borderBottom: '3px solid #e62b2b', paddingBottom: '4px'}}>Home</Link></li>
+                            <li><Link to="/chi-siamo" style={{color: 'white', textDecoration: 'none', fontWeight: 'bold',borderBottom: '3px solid #e62b2b', paddingBottom: '4px', fontSize: '14px'}}>Chi siamo</Link></li>
                             <li><Link to="/servizi" style={{color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px', fontSize: '14px'}}>Servizi</Link></li>
-                            <li><Link to="/galeria" style={{color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px'}}>Galleria</Link></li>
-                            <li><Link to="/aboutus" style={{color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px'}}></Link></li>
-                            <li><Link to="/kontakte" style={{color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px'}}>Contatti</Link></li>
-                            <li><Link to="/calculator" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px' }}>Online Calculator</Link></li>
+                            <li><Link to="/galeria" style={{color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px',fontSize: '14px' }}>Galleria</Link></li>
+                            <li><Link to="/aboutus" style={{color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px',fontSize: '14px' }}></Link></li>
+                            <li><Link to="/kontakte" style={{color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px',fontSize: '14px' }}>Contatti</Link></li>
+                            <li><Link to="/calculator" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px',fontSize: '14px'  }}>Online Calculator</Link></li>
                             <li><Link to="/calculatori"  style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px', fontSize:'14px' }}>Imobillien Preisrechner </Link> </li>
 
 
