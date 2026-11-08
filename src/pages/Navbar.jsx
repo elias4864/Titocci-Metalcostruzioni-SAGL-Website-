@@ -120,7 +120,7 @@ function Navbar() {
                     overflow: 'hidden',
                     transition: 'max-height 0.3s ease-in-out, opacity 0.3s ease-in-out',
                     opacity: isOpen ? 1 : 0,
-                    width: '100%',
+                    width: '240%',
                     backgroundColor:'green'
                 }}>
                     <ul className="nav-menu" style={{
@@ -181,7 +181,7 @@ function Navbar() {
 
 
                     {/* Social Icons */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', borderLeft: '1px solid #ddd', paddingLeft: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'right', gap: '8px', borderLeft: '1px solid #ddd', paddingLeft: '12px',float:'right'}}>
                         <a href="https://facebook.com" target="_blank" rel="noreferrer">
                             <img src={Redfacebook} alt="Facebook" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
                         </a>
