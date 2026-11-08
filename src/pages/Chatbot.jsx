@@ -83,8 +83,8 @@ function Chatbot({lang}) {
 
             {messages.length === 0 && (
                 <div className="chatbot-welcome">
-                    <h2>Willkommen!</h2>
-                    <p>Wie kann ich dir helfen?</p>
+                    <h2>Willkommen,Elias!</h2>
+                    <p>Wie kann ich dir heute helfen?</p>
                 </div>
             )}
 

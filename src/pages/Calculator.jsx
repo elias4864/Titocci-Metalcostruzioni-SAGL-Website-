@@ -35,6 +35,8 @@ function Calculator() {
             if (operator === 3) result = primaryNumber === 0 ? "Error" : secondaryNumber / primaryNumber;
         }
 
+        alert("Das Resultat ist " + result);
+
         const originalPrimary = primary;
         setPrimary(result.toString());
 

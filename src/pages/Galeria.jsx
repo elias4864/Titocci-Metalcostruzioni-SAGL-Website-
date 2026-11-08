@@ -68,6 +68,7 @@ function Galeria({lang}) {
                             <li><Link to="/galeria" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px', fontSize: '14px' }}>Galleria</Link></li>
                             <li><Link to="/kontakte" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px' , borderBottom: '3px solid #e62b2b', paddingBottom: '4px'}}>Contatti</Link></li>
                             <li><Link to="/aboutus" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px', borderBottom: '3px solid #e62b2b', paddingBottom: '4px'}}>About</Link></li>
+                            <li><Link to="/calculator" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px' }}>Online Calculator</Link></li>
                             <li><Link to="/calculatori" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '14px', borderBottom: '3px solid #e62b2b', paddingBottom: '4px' }}>Online Preisrechner</Link></li>
 
 
