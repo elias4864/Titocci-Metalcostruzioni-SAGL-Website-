@@ -28,7 +28,8 @@ Diese Website  umfasst folgende Routes+Seitenlinks in der Navbar
 - **`/kontakte`**: Kontaktinformationen, Anfahrtskarte & Kontaktformular über Titocci Metalconstruzione SAGL
 - **`/impressum`**: Impressum nach DSGVO+DSG
 - **`/galeria`**: Galerie-Karte mit Referenzprojekten
-- 
+- **`/calculatori`**: Online Rechner für Imobilienobjekte der Titocci Metalconsturzione SAGL 
+- **`/calculator`**:Online Rechner
 - **`/sitemap`**: Sitemap mit der gesamten Navbar mit allen Pages übersichtlich aufgeführt
 - **`/privacy`**: Datenschutzbestimmungen (Privacy Policy) gemäss DSG+DSGVO
 
