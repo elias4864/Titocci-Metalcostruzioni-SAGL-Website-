@@ -1,0 +1,45 @@
+.theme-2-main {
+  background-color: hsl(0, 0%, 90%);
+  color: hsl(60, 10%, 19%);
+}
+
+.theme-2-header-logo,
+.theme-2-header-switch-prompt,
+.theme-2-header-switch-position {
+  color: hsl(60, 10%, 19%);
+}
+
+.theme-2-header-switch-container {
+  background-color: hsl(0, 5%, 81%);
+}
+
+.theme-2-header-switch-toggle {
+  background-color: hsl(25, 98%, 40%);
+}
+
+.theme-2-display {
+  background-color: hsl(0, 0%, 93%);
+  color: hsl(60, 10%, 19%);
+}
+
+.theme-2-keypad {
+  background-color: hsl(0, 5%, 81%);
+}
+
+.theme-2-key-0 {
+  background-color: hsl(45, 7%, 89%);
+  color: hsl(60, 10%, 19%);
+  box-shadow: 0 4px 0 hsl(35, 11%, 61%);
+}
+
+.theme-2-key-1 {
+  background-color: hsl(185, 42%, 37%);
+  color: #fff;
+  box-shadow: 0 4px 0 hsl(185, 58%, 25%);
+}
+
+.theme-2-key-2 {
+  background-color: hsl(25, 98%, 40%);
+  color: #fff;
+  box-shadow: 0 4px 0 hsl(25, 99%, 27%);
+}

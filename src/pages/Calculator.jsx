@@ -1,143 +1,133 @@
-import React, { createContext, useState } from "react";
-
-// Komponenten importieren
-import Header from "../pages/Header.jsx";
-import Display from "../pages/Display";
-import Keypad from "../pages/KeyPad.jsx";
-
+import React, { createContext, useState } from 'react';
+import Keypad from '../pages/KeyPad.jsx';
+import Header from '../pages/Header.jsx';
+import Display from '../pages/Display.jsx';
 import '../Styles/Calculator.css';
+import '../Styles/theme-1.css';
+import '../Styles/theme-2.css';
+import '../Styles/theme-3.css';
 
-export const ThemeContext = createContext();
+// 1. Context exportieren, damit Key.jsx darauf zugreifen kann
+export const ThemeContext = createContext("1");
 
-function Calculator() {
-    const [theme, setTheme] = useState(1);
-    const [primary, setPrimary] = useState("0");
-    const [secondary, setSecondary] = useState("");
-    const [operator, setOperator] = useState(null);
-    const [previous, setPrevious] = useState("");
-    const [ResetNext,setResetNext] = useState("");
+export default function Calculator() {
+    const [currentInput, setCurrentInput] = useState("0");
+    const [theme, setTheme] = useState("1"); // Standard-Theme ist "1"
 
-    // Haupt-Berechnung gemäß Lucca Rodrigues Algorithmus
-    const calc = (shift = true, swap = false) => {
-        let result = 0;
-        const primaryNumber = Number(primary);
-        const secondaryNumber = Number(secondary);
-
-        if (swap) {
-            if (operator === 0) result = primaryNumber + secondaryNumber;
-            if (operator === 1) result = primaryNumber - secondaryNumber;
-            if (operator === 2) result = primaryNumber * secondaryNumber;
-            if (operator === 3) result = secondaryNumber === 0 ? "Error" : primaryNumber / secondaryNumber;
-        } else {
-            if (operator === 0) result = secondaryNumber + primaryNumber;
-            if (operator === 1) result = secondaryNumber - primaryNumber;
-            if (operator === 2) result = secondaryNumber * primaryNumber;
-            if (operator === 3) result = primaryNumber === 0 ? "Error" : secondaryNumber / primaryNumber;
-        }
-
-        alert("Das Resultat ist " + result);
-
-        const originalPrimary = primary;
-        setPrimary(result.toString());
-
-        if (shift) {
-            setSecondary(originalPrimary);
-        }
-    };
-
-    // Zeichen/Ziffern eingeben
+    // Zeichen / Ziffern hinzufügen
     const addChar = (char) => {
-        let currentPrimary = primary;
-        let currentSecondary = secondary;
-
-        if (previous === "=") {
-            setSecondary("");
-            currentSecondary = "";
-        }
-
-        if (previous.startsWith("op")) {
-            setSecondary(primary);
-            currentPrimary = "";
-        }
-
-        if (char === "." && currentPrimary.includes(".")) return;
-
-        if (currentPrimary === "0" && char !== ".") {
-            setPrimary(String(char));
-        } else {
-            setPrimary(currentPrimary + String(char));
-        }
-
-        setPrevious(`char-${char}`);
+        setCurrentInput(prev => (prev === "0" ? String(char) : prev + char));
     };
 
-    // DEL Taste
+    // Letztes Zeichen löschen (Backspace)
     const delChar = () => {
-        if (primary.length <= 1 || primary === "Error") {
-            setPrimary("0");
-        } else {
-            setPrimary((prev) => prev.slice(0, -1));
-        }
+        setCurrentInput(prev => (prev.length > 1 ? prev.slice(0, -1) : "0"));
     };
 
-
-    // RESET Taste
+    // Alles zurücksetzen (AC / RESET)
     const reset = () => {
-        setPrimary("0");
-        setSecondary("");
-        setOperator(null);
-        setPrevious("");
+        setCurrentInput("0");
     };
 
-    // Operator-Klick Handler
+    // Operatoren (+, -, *, /) hinzufügen
     const handleOperator = (op) => {
-        const newSecondary = previous === "=" ? "" : secondary;
-        setSecondary(newSecondary);
-
-        if (newSecondary !== "" && !previous.startsWith("op")) {
-            calc(true, false);
-        }
-
-        setOperator(op);
-        setPrevious(`op-${op}`);
+        setCurrentInput(prev => prev + " " + op + " ");
     };
 
-    // Gleichheitszeichen (=) Handler
-    const handleEquals = () => {
-        if (operator === null) return;
-        const isRepeatEquals = previous === "=";
-        calc(!isRepeatEquals, isRepeatEquals);
-        setPrevious("=");
-    };
-
-
-    // Quadrat-Funktion (x²)
+    // Quadrat-Berechnung (x²)
     const handleSquare = () => {
-        const num = parseFloat(primary);
-        if (!isNaN(num)) {
-            const result = (num * num).toString();
-            setPrimary(result);
-            setResetNext(true); // Setzt den Status, damit die nächste Ziffereneingabe das Ergebnis überschreibt
+        const value = parseFloat(currentInput);
+        if (!isNaN(value)) {
+            setCurrentInput(String(value * value));
         }
     };
+
+    // Prozent-Berechnung
+    const handlePercent = () => {
+        const value = parseFloat(currentInput);
+        if (!isNaN(value)) {
+            setCurrentInput(String(value / 100));
+        }
+    };
+
+    // Quadratwurzel-Berechnung
+    const handleSqrt = () => {
+        const value = parseFloat(currentInput);
+        if (!isNaN(value) && value >= 0) {
+            setCurrentInput(String(Math.sqrt(value)));
+        } else {
+            alert(`Fehler: Ungültiger Wert für die Wurzel (${currentInput})`);
+        }
+    };
+
+    // Ergebnis berechnen (=)
+    const handleEquals = () => {
+        try {
+            // eval wird hier für den Taschenrechner-Prototyp genutzt
+            const result = eval(currentInput);
+            setCurrentInput(String(result));
+        } catch (error) {
+            alert("Ungültige Berechnung");
+            setCurrentInput("0");
+        }
+    };
+
     return (
         <ThemeContext.Provider value={theme}>
-            <main className={`calc-wrapper theme-${theme}-main`}>
+            {/* Wichtig: theme-${theme}-main und calc-wrapper müssen hier stehen, damit das CSS greift! */}
+            <div className={`calc-wrapper theme-${theme}-main`}>
                 <div className="calc-container">
-                    <Header setTheme={setTheme} />
-                    <Display value={primary} />
-                    <Keypad
-                        addChar={addChar}
-                        delChar={delChar}
-                        reset={reset}
-                        handleOperator={handleOperator}
-                        handleEquals={handleEquals}
-                        handleSquare={handleSquare}
-                    />
+
+                    {/* Header mit Logo und Theme-Switch */}
+                    <div className="calc-header">
+                        <div className={`header-logo theme-${theme}-header-logo`}>calc</div>
+                        <div className="calc-header-switch">
+                            <span className={`header-switch-prompt theme-${theme}-header-switch-prompt`}>THEME</span>
+                            <div style={{ position: 'relative' }}>
+                                <div className="header-switch-positions">
+                                    <span className={`theme-${theme}-header-switch-position`}>1</span>
+                                    <span className={`theme-${theme}-header-switch-position`}>2</span>
+                                    <span className={`theme-${theme}-header-switch-position`}>3</span>
+                                </div>
+                                <div className={`header-switch-container theme-${theme}-header-switch-container`}>
+                                    {/* Klickbare Bereiche für die Themes 1, 2 und 3 */}
+                                    <div className="ghost ghost-1" onClick={() => setTheme("1")}></div>
+                                    <div className="ghost ghost-2" onClick={() => setTheme("2")}></div>
+                                    <div className="ghost ghost-3" onClick={() => setTheme("3")}></div>
+
+                                    {/* Schieber / Toggle */}
+                                    <div
+                                        className={`header-switch-toggle theme-${theme}-header-switch-toggle`}
+                                        style={{
+                                            left: theme === "1" ? "5px" : theme === "2" ? "27px" : "49px"
+                                        }}
+                                    ></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Display */}
+                    <div className={`display theme-${theme}-display`}>
+                        <div className="display-text">{currentInput}</div>
+                    </div>
+
+                    {/* Keypad */}
+                    <div className={`keypad theme-${theme}-keypad`}>
+                        <Keypad
+                            addChar={addChar}
+                            delChar={delChar}
+                            reset={reset}
+                            handleOperator={handleOperator}
+                            handleSquare={handleSquare}
+                            handlePercent={handlePercent}
+                            handleSqrt={handleSqrt}
+                            handleEquals={handleEquals}
+                        />
+                    </div>
+
                 </div>
-            </main>
+            </div>
         </ThemeContext.Provider>
     );
 }
-
-export default Calculator;

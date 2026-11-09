@@ -44,6 +44,9 @@ function MainContent() {
     const emailInputRef = useRef(null);
     const messageInputRef = useRef(null);
 
+    const [isOpen, setIsOpen] = useState(false);
+
+
     // Funktion zum Nach-oben-Scrollen
     const scrollToTop = () => {
         window.scrollTo({
@@ -62,7 +65,8 @@ function MainContent() {
         }
     };
 
-    const [focusedField, setFocusedField] = useState(null);
+
+    const [focusedField,setFocusedField]=useState("");
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -406,6 +410,55 @@ function MainContent() {
             </button>
 
 
+            <div className={`chatbot-wrapper ${isOpen ? 'open' : 'closed'}`}>
+                {/* Button zum Ausklappen, falls geschlossen */}
+                {!isOpen && (
+                    <button
+                        className="chatbot-toggle-btn"
+                        onClick={() => setIsOpen(true)}
+                        aria-label="Chat öffnen"
+                    >
+                        💬
+                    </button>
+                )}
+
+                {/* Chatbot Fenster */}
+                {isOpen && (
+                    <div className="chatbot-window">
+                        <div className="chatbot-header">
+                            <span>Assistant</span>
+                            <button
+                                className="chatbot-close-btn"
+                                onClick={() => setIsOpen(false)}
+                                aria-label="Chat minimieren"
+                            >
+                                ✖
+                            </button>
+                        </div>
+
+                        {messages.length === 0 && (
+                            <div className="chatbot-welcome">
+                                <h2>Willkommen, Elias!</h2>
+                                <p>Wie kann ich dir heute helfen?</p>
+                            </div>
+                        )}
+
+                        <ChatMessages
+                            messages={messages}
+                        />
+
+                        <ChatInput
+                            newMessage={newMessage}
+                            isLoading={isLoading}
+                            setNewMessage={setNewMessage}
+                            submitNewMessage={submitNewMessage}
+                        />
+                    </div>
+                )}
+            </div>
+            );
+
+
 
 
             <footer className="footer-div">
@@ -495,7 +548,7 @@ function MainContent() {
                                     scrollToInput(messageInputRef);
                                 }}
                                 onBlur={() => setFocusedField(null)}
-                                style={getInputStyle('messagio')}
+                                style={getInputStyle('message')}
                                 rows="10"
                                 cols="100"
                             />

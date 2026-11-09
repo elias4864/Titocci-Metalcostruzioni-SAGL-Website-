@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { ThemeContext } from "../pages/Calculator.jsx";
+import { ThemeContext } from "../pages/context/ThemeContext";
 
 function Display({ value }) {
     const theme = useContext(ThemeContext);

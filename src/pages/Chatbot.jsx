@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useImmer } from 'use-immer';
 
@@ -6,9 +5,13 @@ import ChatInput from '../pages/ChatInput.jsx';
 import ChatMessages from '../pages/ChatMessages.jsx';
 import '../Styles/Chatbot.css';
 
-function Chatbot({lang}) {
+function Chatbot({ lang }) {
     const [messages, setMessages] = useImmer([]);
-    const [newMessage, setNewMessage] = useState(""); // Richtig: Startet als leerer String
+    const [newMessage, setNewMessage] = useState("");
+    const [isOpen, setIsOpen] = useState(false);
+
+
+
 
     const isLoading = messages.some(message => message.loading);
 
@@ -79,26 +82,50 @@ function Chatbot({lang}) {
     }
 
     return (
-        <div className="chatbot">
-
-            {messages.length === 0 && (
-                <div className="chatbot-welcome">
-                    <h2>Willkommen,Elias!</h2>
-                    <p>Wie kann ich dir heute helfen?</p>
-                </div>
+        <div className={`chatbot-wrapper ${isOpen ? 'open' : 'closed'}`}>
+            {/* Button zum Ausklappen, falls geschlossen */}
+            {!isOpen && (
+                <button
+                    className="chatbot-toggle-btn"
+                    onClick={() => setIsOpen(true)}
+                    aria-label="Chat öffnen"
+                >
+                    💬
+                </button>
             )}
 
-            <ChatMessages
-                messages={messages}
-            />
+            {isOpen && (
+                <div className="chatbot-window">
+                    <div className="chatbot-header">
+                        <span>Assistant</span>
+                        <button
+                            className="chatbot-close-btn"
+                            onClick={() => setIsOpen(false)}
+                            aria-label="Chat minimieren"
+                        >
+                            ✖
+                        </button>
+                    </div>
 
-            <ChatInput
-                newMessage={newMessage}
-                isLoading={isLoading}
-                setNewMessage={setNewMessage}
-                submitNewMessage={submitNewMessage}
-            />
+                    {messages.length === 0 && (
+                        <div className="chatbot-welcome">
+                            <h2>Willkommen, Elias!</h2>
+                            <p>Wie kann ich dir heute helfen?</p>
+                        </div>
+                    )}
 
+                    <ChatMessages
+                        messages={messages}
+                    />
+
+                    <ChatInput
+                        newMessage={newMessage}
+                        isLoading={isLoading}
+                        setNewMessage={setNewMessage}
+                        submitNewMessage={submitNewMessage}
+                    />
+                </div>
+            )}
         </div>
     );
 }
