@@ -59,6 +59,7 @@ function MainContent() {
         });
     };
 
+
     /**
      * ScrolltoInput Ref
      * @param inputRef
@@ -136,7 +137,7 @@ function MainContent() {
         }
 
 
-        navigate('/kontakte');
+        navigate('/calculator');
 
         try {
             const EmailJS_serviceID = 'service_n9toe59';
@@ -424,11 +425,11 @@ function MainContent() {
                 {isOpen && (
                     <div className="chatbot-window">
                         <div className="chatbot-header">
-                            <span>Assistant</span>
+                            <span>Leo KI-Chatbot</span>
                             <button
                                 className="chatbot-close-btn"
                                 onClick={() => setIsOpen(false)}
-                                aria-label="Chat minimieren"
+                                aria-label="Chat ausblenden"
                             >
                                 ✖
                             </button>

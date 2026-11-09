@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import emailjs from "@emailjs/browser";
 
 const CANTON_FACTORS = {
     ZH: { name: 'Zürich (ZH)', factor: 1.35 },
@@ -38,10 +39,12 @@ export default function HousePriceCalculator() {
     const [condition, setCondition] = useState('good');
     const [year, setYear] = useState(2000);
     const [personen, setPersonen] = useState(1);
+    const [email, setEmail] = useState('');
     const [result, setResult] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
     const [isOpen, setIsOpen] = useState(true);
     const [zinssatz, setZinssatz] = useState(2.5);
+
 
     const currentYear = new Date().getFullYear();
 
@@ -65,8 +68,51 @@ export default function HousePriceCalculator() {
         setImagePreview(null);
     };
 
+    // E-Mail-Versand via EmailJS
+    const sendEmailCalc = async (calculatedTotalPrice, calculatedPricePerQm) => {
+        if (!email || email.length < 5 || !email.includes('@')) {
+            alert("Bitte gib eine gültige E-Mail-Adresse ein.");
+            return;
+        }
+
+        try {
+            const EmailJS_serviceID = 'service_n9toe59';
+
+            const EmailJS_templateID = 'template_mrshrnl';
+            const EmailJS_publicKey = 'dFpVpt98rEIko4TLa';
+
+            const templateParams = {
+                subject: "Neue Immobilien-Berechnung von Titocci Metalconstruzione",
+                from_email: email,
+                message: `Wohnfläche: ${qm} m²\nKanton: ${canton}\nZinssatz: ${zinssatz}%\nGeschätzter Quadratmeterpreis: ${calculatedPricePerQm} CHF\nGeschätzter Gesamtpreis: ${calculatedTotalPrice} CHF`,
+                to_email: "info@titocci.ch",
+                signup_date: new Date().toLocaleDateString('de-CH'),
+            };
+
+            await emailjs.send(
+                EmailJS_serviceID,
+                EmailJS_templateID,
+                templateParams,
+                EmailJS_publicKey
+            );
+
+            alert("Der Bericht wurde erfolgreich an " + email + " und an Titocci Metalconstruzione gesendet!");
+
+        } catch (error) {
+            console.error("Fehler beim E-Mail-Versand:", error.message);
+            alert("Fehler beim Senden der E-Mail: " + error.message);
+        }
+    };
+
     const handleCalculate = (e) => {
         e.preventDefault();
+
+        if (!email || !email.includes('@')) {
+            alert("Bitte geben Sie zuerst eine gültige E-Mail-Adresse ein.");
+            return;
+        }
+
+
 
         const base = LOCATION_FACTORS[location].basePrice;
         const cantonFactor = CANTON_FACTORS[canton].factor;
@@ -81,13 +127,18 @@ export default function HousePriceCalculator() {
 
         const pricePerQm = base * cantonFactor * conditionMult * groesseFactor * ageFactor * personenFactor * zinsFactor;
         const totalPrice = pricePerQm * qm;
-        alert("Der Imobillienfläche pro Quadratmeter"+pricePerQm);
-        alert("Der Gesamtpreis beträgt"+totalPrice);
+
+        const roundedPricePerQm = Math.round(pricePerQm);
+        const roundedTotalPrice = Math.round(totalPrice);
 
         setResult({
-            pricePerQm: Math.round(pricePerQm),
-            totalPrice: Math.round(totalPrice),
+            pricePerQm: roundedPricePerQm,
+            totalPrice: roundedTotalPrice,
+            email: email,
         });
+
+        // EmailJS direkt nach erfolgreicher Berechnung auslösen
+        sendEmailCalc(roundedTotalPrice, roundedPricePerQm);
     };
 
     const currentGroesse = getGroesseCategory(qm);
@@ -135,6 +186,19 @@ export default function HousePriceCalculator() {
                                     </button>
                                 </div>
                             )}
+                        </div>
+
+                        {/* E-MAIL EINGABE */}
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Ihre E-Mail-Adresse eingeben (für den Bericht):</label>
+                            <input
+                                type="email"
+                                placeholder="elias.kaiser@gmx.ch"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                                style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box', color: 'orange' }}
+                            />
                         </div>
 
                         {/* SLIDER 1: Wohnfläche (m²) */}
@@ -235,18 +299,14 @@ export default function HousePriceCalculator() {
                             />
                         </div>
 
-                        {/* Submit-Button mit PDF Download */}
+                        {/* Submit-Button */}
                         <button
                             type="submit"
+                            onClick={sendEmailCalc}
                             style={{ padding: '12px', backgroundColor: '#0070f3', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px' }}
                         >
-                            <a
-                                href="Bewerbung.pdf"
-                                download="Bewerbung.pdf"
-                                style={{ color: '#ffffff', textDecoration: 'none', display: 'block', width: '100%' }}
-                            >
-                                →Online Berechnung als PDF-Datei downloaden←
-                            </a>
+
+                            Immobilienpreis berechnen & E-Mail erhalten
                         </button>
                     </form>
 
@@ -259,7 +319,10 @@ export default function HousePriceCalculator() {
                             <p style={{ fontSize: '14px', color: '#0369a1', margin: '0 0 10px 0' }}>
                                 ({result.pricePerQm.toLocaleString('de-CH')} CHF / m²)
                             </p>
-                            <small style={{ color: '#666', fontSize: '11px' }}>*Dies ist eine unverbindliche mathematische Schätzung.</small>
+                            <p style={{ fontSize: '13px', color: '#0369a1', margin: '10px 0 0 0' }}>
+                                Der Bericht wurde an <strong>{result.email}</strong> gesendet.
+                            </p>
+                            <small style={{ color: '#666', fontSize: '11px', display: 'block', marginTop: '5px' }}>*Dies ist eine unverbindliche mathematische Schätzung.</small>
                         </div>
                     )}
                 </>

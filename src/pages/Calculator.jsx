@@ -6,6 +6,8 @@ import '../Styles/Calculator.css';
 import '../Styles/theme-1.css';
 import '../Styles/theme-2.css';
 import '../Styles/theme-3.css';
+import emailjs from "@emailjs/browser";
+
 
 // 1. Context exportieren, damit Key.jsx darauf zugreifen kann
 export const ThemeContext = createContext("1");

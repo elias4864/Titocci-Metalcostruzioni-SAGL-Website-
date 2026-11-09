@@ -15,7 +15,7 @@ function ChatInput({ newMessage, isLoading, setNewMessage, submitNewMessage }) {
             <input
                 type="text"
                 className="chat-input-field"
-                placeholder="Schreibe eine Nachricht..."
+                placeholder="Schreibe bitte  eine Nachricht..."
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 onKeyDown={handleKeyDown}
