@@ -1,5 +1,7 @@
-import  {  useEffect, useRef } from 'react';
+import React, { createContext, useState, useEffect, useRef } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate } from 'react-router-dom';
+import emailjs from "@emailjs/browser";
+
 import Home from "./pages/Home.jsx";
 import Navbar from "./pages/Navbar.jsx";
 import Dropdown from "./assets/Dropdown.png";
@@ -10,29 +12,22 @@ import AboutUs from "./pages/AboutUs.jsx";
 import Kontakte from "./pages/Kontakt.jsx";
 import Sitemap from "./pages/Sitemap.jsx";
 import Chatbot from "./pages/Chatbot.jsx";
-import ChatInput from "./pages/ChatInput.jsx";
-import ChatMessages from "./pages/ChatMessages.jsx";
 import Calculator from "./pages/Calculator.jsx";
-
-import './Styles/App.css';
 import LanguageSwitcher from "./pages/LanguageDropwdon.jsx";
 import Imobiliacalculatori from "./pages/ImobiliaCalculatori.jsx";
+import Privacy from "./pages/Privacy.jsx";
+import Impressumpage from "./pages/Impressum.jsx";
+import Avegno from "./pages/Avegno.jsx";
+import Locarno from "./pages/Locarno.jsx";
 
 import Facebook from "./assets/Facebook.png";
-import Privacy from "./pages/Privacy.jsx";
 import Instagram from "./assets/Insagram.jfif";
 import Google from "./assets/Google.png";
 import Verifizierungbild from "./assets/Verifizierung.gif";
-import Impressumpage from "./pages/Impressum.jsx";
-import  Avegno from "./pages/Avegno.jsx";
-import emailjs from "@emailjs/browser";
-import Locarno from "./pages/Locarno.jsx";
 
-import React, { createContext, useState } from "react";
-
+import './Styles/App.css';
 
 export const ThemeContext = createContext();
-
 
 function MainContent() {
     const [showBanner, setShowBanner] = useState(false);
@@ -43,15 +38,7 @@ function MainContent() {
     const nameInputRef = useRef(null);
     const emailInputRef = useRef(null);
     const messageInputRef = useRef(null);
-    const [messages, setMessages] = useState([]); // Wichtig: [] statt null oder {}
-    const[newMessage, setNewMessage]=useState("");
-    const[isloading,setIsLoading]=useState(true);
-    const[submitNewMessage,setSubmitNewMessage]=useState("");
 
-    const [isOpen, setIsOpen] = useState(false);
-
-
-    // Funktion zum Nach-oben-Scrollen
     const scrollToTop = () => {
         window.scrollTo({
             top: 0,
@@ -59,19 +46,13 @@ function MainContent() {
         });
     };
 
-
-    /**
-     * ScrolltoInput Ref
-     * @param inputRef
-     */
     const scrollToInput = (inputRef) => {
         if (inputRef.current) {
             inputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     };
 
-
-    const [focusedField,setFocusedField]=useState("");
+    const [focusedField, setFocusedField] = useState("");
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -89,10 +70,6 @@ function MainContent() {
         transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
         boxSizing: 'border-box'
     });
-
-
-
-
 
     useEffect(() => {
         const cookieChoice = localStorage.getItem('cookieConsent');
@@ -120,24 +97,21 @@ function MainContent() {
 
     const sendEmail = async (e) => {
         e.preventDefault();
-        alert("Nachricht wurde erfolgreich gesendet an die Titocci Metalconstruzione SAGL");
 
-
-        if(formData.email.length<8) {
+        if (formData.email.length < 8) {
             alert("Bitte eine gültige E-Mail eingeben");
+            return;
         }
 
-
-        if(formData.name.length<7) {
+        if (formData.name.length < 7) {
             alert("Bitte einen gültigen Namen eingeben");
+            return;
         }
 
-        if(formData.message.length<7) {
-            alert("Bitte eine gültige E-Mail Nachricht eingeben");
+        if (formData.message.length < 7) {
+            alert("Bitte eine gültige Nachricht eingeben");
+            return;
         }
-
-
-        navigate('/calculator');
 
         try {
             const EmailJS_serviceID = 'service_n9toe59';
@@ -145,217 +119,34 @@ function MainContent() {
             const EmailJS_publicKey = 'dFpVpt98rEIko4TLa';
 
             const templateParams = {
-                // Welches Formular/Betreff
                 subject: "Neue Newsletter-Anmeldung",
-
-                // Daten des Absenders aus dem React-State (formData)
                 from_name: formData.name || "Newsletter-Abonnent",
                 from_email: formData.email,
                 message: formData.message || "Interesse an News und Angeboten",
-
-                // Optional: Empfänger-Adresse (falls im EmailJS-Template genutzt)
                 to_email: "info@titocci.ch",
-
-                // Optional: Zusatzdaten wie Datum oder Sprache
                 signup_date: new Date().toLocaleDateString('de-CH'),
                 language: language
             };
 
-            const response = await emailjs.send(
+            await emailjs.send(
                 EmailJS_serviceID,
                 EmailJS_templateID,
                 templateParams,
                 EmailJS_publicKey
             );
 
-            console.log('SUCCESS!', response.status, response.text);
             alert('Vielen Dank! Deine Nachricht wurde erfolgreich versendet.');
+            navigate('/calculator');
 
         } catch (error) {
             console.error("Fehler beim Absenden des Formulars:", error.message);
         }
     };
 
-
-
-    const translations = {
-        de: {
-            navHome: "Home",
-            navCarrosserie: "Carrosserie",
-            navAufbereitung: "Autoaufbereitung",
-            navAufbereitungTitle:"Aufbereitung",
-            navKontakt: "Kontakt",
-            navImpressum: "Impressum",
-            navServizi: "Leistungen",
-            navChiSiamo: "CHi Siamo",
-            navGaleria: "Galeria",
-            navImobiliaCalculatori:"Imobillienrechner",
-
-            navLackierereititle:"Lackierei",
-            navDatenschutzerklärung: "Datenschutzerklärung",
-            navPrivacyPolicy: "Datenschutzerklärung öffnen",
-            wikiText:"Wiki",
-
-            navAutolackieren: "Auto lackieren",
-            newsletterTitle: " Unser Newsletter abonnieren",
-            navKontakt2:"Kontakt aufnehmen",
-            newsletterDesc: "Abonnieren Sie unseren Newsletter für aktuelle Angebote und News.",
-            newsletterEmailPlaceholder: "Ihre E-Mail-Adresse",
-            newsletterSubmit: "Abonnieren",
-            newsletterSuccess: "Vielen Dank für Ihre Anmeldung!",
-            navSpenglerei: "Spenglerei",
-            navGalerie: "Galerie",
-            navSpengler: "Spengler",
-            navAutopflege: "Autopflege",
-            navFahrzeugaufbereitung: "Fahrzeugaufbereitung",
-            modalTitle: "Nehmen Sie jetzt Kontakt mit uns auf",
-            phoneLabel: "Telefon:",
-            callBtn: "Jetzt anrufen",
-            closeBtn: "Schliessen",
-            contactTitle: "Kontakt",
-            hoursTitle: "Öffnungszeiten",
-            hoursWeek: "Mo – Do: 07.30 – 12.00 Uhr | 13.00 – 17.30 Uhr",
-            hoursFri: "Fr: 07.30 – 12.00 Uhr | 13.00 – 16.30 Uhr",
-            socialText: "Folgen Sie uns jetzt auf unseren Social Media Kanälen:",
-            companyTitle: "Carrosserie Örlike TL AG",
-            companyOwners: "Duje Antonina / Michael Nufer",
-            companyAddress: "Fabrikstrasse 17, 8102 Oberengstringen",
-            metaTitle: "Carrosserie Örlike TL AG | Carrosserie, Lackiererei & Spenglerei in Oberengstringen",
-            metaDesc: "Professionelle Carrosseriearbeiten, Unfallinstandsetzung, Lackiererei, Spenglerei und Fahrzeugaufbereitung in Oberengstringen / Zürich.",
-        },
-        en: {
-            navHome: "Home",
-            navCarrosserie: "Body Shop",
-            navAufbereitung: "Car Detailing",
-            navAufbereitungTitle:"Processing",
-            navDatenschutzerklärung: "Privacy Policy",
-            navAnfrage: "Inquiry",
-            wikiText:"Wiki",
-            navChatbot: "AI chatbot",
-
-            navKontakt2: "make contact",
-            navKontakt: "Contact",
-            navSpenglerei: "Sheet Metal Work",
-            navFahrzeugaufbereitung: "Vehicle detailing",
-            navAutopflege: "Car Care",
-            navSpengler: "Spengler",
-            modalTitle: "Get in touch with us now",
-            navLackierei: "Auto Body and Paint Shop",
-            navAutolackieren: "Car painting",
-            navLackierereititle:"paint shop",
-            newsletterTitle: "Subscribe to our Newsletter",
-            newsletterDesc: "Subscribe to our newsletter for the latest offers and news.",
-            newsletterEmailPlaceholder: "Your email address",
-            newsletterSubmit: "Subscribe",
-            newsletterSuccess: "Thank you for subscribing!",
-            navPrivacyPolicy:"Privacy Policy",
-            navGalerie: "Gallery",
-            navTermin:"Appointment",
-            phoneLabel: "Phone:",
-            callBtn: "Call now",
-            closeBtn: "Close",
-            contactTitle: "Contact",
-            hoursTitle: "Opening Hours",
-            hoursWeek: "Mon – Thu: 07.30 – 12.00 | 13.00 – 17.30",
-            hoursFri: "Fri: 07.30 – 12.00 | 13.00 – 16.30",
-            socialText: "Follow us now on our social media channels:",
-            companyTitle: "Carrosserie Örlike TL AG",
-            companyOwners: "Duje Antonina / Michael Nufer",
-            companyAddress: "Fabrikstrasse 17, 8102 Oberengstringen",
-            metaTitle: "Carrosserie Örlike TL AG | Body & Paint Shop Oberengstringen",
-            metaDesc: "Professional body shop, paint shop, sheet metal work, and car detailing in Oberengstringen, Zurich."
-        },
-        it: {
-            navHome: "Home",
-            navCarrosserie: "Carrozzeria",
-            navAufbereitung: "Preparazione auto",
-            navAufbereitungTitle:"Trattamento",
-            navKontakt: "Contatti",
-            navDatenschutzerklärung:"Informativa sulla privacy",
-            navPrivacyPolicy:"Informativa sulla privacy",
-            wikiText:"Wiki",
-            navTermin:"Appuntamento",
-            navChatbot:"sull'IA",
-            navAnfrage: "Richiesta",
-            navKontakt2:"make contact",
-            navLackierei: "Carrozzeria (verniciatura auto)",
-            navAutolackieren: "Verniciare l'auto",
-            navLackierereititle:"Reparto verniciatura",
-            newsletterTitle: "Iscriviti alla nostro Newsletter",
-            newsletterDesc: "Iscriviti alla nostra newsletter per ricevere le ultime offerte e novità.",
-            newsletterEmailPlaceholder: "Il tuo indirizzo e-mail",
-            newsletterSubmit: "Iscriviti",
-            newsletterSuccess: "Grazie per l'iscrizione!",
-
-            navAutopflege: "Cura dell'auto",
-            navSpenglerei: "Lattoneria",
-            navSpengler: "Lattoniere",
-            navGalerie: "Galleria",
-            modalTitle: "Mettetevi in contatto con noi ora",
-            phoneLabel: "Telefono:",
-            callBtn: "Chiama ora",
-            closeBtn: "Chiudi",
-            contactTitle: "Contatto",
-            hoursTitle: "Orari di apertura",
-            hoursWeek: "Lun – Gio: 07.30 – 12.00 | 13.00 – 17.30",
-            hoursFri: "Ven: 07.30 – 12.00 | 13.00 – 16.30",
-            socialText: "Seguiteci ora sui nostri canali social:",
-            companyTitle: "Carrozzeria Örlike TL AG",
-            companyOwners: "Duje Antonina / Michael Nufer",
-            companyAddress: "Fabrikstrasse 17, 8102 Oberengstringen",
-            metaTitle: "Carrozzeria Örlike TL AG | Carrozzeria e Verniciatura Oberengstringen",
-            metaDesc: "Servizi professionali di carrozzeria, verniciatura, lattoneria e preparazione auto a Oberengstringen / Zurigo.",
-
-        },
-        fr: {
-            navHome: "Accueil",
-            navCarrosserie: "Carrosserie",
-            navAufbereitung: "Préparation automobile",
-            navAufbereitungTitle:"Traitement",
-            navKontakt: "Contact",
-            navGalerie: "Galerie",
-            wikiText: "Wiki",
-            navAnfrage: "Demande",
-            navChatbot: "Chatbot IA",
-            navLackierei: "Atelier de peinture automobile",
-            navDatenschutzerklärung:"Déclaration de protection des données",
-            navPrivacyPolicy:"Déclaration de protection des données",
-            navLackierereititle:"atelier de peinture",
-            navAutolackieren: "Peindre une voiture",
-            navKontakt2:"Prendre contact",
-            navFahrzeugaufbereitung: "Préparation esthétique de véhicules",
-            navAutopflege: "Entretien automobile",
-            newsletterTitle: "S'abonner à notre Newsletter",
-            newsletterDesc: "Abonnez-vous à notre newsletter pour recevoir nos dernières offres et actualités.",
-            newsletterEmailPlaceholder: "Votre adresse e-mail",
-            newsletterSubmit: "S'abonner",
-            newsletterSuccess: "Merci für votre inscription!",
-            navSpenglerei: "Zinguerie",
-            navSpengler: "Spengler",
-            modalTitle: "Contactez-nous dès maintenant",
-            phoneLabel: "Téléphone:",
-            navTermin: "Rendez-vous",
-            callBtn: "Appeler maintenant",
-            closeBtn: "Fermer",
-            contactTitle: "Contact",
-            hoursTitle: "Heures d'ouverture",
-            hoursWeek: "Lun – Jeu: 07h30 – 12h00 | 13h00 – 17h30",
-            hoursFri: "Ven: 07h30 – 12h00 | 13h00 – 16h30",
-            socialText: "Suivez-nous dès maintenant sur nos réseaux sociaux:",
-            companyTitle: "Carrosserie Örlike TL AG",
-            companyOwners: "Duje Antonina / Michael Nufer",
-            companyAddress: "Fabrikstrasse 17, 8102 Oberengstringen",
-            metaTitle: "Carrosserie Örlike TL AG | Carrosserie & Peinture à Oberengstringen",
-            metaDesc: "Services professionnels de carrosserie, peinture, zinguerie et préparation automobile à Oberengstringen / Zurich."
-        }
-    };
-
-
     return (
         <>
-            {/* Navbar links */}
+            {/* Top Bar / Navigation */}
             <div className="top-bar">
-                {/* Navbar rechts */}
                 <div className="navbar-right">
                     <Navbar />
                 </div>
@@ -374,19 +165,15 @@ function MainContent() {
                         <Route path="/chi-siamo" element={<ChisiamoPage lang={language} />} />
                         <Route path="/galeria" element={<Galeria lang={language} />} />
                         <Route path="/aboutus" element={<AboutUs lang={language} />} />
-                        <Route path="/sitemap" element={<Sitemap  lang={language}/>} />
-                        <Route path="/calculatori" element={<Imobiliacalculatori lang={language}/>} />
+                        <Route path="/sitemap" element={<Sitemap lang={language} />} />
+                        <Route path="/calculatori" element={<Imobiliacalculatori lang={language} />} />
                         <Route path="/kontakte" element={<Kontakte lang={language} />} />
                         <Route path="/impressum" element={<Impressumpage lang={language} />} />
                         <Route path="/privacy" element={<Privacy lang={language} />} />
                         <Route path="/avegno" element={<Avegno lang={language} />} />
                         <Route path="/locarno" element={<Locarno lang={language} />} />
                         <Route path="/chatbot" element={<Chatbot lang={language} />} />
-                        <Route path="/chatmessage" element={<ChatMessages lang={language}/>}/>
-                        <Route path="/chatinput" element={<ChatInput lang={language} />}/>
                         <Route path="/calculator" element={<Calculator lang={language} />} />
-
-
                         <Route path="*" element={<Navigate to="/" replace />} />
                     </Routes>
                 </div>
@@ -406,57 +193,8 @@ function MainContent() {
                 </div>
             )}
 
-
-
-
-            <div className={`chatbot-wrapper ${isOpen ? 'open' : 'closed'}`}>
-                {/* Button zum Ausklappen, falls geschlossen */}
-                {!isOpen && (
-                    <button
-                        className="chatbot-toggle-btn"
-                        onClick={() => setIsOpen(true)}
-                        aria-label="Chat öffnen"
-                    >
-                        💬
-                    </button>
-                )}
-
-                {/* Chatbot Fenster */}
-                {isOpen && (
-                    <div className="chatbot-window">
-                        <div className="chatbot-header">
-                            <span>Leo KI-Chatbot</span>
-                            <button
-                                className="chatbot-close-btn"
-                                onClick={() => setIsOpen(false)}
-                                aria-label="Chat ausblenden"
-                            >
-                                ✖
-                            </button>
-                        </div>
-
-                        {messages.length === 0 && (
-                            <div className="chatbot-welcome">
-                                <h2>Willkommen, Elias!</h2>
-                                <p>Wie kann ich dir heute helfen?</p>
-                            </div>
-                        )}
-
-                        <ChatMessages
-                            messages={messages}
-                        />
-
-                        <ChatInput
-                            newMessage={newMessage}
-                            isLoading={isloading}
-                            setNewMessage={setNewMessage}
-                            submitNewMessage={submitNewMessage}
-                        />
-                    </div>
-                )}
-            </div>
-            );
-
+            {/* Eingebundener Chatbot (nutzt seine eigene funktionierende Logik) */}
+            <Chatbot lang={language} />
 
             <button
                 className="scroll-to-top"
@@ -466,9 +204,7 @@ function MainContent() {
                 <img className="dropdown-img" src={Dropdown} alt="Nach oben" />
             </button>
 
-
-
-
+            {/* Footer */}
             <footer className="footer-div">
                 <section className="footer-section section-center">
                     <h1 className="text-footer">CHI SIAMO</h1>
@@ -505,10 +241,8 @@ function MainContent() {
                     <h1 className="text-footer">CONTATTI</h1>
                     <p className="text-column">In di Salécc 2,</p>
                     <p className="text-column">6670 Avegno</p>
-
                     <a className="highlight-red" href="mailto:info@titocci.ch">info@titocci.ch</a>
                     <a className="highlight-red" href="tel:+41917962369">Tel. +41 91 796 23 69</a>
-
                     <div className="badge-container">
                         <img src={Verifizierungbild} alt="Azienda Formatrice" className="badge-img" />
                     </div>
@@ -526,31 +260,48 @@ function MainContent() {
                 </section>
 
                 <div>
-                    <h2 className="newsletter"><marquee>Aboniere jetzt unseren Newsletter </marquee></h2>
-
+                    <h2 className="newsletter"><marquee>Abonniere jetzt unseren Newsletter</marquee></h2>
                     <form className="formular">
                         <span><label><b>Nome:*</b></label></span>
-                        <input type="text" id="name" placeholder="Elias" name="name" ref={nameInputRef}   onFocus={() => {
-                            setFocusedField('name');
-                            scrollToInput(nameInputRef);
-                        }}
-                               onBlur={() => setFocusedField(null)}
-                               style={getInputStyle('name')}
-
+                        <input
+                            type="text"
+                            id="name"
+                            placeholder="Elias"
+                            name="name"
+                            ref={nameInputRef}
+                            value={formData.name}
+                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                            onFocus={() => {
+                                setFocusedField('name');
+                                scrollToInput(nameInputRef);
+                            }}
+                            onBlur={() => setFocusedField(null)}
+                            style={getInputStyle('name')}
                         />
                         <span><label><b>E-Mail-Adresse*</b></label></span>
-                        <input type="email" id="email" name="email"  required placeholder="elias.kaiser@gmx.ch" onFocus={() => {
-                            setFocusedField('email');
-                            scrollToInput(emailInputRef);
-                        }}
-                               onBlur={() => setFocusedField(null)}
-                               style={getInputStyle('email')} ref={emailInputRef} />
-
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            required
+                            placeholder="elias.kaiser@gmx.ch"
+                            ref={emailInputRef}
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                            onFocus={() => {
+                                setFocusedField('email');
+                                scrollToInput(emailInputRef);
+                            }}
+                            onBlur={() => setFocusedField(null)}
+                            style={getInputStyle('email')}
+                        />
                         <span><label><b>Nachricht:*</b></label>
                             <textarea
                                 id="message"
                                 name="message"
                                 ref={messageInputRef}
+                                value={formData.message}
+                                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                                 onFocus={() => {
                                     setFocusedField('message');
                                     scrollToInput(messageInputRef);
@@ -560,12 +311,8 @@ function MainContent() {
                                 rows="10"
                                 cols="100"
                             />
-
-
-
                         </span>
                     </form>
-
                     <button onClick={sendEmail} className="red-btn">
                         Newsletter abonnieren
                     </button>
@@ -597,14 +344,11 @@ function App() {
         <BrowserRouter
             basename={import.meta.env.BASE_URL}
             future={{
-            v7_startTransition: true,
-            v7_relativeSplatPath: true
-        }}
-            >
-
+                v7_startTransition: true,
+                v7_relativeSplatPath: true
+            }}
+        >
             <MainContent />
-
-
         </BrowserRouter>
     );
 }

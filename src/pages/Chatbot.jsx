@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useImmer } from 'use-immer';
 
 import ChatInput from '../pages/ChatInput.jsx';
@@ -55,9 +55,8 @@ function Chatbot({ lang }) {
 
             const data = await response.json();
 
-            // KORRIGIERT: Sauberer Zugriff auf das letzte Element im Draft (Immer-Array)
             setMessages(draft => {
-                const lastMessage = draft[draft.length - 1];
+                const lastMessage = draft.at(-1);
                 if (lastMessage) {
                     lastMessage.content = data.reply || 'Keine Antwort erhalten.';
                     lastMessage.loading = false;
@@ -67,9 +66,8 @@ function Chatbot({ lang }) {
         } catch (error) {
             console.error('Chat error:', error);
 
-            // KORRIGIERT: Sauberer Zugriff im Fehlerfall
             setMessages(draft => {
-                const lastMessage = draft[draft.length - 1];
+                const lastMessage = draft.at(-1);
                 if (lastMessage) {
                     lastMessage.loading = false;
                     lastMessage.error = true;
@@ -84,6 +82,7 @@ function Chatbot({ lang }) {
             {/* Button zum Ausklappen, falls geschlossen */}
             {!isOpen && (
                 <button
+                    type="button"
                     className="chatbot-toggle-btn"
                     onClick={() => setIsOpen(true)}
                     aria-label="Chat öffnen"
@@ -97,6 +96,7 @@ function Chatbot({ lang }) {
                     <div className="chatbot-header">
                         <span>Assistant</span>
                         <button
+                            type="button"
                             className="chatbot-close-btn"
                             onClick={() => setIsOpen(false)}
                             aria-label="Chat minimieren"
@@ -121,6 +121,7 @@ function Chatbot({ lang }) {
                         isLoading={isLoading}
                         setNewMessage={setNewMessage}
                         submitNewMessage={submitNewMessage}
+
                     />
                 </div>
             )}

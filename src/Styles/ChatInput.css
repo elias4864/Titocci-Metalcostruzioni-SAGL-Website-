@@ -2,3 +2,42 @@
     width: 60px;
     height: 40px;
 }
+
+
+.chat-input-field {
+    flex: 1;
+    padding: 10px 14px;
+    font-size: 14px;
+    font-family: inherit;
+    color: #333333;
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+    /* WICHTIG: Erzwingt, dass man in das Feld klicken und schreiben kann */
+    pointer-events: auto !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+
+}
+
+/* Wenn das Feld aktiv/angeklickt ist (Blauer Rahmen im modernen Look) */
+.chat-input-field:focus {
+    border-color: #0070f3;
+    box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.2);
+}
+
+/* Falls das Feld gesperrt ist (während isLoading === true) */
+.chat-input-field:disabled {
+    background-color: #f5f5f5;
+    color: #999999;
+    cursor: not-allowed;
+}
+
+.chat-input-container {
+    position: relative;
+    z-index: 10;
+}
+
