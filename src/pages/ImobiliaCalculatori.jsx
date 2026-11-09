@@ -45,7 +45,6 @@ export default function HousePriceCalculator() {
     const [isOpen, setIsOpen] = useState(true);
     const [zinssatz, setZinssatz] = useState(2.5);
 
-
     const currentYear = new Date().getFullYear();
 
     const getGroesseCategory = (qmValue) => {
@@ -68,16 +67,20 @@ export default function HousePriceCalculator() {
         setImagePreview(null);
     };
 
-    // E-Mail-Versand via EmailJS
+    // E-Mail-Versand via EmailJS inklusive Validierung & Try-Catch
     const sendEmailCalc = async (calculatedTotalPrice, calculatedPricePerQm) => {
         if (!email || email.length < 5 || !email.includes('@')) {
             alert("Bitte gib eine gültige E-Mail-Adresse ein.");
             return;
         }
 
+        if (!qm || qm <= 0) {
+            alert("Bitte eine gültige Gebäudefläche eingeben.");
+            return;
+        }
+
         try {
             const EmailJS_serviceID = 'service_n9toe59';
-
             const EmailJS_templateID = 'template_mrshrnl';
             const EmailJS_publicKey = 'dFpVpt98rEIko4TLa';
 
@@ -89,13 +92,14 @@ export default function HousePriceCalculator() {
                 signup_date: new Date().toLocaleDateString('de-CH'),
             };
 
-            await emailjs.send(
+            const response = await emailjs.send(
                 EmailJS_serviceID,
                 EmailJS_templateID,
                 templateParams,
                 EmailJS_publicKey
             );
 
+            console.log('SUCCESS!', response.status, response.text);
             alert("Der Bericht wurde erfolgreich an " + email + " und an Titocci Metalconstruzione gesendet!");
 
         } catch (error) {
@@ -107,22 +111,30 @@ export default function HousePriceCalculator() {
     const handleCalculate = (e) => {
         e.preventDefault();
 
+        if (!qm || qm <= 0) {
+            alert("Bitte gib eine gültige Wohnfläche ein.");
+            return;
+        }
+
         if (!email || !email.includes('@')) {
             alert("Bitte geben Sie zuerst eine gültige E-Mail-Adresse ein.");
             return;
         }
 
-
-        if(!qm){
-            alert("Bitte gib eine gültige Wohnfläche ein.");
-            return;
-        }
-
         if(!canton){
-            alert("Gib mitte eine gültiger Kanton ZH an");
+            alert("Der Kanton ist leer");
             return;
         }
 
+        if(!zinssatz===0){
+            alert("Der angegebene Zinssatz ist leer"+zinssatz);
+            return;
+        }
+
+        if(!personen===0){
+            alert("Die Anzahl der Personen ist leer"+personen);
+            return;
+        }
 
         const base = LOCATION_FACTORS[location].basePrice;
         const cantonFactor = CANTON_FACTORS[canton].factor;
@@ -140,6 +152,9 @@ export default function HousePriceCalculator() {
 
         const roundedPricePerQm = Math.round(pricePerQm);
         const roundedTotalPrice = Math.round(totalPrice);
+        alert("Der Gesamtpreis der Imobillienhaus pro Quadratmeter beträgt"+roundedPricePerQm);
+        alert("Der Totalpreis der Imbobillienhaus beträgt"+roundedTotalPrice);
+
 
         setResult({
             pricePerQm: roundedPricePerQm,
@@ -147,7 +162,7 @@ export default function HousePriceCalculator() {
             email: email,
         });
 
-        // EmailJS direkt nach erfolgreicher Berechnung auslösen
+        // E-Mail-Versand aufrufen
         sendEmailCalc(roundedTotalPrice, roundedPricePerQm);
     };
 
@@ -312,10 +327,8 @@ export default function HousePriceCalculator() {
                         {/* Submit-Button */}
                         <button
                             type="submit"
-                            onClick={sendEmailCalc}
                             style={{ padding: '12px', backgroundColor: '#0070f3', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px' }}
                         >
-
                             Immobilienpreis berechnen & E-Mail erhalten
                         </button>
                     </form>
