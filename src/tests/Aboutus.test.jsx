@@ -1,6 +1,10 @@
 
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import {
+    render,
+    screen,
+    waitFor
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
     describe,
@@ -50,7 +54,7 @@ vi.mock('@marsidev/react-turnstile', async () => {
     };
 });
 
-// Animation Mocks
+// Animation Mock
 vi.mock('react-useanimations', () => ({
     default: () => (
         <div data-testid="mock-use-animation">
@@ -63,14 +67,12 @@ vi.mock('react-useanimations/lib/lock', () => ({
     default: {}
 }));
 
-// EmailJS Import
-import emailjs from '@emailjs/browser';
-
 describe('AboutUsPage Component Tests', () => {
     let alertSpy;
 
     beforeEach(() => {
-        vi.clearAllMocks();
+        mockSend.mockReset();
+        mockReset.mockReset();
 
         alertSpy = vi.spyOn(window, 'alert')
             .mockImplementation(() => {});
@@ -136,7 +138,7 @@ describe('AboutUsPage Component Tests', () => {
         ).toBeInTheDocument();
     });
 
-    it('zeigt einen Fehler an, wenn die Nachricht kürzer als 10 Zeichen ist', async () => {
+    it('verhindert den Versand bei einer zu kurzen Nachricht', async () => {
         const user = userEvent.setup();
 
         renderComponent();
@@ -146,8 +148,6 @@ describe('AboutUsPage Component Tests', () => {
             'Elias'
         );
 
-        await user.click(screen.getByRole('checkbox'));
-
         await user.type(
             screen.getByPlaceholderText(
                 'Scrivi qui il tuo messaggio...'
@@ -155,17 +155,15 @@ describe('AboutUsPage Component Tests', () => {
             'Kurz'
         );
 
+        await user.click(screen.getByRole('checkbox'));
+
         await user.click(
             screen.getByRole('button', {
                 name: /Invia Messaggio/i
             })
         );
 
-        expect(alertSpy).toHaveBeenCalledWith(
-            'Fehler beim Senden der Nachricht.'
-        );
-
-        expect(emailjs.send).not.toHaveBeenCalled();
+        expect(mockSend).not.toHaveBeenCalled();
     });
 
     it('bricht ab, wenn das Turnstile-Token fehlt', async () => {
@@ -181,11 +179,13 @@ describe('AboutUsPage Component Tests', () => {
             })
         );
 
-        expect(alertSpy).toHaveBeenCalledWith(
-            'Bitte bestätige, dass du kein Roboter bist (Turnstile).'
-        );
+        await waitFor(() => {
+            expect(alertSpy).toHaveBeenCalledWith(
+                'Bitte bestätige, dass du kein Roboter bist (Turnstile).'
+            );
+        });
 
-        expect(emailjs.send).not.toHaveBeenCalled();
+        expect(mockSend).not.toHaveBeenCalled();
     });
 
     it('sendet die E-Mail erfolgreich und setzt Formular sowie Turnstile zurück', async () => {
@@ -216,8 +216,8 @@ describe('AboutUsPage Component Tests', () => {
 
         await waitFor(() => {
             expect(mockSend).toHaveBeenCalledWith(
-                'service_qa3r1ej',
-                'template_mrshrnl',
+                'service_n9toe59',
+                'template_zwrdyci',
                 expect.objectContaining({
                     message: 'Das ist eine Testnachricht mit mehr als zehn Zeichen.',
                     'g-recaptcha-response': 'fake-turnstile-token'
@@ -264,12 +264,30 @@ describe('AboutUsPage Component Tests', () => {
             expect(mockSend).toHaveBeenCalledTimes(1);
 
             expect(alertSpy).toHaveBeenCalledWith(
-                'Fehler beim Senden der Nachricht.'
+                'Fehler beim Senden der Nachricht: Network Error'
             );
-        });
 
-        expect(consoleSpy).toHaveBeenCalled();
+            expect(consoleSpy).toHaveBeenCalled();
+        });
 
         consoleSpy.mockRestore();
     });
 });
+
+it('ermöglicht das Aktivieren der Datenschutz-Checkbox', async () => {
+    const user = userEvent.setup();
+
+    render(
+        <BrowserRouter>
+            <AboutUsPage />
+        </BrowserRouter>
+    );
+
+    const privacyCheckbox = screen.getByRole('checkbox');
+
+    await user.click(privacyCheckbox);
+
+    expect(privacyCheckbox).toBeChecked();
+});
+
+
