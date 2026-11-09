@@ -43,6 +43,10 @@ function MainContent() {
     const nameInputRef = useRef(null);
     const emailInputRef = useRef(null);
     const messageInputRef = useRef(null);
+    const [messages, setMessages] = useState([]); // Wichtig: [] statt null oder {}
+    const[newMessage, setNewMessage]=useState("");
+    const[isloading,setIsLoading]=useState(true);
+    const[submitNewMessage,setSubmitNewMessage]=useState("");
 
     const [isOpen, setIsOpen] = useState(false);
 
@@ -401,13 +405,7 @@ function MainContent() {
                 </div>
             )}
 
-            <button
-                className="scroll-to-top"
-                title="Nach oben scrollen"
-                onClick={scrollToTop}
-            >
-                <img className="dropdown-img" src={Dropdown} alt="Nach oben" />
-            </button>
+
 
 
             <div className={`chatbot-wrapper ${isOpen ? 'open' : 'closed'}`}>
@@ -449,7 +447,7 @@ function MainContent() {
 
                         <ChatInput
                             newMessage={newMessage}
-                            isLoading={isLoading}
+                            isLoading={isloading}
                             setNewMessage={setNewMessage}
                             submitNewMessage={submitNewMessage}
                         />
@@ -457,6 +455,15 @@ function MainContent() {
                 )}
             </div>
             );
+
+
+            <button
+                className="scroll-to-top"
+                title="Nach oben scrollen"
+                onClick={scrollToTop}
+            >
+                <img className="dropdown-img" src={Dropdown} alt="Nach oben" />
+            </button>
 
 
 

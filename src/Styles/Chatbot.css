@@ -5,7 +5,11 @@
     z-index: 1000;
 }
 
+/* ✅ Fixierter Button ganz unten rechts */
 .chatbot-toggle-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
     width: 60px;
     height: 60px;
     border-radius: 50%;
@@ -15,18 +19,26 @@
     font-size: 24px;
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Zentriert das Icon perfekt */
+    z-index: 1000; /* Stellt sicher, dass der Button über dem Content liegt */
 }
 
-/* ✅ KORRIGIERT: .chatbot -> .chatbot-window */
+/* ✅ Fixiertes Chatbot-Fenster direkt über dem Button unten rechts */
 .chatbot-window {
+    position: fixed;
+    bottom: 90px; /* Sitzt exakt über dem Toggle-Button */
+    right: 20px;
     width: 360px;
-    height: 500px; /* max-height durch eine feste height oder flex-grow ersetzen */
+    height: 500px;
     display: flex;
     flex-direction: column;
     background: #ffffff;
     border-radius: 12px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
     overflow: hidden;
+    z-index: 1000;
 }
 
 .chatbot-header {

@@ -1,53 +1,34 @@
-import useAutosize from '../hooks/useAutoSize.js';
-import Sendbutton from '../assets/Send.jpg';
-import '../Styles/ChatInput.css';
-import { useRef, useState } from "react";
+import React from 'react';
 
-function ChatInput({
-                       newMessage,
-                       isLoading,
-                       setNewMessage,
-                       submitNewMessage,
-                       lang
-                   }) {
-    const textareaRef = useAutosize(newMessage);
+function ChatInput({ newMessage, isLoading, setNewMessage, submitNewMessage }) {
 
-    const scrollToInput = () => {
-        if (textareaRef.current) {
-            textareaRef.current.scrollIntoView({ behavior: 'smooth', block: 'center',borderColor:'red' });
-            textareaRef.current.focus();
-        }
-    };
-
-    const [focusedField, setFocusedField] = useState(null);
-
-    function handleKeyDown(e) {
-        if (e.key === 'Enter' && !e.shiftKey && !isLoading) {
+    // Senden per Enter-Taste (ohne Shift)
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             submitNewMessage();
         }
-    }
+    };
 
     return (
-        <div>
-            <textarea
-                ref={textareaRef}
-                rows="7"
-                value={newMessage}
+        <form onSubmit={(e) => { e.preventDefault(); submitNewMessage(); }} className="chat-input-container">
+            <input
+                type="text"
+                className="chat-input-field"
                 placeholder="Schreibe eine Nachricht..."
+                value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 onKeyDown={handleKeyDown}
-                onClick={scrollToInput}
                 disabled={isLoading}
             />
-
             <button
-                onClick={submitNewMessage}
-                disabled={isLoading || !(newMessage || "").trim()}
+                type="submit"
+                className="chat-send-btn"
+                disabled={isLoading || !newMessage.trim()}
             >
-                <img className="send-btn" src={Sendbutton} alt="Senden" />
+                {isLoading ? '...' : 'Senden'}
             </button>
-        </div>
+        </form>
     );
 }
 

@@ -10,9 +10,6 @@ function Chatbot({ lang }) {
     const [newMessage, setNewMessage] = useState("");
     const [isOpen, setIsOpen] = useState(false);
 
-
-
-
     const isLoading = messages.some(message => message.loading);
 
     async function submitNewMessage() {
@@ -58,25 +55,26 @@ function Chatbot({ lang }) {
 
             const data = await response.json();
 
+            // KORRIGIERT: Sauberer Zugriff auf das letzte Element im Draft (Immer-Array)
             setMessages(draft => {
                 const lastMessage = draft[draft.length - 1];
-
-                lastMessage.content =
-                    data.reply || 'Keine Antwort erhalten.';
-
-                lastMessage.loading = false;
+                if (lastMessage) {
+                    lastMessage.content = data.reply || 'Keine Antwort erhalten.';
+                    lastMessage.loading = false;
+                }
             });
 
         } catch (error) {
             console.error('Chat error:', error);
 
+            // KORRIGIERT: Sauberer Zugriff im Fehlerfall
             setMessages(draft => {
                 const lastMessage = draft[draft.length - 1];
-
-                lastMessage.loading = false;
-                lastMessage.error = true;
-                lastMessage.content =
-                    'Die Verbindung zu Gemini konnte nicht hergestellt werden.';
+                if (lastMessage) {
+                    lastMessage.loading = false;
+                    lastMessage.error = true;
+                    lastMessage.content = 'Die Verbindung zu Gemini konnte nicht hergestellt werden.';
+                }
             });
         }
     }

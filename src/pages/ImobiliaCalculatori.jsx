@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 
 const LOCATION_FACTORS = {
-    city: { name: 'Großstadt / Top-Lage', basePrice: 4500 },
-    suburb: { name: 'Speckgürtel / Vorort', basePrice: 3200 },
-    rural: { name: 'Ländliche Region', basePrice: 2100 },
-    country: { name: 'Schweiz', basePrice: 5000 }
+    city: { name: 'Großstadt / Top-Lage', basePrice: 8500 },
+    suburb: { name: 'Speckgürtel / Vorort', basePrice: 6200 },
+    rural: { name: 'Ländliche Region', basePrice: 4100 },
+    country: { name: 'Schweiz (Standard)', basePrice: 5000 },
+    lake: { name: 'Am Seeufer', basePrice: 11000 },
 };
 
 const CONDITION_FACTORS = {
@@ -29,6 +30,9 @@ export default function HousePriceCalculator() {
     const [result, setResult] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
     const [isOpen, setIsOpen] = useState(true);
+    const [zinssatz, setZinssatz] = useState(2.5);
+
+    const currentYear = new Date().getFullYear();
 
     const getGroesseCategory = (qmValue) => {
         if (qmValue <= 45) return GROESSE.small;
@@ -41,9 +45,7 @@ export default function HousePriceCalculator() {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result);
-            };
+            reader.onloadend = () => setImagePreview(reader.result);
             reader.readAsDataURL(file);
         }
     };
@@ -58,17 +60,15 @@ export default function HousePriceCalculator() {
         const base = LOCATION_FACTORS[location].basePrice;
         const conditionMult = CONDITION_FACTORS[condition].multiplier;
         const groesseFactor = getGroesseCategory(qm).multiplier;
-        const personenFactor = 1 + (personen - 1) * 0.02;
 
-        const currentYear = new Date().getFullYear();
         const age = Math.max(0, currentYear - year);
-        const buildyear = Math.max(0.6, 1 - (age * 0.005));
+        const ageFactor = Math.max(0.6, 1 - (age * 0.005));
 
-        const pricePerQm = base * conditionMult * groesseFactor * personenFactor * buildyear;
+        const personenFactor = 1 + ((personen - 1) * 0.01);
+        const zinsFactor = Math.max(0.85, 1 - ((zinssatz - 2.0) * 0.03));
+
+        const pricePerQm = base * conditionMult * groesseFactor * ageFactor * personenFactor * zinsFactor;
         const totalPrice = pricePerQm * qm;
-
-        alert("Der Gesamtpreis pro Quadratmeter beträgt " + Math.round(pricePerQm) + " CHF etwa!");
-        alert("Der Gesamtpreis des Grundstücks beträgt " + Math.round(totalPrice) + " CHF etwa!");
 
         setResult({
             pricePerQm: Math.round(pricePerQm),
@@ -83,7 +83,7 @@ export default function HousePriceCalculator() {
 
             {/* Header mit Toggle-Button */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: isOpen ? '15px' : '0' }}>
-                <h2 style={{ margin: 0, color: '#d4af37', fontSize: '24px', fontWeight: 'bold' }}>Gratis Immobilienrechner</h2>
+                <h2 style={{ margin: 0, color: '#0070f3', fontSize: '24px', fontWeight: 'bold' }}>Gratis Immobilienrechner</h2>
                 <button
                     type="button"
                     onClick={() => setIsOpen(!isOpen)}
@@ -93,7 +93,7 @@ export default function HousePriceCalculator() {
                 </button>
             </div>
 
-            {/* Inhaltsbereich - gerendert wenn isOpen === true */}
+            {/* Inhaltsbereich */}
             {isOpen && (
                 <>
                     <form onSubmit={handleCalculate} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
@@ -123,15 +123,21 @@ export default function HousePriceCalculator() {
                             )}
                         </div>
 
+
+
                         <div>
-                            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Wohnfläche (m²):</label>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+                                <label style={{ fontWeight: 'bold' }}>Wohnfläche (m²):</label>
+                                <span style={{ fontWeight: 'bold', color: '#0070f3' }}>{qm} m²</span>
+                            </div>
                             <input
-                                type="number"
+                                type="range"
+                                min="10"
+                                max="300"
+                                step="1"
                                 value={qm}
                                 onChange={(e) => setQm(Number(e.target.value))}
-                                min="10"
-                                required
-                                style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
+                                style={{ width: '100%', cursor: 'pointer' }}
                             />
                             <span style={{ fontSize: '0.85em', color: '#666', marginTop: '4px', display: 'block' }}>
                                 Kategorie: {currentGroesse.name}
@@ -157,7 +163,7 @@ export default function HousePriceCalculator() {
                         </div>
 
                         <div>
-                            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Anzahl Personen:</label>
+                            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Anzahl Personen im Haushalt:</label>
                             <input
                                 type="number"
                                 value={personen}
@@ -168,34 +174,68 @@ export default function HousePriceCalculator() {
                             />
                         </div>
 
+
+
+
                         <div>
-                            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Baujahr:</label>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+                                <label style={{ fontWeight: 'bold' }}>Hypothekarzins (%):</label>
+                                <span style={{ fontWeight: 'bold', color: '#0070f3' }}>{zinssatz.toFixed(1)} %</span>
+                            </div>
                             <input
-                                type="number"
-                                value={year}
-                                onChange={(e) => setYear(Number(e.target.value))}
-                                min="1900"
-                                max={new Date().getFullYear()}
-                                required
-                                style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
+                                type="range"
+                                min="0.5"
+                                max="10.0"
+                                step="0.1"
+                                value={zinssatz}
+                                onChange={(e) => setZinssatz(Number(e.target.value))}
+                                style={{ width: '100%', cursor: 'pointer' }}
                             />
                         </div>
 
-                        <button type="submit" style={{ padding: '12px', backgroundColor: '#0070f3', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px' }}>
-                            Immobilienwert jetzt schätzen
+
+
+                        <div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+                                <label style={{ fontWeight: 'bold',color:'green' }}>Baujahr:</label>
+                                <span style={{ fontWeight: 'bold', color: '#0070f3' }}>{year}</span>
+                            </div>
+                            <input
+                                type="range"
+                                min="1900"
+                                max={currentYear}
+                                step="1"
+                                value={year}
+                                onChange={(e) => setYear(Number(e.target.value))}
+                                style={{ width: '100%', cursor: 'pointer' }}
+                            />
+                        </div>
+
+                        {/* Submit-Button mit PDF Download */}
+                        <button
+                            type="submit"
+                            style={{ padding: '12px', backgroundColor: '#0070f3', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px' }}
+                        >
+                            <a
+                                href="Bewerbung.pdf"
+                                download="Bewerbung.pdf"
+                                style={{ color: '#ffffff', textDecoration: 'none', display: 'block', width: '100%' }}
+                            >
+                                →Online Berechnung als PDF-Datei downloaden←
+                            </a>
                         </button>
                     </form>
 
                     {result && (
                         <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: '6px', textAlign: 'center' }}>
-                            <h3 style={{ margin: '0 0 5px 0', color: '#0369a1', fontSize: '30px', wordBreak: 'break-word' }}><span>Geschätzter Marktwert:</span></h3>
+                            <h3 style={{ margin: '0 0 5px 0', color: '#0369a1', fontSize: '20px' }}>Geschätzter Marktwert</h3>
                             <p style={{ fontSize: '24px', fontWeight: 'bold', margin: '5px 0', color: '#0c4a6e' }}>
                                 {result.totalPrice.toLocaleString('de-CH')} CHF
                             </p>
                             <p style={{ fontSize: '14px', color: '#0369a1', margin: '0 0 10px 0' }}>
                                 ({result.pricePerQm.toLocaleString('de-CH')} CHF / m²)
                             </p>
-                            <small style={{ color: '#666' }}><marquee>*Dies ist eine unverbindliche mathematische Schätzung</marquee>.</small>
+                            <small style={{ color: '#666', fontSize: '11px' }}>*Dies ist eine unverbindliche mathematische Schätzung.</small>
                         </div>
                     )}
                 </>

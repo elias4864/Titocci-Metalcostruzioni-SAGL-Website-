@@ -195,11 +195,13 @@
 
 .scroll-to-top {
   position: fixed;
-  bottom: 20px;  /* Abstand vom unteren Bildschirmrand */
+  bottom: 10px;  /* Abstand vom unteren Bildschirmrand */
   right: 20px;   /* Abstand vom rechten Bildschirmrand */
   z-index: 1000; /* Stellt sicher, dass er über anderen Elementen liegt */
   background: none;
   border: none;
+  align-items: center;
+  justify-content: right;
   cursor: pointer;
 }
 

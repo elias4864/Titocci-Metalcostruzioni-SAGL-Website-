@@ -27,6 +27,7 @@ const heroOverlayStyle = {
 
 function AboutUsPage({ lang }) {
     const [formData, setFormData] = useState({
+        name: '',
         message: '',
         turnstileToken: '',
         privacy: false
@@ -61,25 +62,30 @@ function AboutUsPage({ lang }) {
                 return;
             }
 
-
-            if(!formData.privacy){
-
+            // 3. DSG-Datenschutz-Prüfung
+            if (!formData.privacy) {
                 alert("Bitte akzeptiere die Datenschutzrichtlinien zuerst!");
                 return;
             }
+
+            // 4. Aktuellen Zeitstempel für {{time}} generieren
+            const currentTime = new Date().toLocaleString('de-CH', {
+                dateStyle: 'short',
+                timeStyle: 'medium'
+            });
+
             const EmailJS_serviceID = 'service_n9toe59';
-            const EmailJS_templateID = '__ejs-test-mail-service__';
+            // ACHTUNG: Ersetze '__ejs-test-mail-service__' im EmailJS Dashboard durch deine echte Template-ID!
+            const EmailJS_templateID = 'template_zwrdyci';
             const EmailJS_publicKey = 'dFpVpt98rEIko4TLa';
 
+            // Template-Parameter für EmailJS mit {{name}}, {{time}} und {{message}}
             const templateParams = {
+                name: formData.name || 'Anonym',
+                time: currentTime,
                 message: formData.message,
                 'g-recaptcha-response': formData.turnstileToken
             };
-
-
-
-
-
 
             const response = await emailjs.send(
                 EmailJS_serviceID,
@@ -93,8 +99,10 @@ function AboutUsPage({ lang }) {
 
             // Formular und Turnstile zurücksetzen
             setFormData({
+                name: '',
                 message: '',
-                turnstileToken: ''
+                turnstileToken: '',
+                privacy: false
             });
 
             if (turnstileRef.current) {
@@ -102,8 +110,10 @@ function AboutUsPage({ lang }) {
             }
 
         } catch (error) {
-            console.error("Fehler beim Absenden des Formulars:", error.message);
-            alert("Fehler beim Senden der Nachricht.");
+            // Gefixtes Fehler-Handling: Verhindert "undefined" in der Konsole
+            const errorMessage = error?.text || error?.message || (typeof error === 'string' ? error : JSON.stringify(error));
+            console.error("Fehler beim Absenden des Formulars:", errorMessage);
+            alert(`Fehler beim Senden der Nachricht: ${errorMessage}`);
         }
     };
 
@@ -205,12 +215,25 @@ function AboutUsPage({ lang }) {
                     <h3 style={{margin: 0, color: '#e62b2b'}}>Invia un messaggio</h3>
 
                     <div style={{display: 'flex', flexDirection: 'column', gap: '5px'}}>
-                        <label htmlFor="message" style={{fontWeight: 'bold', fontSize: '0.9rem'}}>Messaggio (min. 10
-                            caratteri)*:</label>
+                        <label htmlFor="name" style={{fontWeight: 'bold', fontSize: '0.9rem'}}>Nome (Dein Name):</label>
+                        <input
+                            type="text"
+                            id="name"
+                            value={formData.name}
+                            onChange={(e) => setFormData({...formData, name: e.target.value})}
+                            onFocus={scrollToInput}
+                            placeholder="Il tuo nome..."
+                            style={{padding: '10px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '1rem'}}
+                        />
+                    </div>
+
+                    <div style={{display: 'flex', flexDirection: 'column', gap: '5px'}}>
+                        <label htmlFor="message" style={{fontWeight: 'bold', fontSize: '0.9rem'}}>Messaggio (min. 10 caratteri)*:</label>
                         <textarea
                             id="message"
                             ref={messagioRef}
                             value={formData.message}
+                            onFocus={scrollToInput}
                             onChange={(e) => setFormData({...formData, message: e.target.value})}
                             rows="5"
                             placeholder="Scrivi qui il tuo messaggio..."
@@ -241,13 +264,14 @@ function AboutUsPage({ lang }) {
                             className="privacy-checkbox"
                             id="privacy"
                             name="privacy"
-                            checked={formData.privacy} // Verknüpft mit dem State
-                            onChange={(e) => setFormData({ ...formData, privacy: e.target.checked })} // Aktualisiert den State
+                            checked={formData.privacy}
+                            onChange={(e) => setFormData({ ...formData, privacy: e.target.checked })}
                         />
                         <label className="privacy-label" htmlFor="privacy">
                             Bitte akzeptiere die Datenschutzrichtlinien (DSG)
                         </label>
                     </div>
+
                     <button type="submit" style={{
                         padding: '12px 20px',
                         backgroundColor: '#e62b2b',
@@ -263,7 +287,7 @@ function AboutUsPage({ lang }) {
                 </form>
 
                 <h2 className="about-us" style={{color: '#e62b2b', fontSize: '1.5rem', marginBottom: '10px'}}>
-                Titocci Metalcostruzioni SAGL
+                    Titocci Metalcostruzioni SAGL
                 </h2>
 
                 <section style={{ lineHeight: '1.6', color: '#333', fontSize: '1rem' }}>

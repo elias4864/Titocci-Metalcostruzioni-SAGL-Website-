@@ -7,9 +7,12 @@ import Error from '../assets/Error.png';
 function ChatMessages({ messages, lang }) {
     const scrollContentRef = useAutoScroll(messages);
 
+    // Sicherer Check, ob messages wirklich ein Array ist
+    const messageList = Array.isArray(messages) ? messages : [];
+
     return (
         <div className="chat-messages-container">
-            {messages?.map(({ role, content, loading, error }, idx) => (
+            {messageList.map(({ role, content, loading, error }, idx) => (
                 <div key={idx} className={`message-item ${role}`}>
                     {/* User Icon */}
                     {role === 'user' && (
