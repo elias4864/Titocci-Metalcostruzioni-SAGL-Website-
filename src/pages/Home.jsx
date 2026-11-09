@@ -5,6 +5,8 @@ import Zeit from '../assets/Zeit.png';
 import NavIcon from '../assets/Navicon.png';
 import StatCard from '../pages/StatCard';
 import Email from '../assets/Email.png';
+import Steinhaus from '../assets/Steinhaus.jfif';
+import Wand from '../assets/Wand.jfif';
 import PC from '../assets/PC.png';
 import Facebook from '../assets/Facebook.png';
 import Zangen from '../assets/Zangen.jfif';
@@ -20,6 +22,7 @@ import Google from '../assets/Google.png';
 import RedGoogleMaps from '../assets/RedGoogleMaps.jfif';
 import Verifizierung from '../assets/Verifizierung.gif';
 import '../Styles/Home.css';
+import Locarno from "./Locarno.jsx";
 
 const IMAGES = [
     { id: 1, url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFVirl6neqny0T2cnyJFMtcaUhsAXd1M7DOrKlXOmUmA&s=10', title: 'Holzkonstrukt' },
@@ -74,6 +77,36 @@ const heroOverlayStyle = {
     pointerEvents: 'none'
 };
 
+
+
+const LATEST_PROPERTIES = [
+    {
+        id: 1,
+        title: "Moderne Attikawohnung in Locarno",
+        price: "CHF 1'250'000",
+        location: "6600 Locarno",
+        image: Locarno, // Nutze deine vorhandenen Bild-Imports
+        link: "/locarno"
+    },
+    {
+        id: 2,
+        title: "Rustico mit Panoramablick in Avegno",
+        price: "CHF 890'000",
+        location: "6670 Avegno",
+        image: Steinhaus,
+        link: "/avegno"
+    },
+
+    {
+        id: 3,
+        title:"Angenehmes Holzhaus in Locarno",
+        price: "CHF 1'250'000",
+        location:'6600 Locarno',
+        image: Wand,
+        link: "/locarno"
+    }
+];
+
 function Home({lang}) {
     const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -83,7 +116,7 @@ function Home({lang}) {
         }, 3000);
 
         return () => clearInterval(interval);
-    }, []);
+    }, []); 
 
     const nextImage = () => {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % IMAGES.length);
@@ -91,6 +124,28 @@ function Home({lang}) {
 
     const prevImage = () => {
         setCurrentIndex((prevIndex) => (prevIndex - 1 + IMAGES.length) % IMAGES.length);
+    };
+
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+    /**
+     * Popup wird automatisch geöffnet  mit 3000 Sekunden Latenzzeit
+     */
+    useEffect(() => {
+        // Öffnet das Popup automatisch beim Laden der Seite
+        const timer = setTimeout(() => {
+            setIsPopupOpen(true);
+        }, 3000); // 800ms Verzögerung für weichen Effekt
+
+        return () => clearTimeout(timer);
+    }, []);
+
+    /**
+     *  Konstante um Popup-Modal schliessen
+     */
+
+    const closePopup = () => {
+        setIsPopupOpen(false);
     };
 
 
@@ -266,6 +321,45 @@ function Home({lang}) {
                 </div>
             </div>
             </div>
+
+            <div className="home-container">
+                {/* Dein bestehender Home-Inhalt */}
+
+                {/* IMMOBILIEN POPUP MODAL */}
+                {isPopupOpen && (
+                    <div className="modal-overlay" onClick={closePopup}>
+                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                            <button className="modal-close-btn" onClick={closePopup}>
+                                &times;
+                            </button>
+
+                            <h2 className="modal-title">🏠 Neueste Immobilien-Angebote</h2>
+                            <p className="modal-subtitle">Entdecken Sie unsere aktuellen Objekte im Tessin:</p>
+
+                            <div className="properties-grid">
+                                {LATEST_PROPERTIES.map((property) => (
+                                    <div key={property.id} className="property-card">
+                                        <img src={property.image} alt={property.title} className="property-img" />
+                                        <div className="property-info">
+                                            <h3>{property.title}</h3>
+                                            <p className="property-location">📍 {property.location}</p>
+                                            <p className="property-price">{property.price}</p>
+                                            <Link
+                                                to={property.link}
+                                                className="property-btn"
+                                                onClick={closePopup}
+                                            >
+                                                Details ansehen
+                                            </Link>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+            );
 
         </>
     );
