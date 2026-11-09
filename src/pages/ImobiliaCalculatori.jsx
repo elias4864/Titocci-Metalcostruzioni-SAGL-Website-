@@ -1,10 +1,20 @@
 import React, { useState } from 'react';
 
+const CANTON_FACTORS = {
+    ZH: { name: 'Zürich (ZH)', factor: 1.35 },
+    GE: { name: 'Genf (GE)', factor: 1.40 },
+    BS: { name: 'Basel-Stadt (BS)', factor: 1.25 },
+    BE: { name: 'Bern (BE)', factor: 1.00 },
+    LU: { name: 'Luzern (LU)', factor: 1.15 },
+    SG: { name: 'St. Gallen (SG)', factor: 0.90 },
+    VS: { name: 'Wallis (VS)', factor: 0.85 },
+    CH: { name: 'Übrige Schweiz', factor: 1.00 },
+};
+
 const LOCATION_FACTORS = {
     city: { name: 'Großstadt / Top-Lage', basePrice: 8500 },
     suburb: { name: 'Speckgürtel / Vorort', basePrice: 6200 },
     rural: { name: 'Ländliche Region', basePrice: 4100 },
-    country: { name: 'Schweiz (Standard)', basePrice: 5000 },
     lake: { name: 'Am Seeufer', basePrice: 11000 },
 };
 
@@ -23,6 +33,7 @@ const GROESSE = {
 
 export default function HousePriceCalculator() {
     const [qm, setQm] = useState(75);
+    const [canton, setCanton] = useState('ZH');
     const [location, setLocation] = useState('suburb');
     const [condition, setCondition] = useState('good');
     const [year, setYear] = useState(2000);
@@ -58,6 +69,7 @@ export default function HousePriceCalculator() {
         e.preventDefault();
 
         const base = LOCATION_FACTORS[location].basePrice;
+        const cantonFactor = CANTON_FACTORS[canton].factor;
         const conditionMult = CONDITION_FACTORS[condition].multiplier;
         const groesseFactor = getGroesseCategory(qm).multiplier;
 
@@ -67,8 +79,10 @@ export default function HousePriceCalculator() {
         const personenFactor = 1 + ((personen - 1) * 0.01);
         const zinsFactor = Math.max(0.85, 1 - ((zinssatz - 2.0) * 0.03));
 
-        const pricePerQm = base * conditionMult * groesseFactor * ageFactor * personenFactor * zinsFactor;
+        const pricePerQm = base * cantonFactor * conditionMult * groesseFactor * ageFactor * personenFactor * zinsFactor;
         const totalPrice = pricePerQm * qm;
+        alert("Der Imobillienfläche pro Quadratmeter"+pricePerQm);
+        alert("Der Gesamtpreis beträgt"+totalPrice);
 
         setResult({
             pricePerQm: Math.round(pricePerQm),
@@ -123,8 +137,7 @@ export default function HousePriceCalculator() {
                             )}
                         </div>
 
-
-
+                        {/* SLIDER 1: Wohnfläche (m²) */}
                         <div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
                                 <label style={{ fontWeight: 'bold' }}>Wohnfläche (m²):</label>
@@ -144,8 +157,22 @@ export default function HousePriceCalculator() {
                             </span>
                         </div>
 
+                        {/* KANTON / GEMEINDE AUSWAHL */}
                         <div>
-                            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Lage:</label>
+                            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Kanton / Region:</label>
+                            <select
+                                value={canton}
+                                onChange={(e) => setCanton(e.target.value)}
+                                style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                            >
+                                {Object.entries(CANTON_FACTORS).map(([key, val]) => (
+                                    <option key={key} value={key}>{val.name}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Lage innerhalb der Region:</label>
                             <select value={location} onChange={(e) => setLocation(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}>
                                 {Object.entries(LOCATION_FACTORS).map(([key, val]) => (
                                     <option key={key} value={key}>{val.name}</option>
@@ -174,9 +201,7 @@ export default function HousePriceCalculator() {
                             />
                         </div>
 
-
-
-
+                        {/* SLIDER 2: Hypothekarzins (%) */}
                         <div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
                                 <label style={{ fontWeight: 'bold' }}>Hypothekarzins (%):</label>
@@ -193,11 +218,10 @@ export default function HousePriceCalculator() {
                             />
                         </div>
 
-
-
+                        {/* SLIDER 3: Baujahr */}
                         <div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                                <label style={{ fontWeight: 'bold',color:'green' }}>Baujahr:</label>
+                                <label style={{ fontWeight: 'bold' }}>Baujahr:</label>
                                 <span style={{ fontWeight: 'bold', color: '#0070f3' }}>{year}</span>
                             </div>
                             <input
