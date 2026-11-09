@@ -2,7 +2,7 @@
 
 # Rebuild of Titocci Metalcostruzioni SAGL - Website
 
-Offizielle Website für den Schweizer Metallbau- und Schlosserbetrieb Titocci Metalcostruzioni SAGL (titocci.ch) möglichst genau nachgebaut inklusive und  ist zusätzlich mit einem Imobillienrechner und einer Sitemap aller Links der Navbar ausgestattet. Das Vite-Projekt verwendet ein modernes Frontend-Setup basierend auf React 19 und Vite, gekapselt in einer Docker-Umgebung(Docker-Compose) für konsistente Deployments sowie automatisiert über GitHub Actions für moderne DevOps-Praktiken(CI/CD).
+Offizielle Website für den Schweizer Metallbau- und Schlosserbetrieb Titocci Metalcostruzioni SAGL (titocci.ch) möglichst genau nachgebaut inklusive und  ist zusätzlich mit einem Imobillienrechner,  einem einem KI-Chatbot und einer Sitemap aller Links der Navbar ausgestattet. Das Vite-Projekt verwendet ein modernes Frontend-Setup basierend auf React 19 und Vite, gekapselt in einer Docker-Umgebung(Docker-Compose) für konsistente Deployments sowie automatisiert über GitHub Actions für moderne DevOps-Praktiken(CI/CD) inklusive dem Website hosted auf  Github Pages 
 
 ---
 
@@ -29,7 +29,7 @@ Diese Website  umfasst folgende Routes+Seitenlinks in der Navbar
 - **`/impressum`**: Impressum nach DSGVO+DSG
 - **`/galeria`**: Galerie-Karte mit Referenzprojekten
 - **`/calculatori`**: Online Rechner für Imobilienobjekte der Titocci Metalconsturzione SAGL 
-- **`/calculator`**:Online Rechner
+- **`/calculator`**:Online Rechner mit Operationen(*,+,-,/, und ^^2)
 - **`/sitemap`**: Sitemap mit der gesamten Navbar mit allen Pages übersichtlich aufgeführt
 - **`/privacy`**: Datenschutzbestimmungen (Privacy Policy) gemäss DSG+DSGVO
 
