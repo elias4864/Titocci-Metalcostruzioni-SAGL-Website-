@@ -262,7 +262,7 @@ function MainContent() {
                 <div>
                     <h2 className="newsletter"><marquee>Abonniere jetzt unseren Newsletter</marquee></h2>
                     <form className="formular">
-                        <span><label><b>Nome:*</b></label></span>
+                        <span ><label><b>Nome:*</b></label></span>
                         <input
                             type="text"
                             id="name"
@@ -275,7 +275,8 @@ function MainContent() {
                                 setFocusedField('name');
                                 scrollToInput(nameInputRef);
                             }}
-                            onBlur={() => setFocusedField(null)}
+                            onBlur={() => setFocusedField('name')}
+                            required={true}
                             style={getInputStyle('name')}
                         />
                         <span><label><b>E-Mail-Adresse*</b></label></span>
@@ -306,11 +307,14 @@ function MainContent() {
                                     setFocusedField('message');
                                     scrollToInput(messageInputRef);
                                 }}
-                                onBlur={() => setFocusedField(null)}
+                                onBlur={() => setFocusedField('message')}
                                 style={getInputStyle('message')}
                                 rows="10"
                                 cols="100"
+                                required={true}
+                                placeholder="Bitte eine Nachricht eingeben"
                             />
+
                         </span>
                     </form>
                     <button onClick={sendEmail} className="red-btn">

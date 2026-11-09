@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { useImmer } from 'use-immer';
 
 import ChatInput from '../pages/ChatInput.jsx';
@@ -50,7 +50,7 @@ function Chatbot({ lang }) {
             });
 
             if (!response.ok) {
-                throw new Error('Gemini Server Fehler');
+                throw new Error(`Server antwortete mit Status ${response.status}`);
             }
 
             const data = await response.json();
@@ -64,14 +64,15 @@ function Chatbot({ lang }) {
             });
 
         } catch (error) {
-            console.error('Chat error:', error);
+            console.warn('Backend API /api/chat nicht erreichbar:', error.message);
 
+            // Fehler sauber im State abfangen, anstatt abzustürzen
             setMessages(draft => {
                 const lastMessage = draft.at(-1);
                 if (lastMessage) {
                     lastMessage.loading = false;
                     lastMessage.error = true;
-                    lastMessage.content = 'Die Verbindung zu Gemini konnte nicht hergestellt werden.';
+                    lastMessage.content = 'Hinweis: Die Verbindung zum Server (/api/chat) ist aktuell nicht erreichbar. Bitte stelle sicher, dass der Backend-Server läuft.';
                 }
             });
         }
@@ -79,7 +80,6 @@ function Chatbot({ lang }) {
 
     return (
         <div className={`chatbot-wrapper ${isOpen ? 'open' : 'closed'}`}>
-            {/* Button zum Ausklappen, falls geschlossen */}
             {!isOpen && (
                 <button
                     type="button"
@@ -94,7 +94,7 @@ function Chatbot({ lang }) {
             {isOpen && (
                 <div className="chatbot-window">
                     <div className="chatbot-header">
-                        <span>Assistant</span>
+                        <span>Leo KI-Chatbot</span>
                         <button
                             type="button"
                             className="chatbot-close-btn"
@@ -112,16 +112,13 @@ function Chatbot({ lang }) {
                         </div>
                     )}
 
-                    <ChatMessages
-                        messages={messages}
-                    />
+                    <ChatMessages messages={messages} />
 
                     <ChatInput
                         newMessage={newMessage}
                         isLoading={isLoading}
                         setNewMessage={setNewMessage}
                         submitNewMessage={submitNewMessage}
-
                     />
                 </div>
             )}
