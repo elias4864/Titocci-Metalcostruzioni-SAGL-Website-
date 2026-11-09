@@ -222,6 +222,7 @@ function AboutUsPage({ lang }) {
                             value={formData.name}
                             onChange={(e) => setFormData({...formData, name: e.target.value})}
                             onFocus={scrollToInput}
+                            required
                             placeholder="Il tuo nome..."
                             style={{padding: '10px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '1rem'}}
                         />
@@ -236,6 +237,7 @@ function AboutUsPage({ lang }) {
                             onFocus={scrollToInput}
                             onChange={(e) => setFormData({...formData, message: e.target.value})}
                             rows="5"
+                            required
                             placeholder="Scrivi qui il tuo messaggio..."
                             style={{padding: '10px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '1rem'}}
                         />
@@ -265,6 +267,7 @@ function AboutUsPage({ lang }) {
                             id="privacy"
                             name="privacy"
                             checked={formData.privacy}
+
                             onChange={(e) => setFormData({ ...formData, privacy: e.target.checked })}
                         />
                         <label className="privacy-label" htmlFor="privacy">

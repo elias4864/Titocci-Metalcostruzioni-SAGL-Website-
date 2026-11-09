@@ -67,8 +67,8 @@ export default function HousePriceCalculator() {
         setImagePreview(null);
     };
 
-    // E-Mail-Versand via EmailJS inklusive Validierung & Try-Catch
-    const sendEmailCalc = async (calculatedTotalPrice, calculatedPricePerQm) => {
+    // E-Mail-Versand via EmailJS inklusive Bildverknüpfung
+    const sendEmailCalc = async (calculatedTotalPrice, calculatedPricePerQm, attachedImage) => {
         if (!email || email.length < 5 || !email.includes('@')) {
             alert("Bitte gib eine gültige E-Mail-Adresse ein.");
             return;
@@ -90,6 +90,7 @@ export default function HousePriceCalculator() {
                 message: `Wohnfläche: ${qm} m²\nKanton: ${canton}\nZinssatz: ${zinssatz}%\nGeschätzter Quadratmeterpreis: ${calculatedPricePerQm} CHF\nGeschätzter Gesamtpreis: ${calculatedTotalPrice} CHF`,
                 to_email: "info@titocci.ch",
                 signup_date: new Date().toLocaleDateString('de-CH'),
+                image_url: attachedImage || "Kein Bild angehängt"
             };
 
             const response = await emailjs.send(
@@ -121,18 +122,18 @@ export default function HousePriceCalculator() {
             return;
         }
 
-        if(!canton){
-            alert("Der Kanton ist leer");
+        if (!canton) {
+            alert("Der Kanton ist leer.");
             return;
         }
 
-        if(!zinssatz===0){
-            alert("Der angegebene Zinssatz ist leer"+zinssatz);
+        if (zinssatz <= 0) {
+            alert("Der angegebene Zinssatz ist ungültig: " + zinssatz);
             return;
         }
 
-        if(!personen===0){
-            alert("Die Anzahl der Personen ist leer"+personen);
+        if (personen <= 0) {
+            alert("Die Anzahl der Personen ist ungültig: " + personen);
             return;
         }
 
@@ -141,9 +142,9 @@ export default function HousePriceCalculator() {
         const conditionMult = CONDITION_FACTORS[condition].multiplier;
         const groesseFactor = getGroesseCategory(qm).multiplier;
 
+        // Vollständig korrigierte mathematische Faktoren ohne störende Bindestriche
         const age = Math.max(0, currentYear - year);
         const ageFactor = Math.max(0.6, 1 - (age * 0.005));
-
         const personenFactor = 1 + ((personen - 1) * 0.01);
         const zinsFactor = Math.max(0.85, 1 - ((zinssatz - 2.0) * 0.03));
 
@@ -152,18 +153,21 @@ export default function HousePriceCalculator() {
 
         const roundedPricePerQm = Math.round(pricePerQm);
         const roundedTotalPrice = Math.round(totalPrice);
-        alert("Der Gesamtpreis der Imobillienhaus pro Quadratmeter beträgt"+roundedPricePerQm);
-        alert("Der Totalpreis der Imbobillienhaus beträgt"+roundedTotalPrice);
-
-
+        alert("Der Gesamtpreis der Imobillie beträgt"+roundedTotalPrice);
+        alert("Der Gesamtpreis der Imobillie pro Quadratmeter beträgt"+roundedPricePerQm);
+        // Ergebnis inklusive verknüpftem Bild im State speichern
         setResult({
             pricePerQm: roundedPricePerQm,
             totalPrice: roundedTotalPrice,
             email: email,
+            image: imagePreview
         });
 
-        // E-Mail-Versand aufrufen
-        sendEmailCalc(roundedTotalPrice, roundedPricePerQm);
+        // E-Mail-Versand inklusive Bild aufrufen
+        sendEmailCalc(roundedTotalPrice, roundedPricePerQm, imagePreview);
+
+        alert("Der Gesamtpreis der Immobilienwohnung pro Quadratmeter beträgt " + roundedPricePerQm + " CHF");
+        alert("Der Gesamtpreis der Immobilie beträgt " + roundedTotalPrice + " CHF");
     };
 
     const currentGroesse = getGroesseCategory(qm);
@@ -173,7 +177,7 @@ export default function HousePriceCalculator() {
 
             {/* Header mit Toggle-Button */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: isOpen ? '15px' : '0' }}>
-                <h2 style={{ margin: 0, color: '#0070f3', fontSize: '24px', fontWeight: 'bold' }}>Gratis Immobilienrechner</h2>
+                <h2 style={{ margin: 0, color: '#0070f3', fontSize: '24px', fontWeight: 'bold' ,textShadow:'brown 2px 2px'}}>Free Immobilienrechner</h2>
                 <button
                     type="button"
                     onClick={() => setIsOpen(!isOpen)}
@@ -324,7 +328,6 @@ export default function HousePriceCalculator() {
                             />
                         </div>
 
-                        {/* Submit-Button */}
                         <button
                             type="submit"
                             style={{ padding: '12px', backgroundColor: '#0070f3', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px' }}
@@ -333,8 +336,16 @@ export default function HousePriceCalculator() {
                         </button>
                     </form>
 
+                    {/* ERGEBNIS-BOX MIT DIREKT VERKNÜPFTEM BILD */}
                     {result && (
                         <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: '6px', textAlign: 'center' }}>
+                            {result.image && (
+                                <img
+                                    src={result.image}
+                                    alt="Bewertete Immobilie"
+                                    style={{ width: '100%', maxHeight: '180px', objectFit: 'cover', borderRadius: '6px', marginBottom: '12px' }}
+                                />
+                            )}
                             <h3 style={{ margin: '0 0 5px 0', color: '#0369a1', fontSize: '20px' }}>Geschätzter Marktwert</h3>
                             <p style={{ fontSize: '24px', fontWeight: 'bold', margin: '5px 0', color: '#0c4a6e' }}>
                                 {result.totalPrice.toLocaleString('de-CH')} CHF
