@@ -113,6 +113,16 @@ export default function HousePriceCalculator() {
         }
 
 
+        if(!qm){
+            alert("Bitte gib eine gültige Wohnfläche ein.");
+            return;
+        }
+
+        if(!canton){
+            alert("Gib mitte eine gültiger Kanton ZH an");
+            return;
+        }
+
 
         const base = LOCATION_FACTORS[location].basePrice;
         const cantonFactor = CANTON_FACTORS[canton].factor;
