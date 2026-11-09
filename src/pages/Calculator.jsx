@@ -80,7 +80,7 @@ export default function Calculator() {
 
                     {/* Header mit Logo und Theme-Switch */}
                     <div className="calc-header">
-                        <div className={`header-logo theme-${theme}-header-logo`}>calc</div>
+                        <div className={`header-logo theme-${theme}-header-logo`}>Online Rechner</div>
                         <div className="calc-header-switch">
                             <span className={`header-switch-prompt theme-${theme}-header-switch-prompt`}>THEME</span>
                             <div style={{ position: 'relative' }}>

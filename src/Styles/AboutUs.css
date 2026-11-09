@@ -2,3 +2,22 @@
     text-decoration: brown;
     text-shadow:  2px 2px orange;
 }
+.privacy-container {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Abstand zwischen Checkbox und Text */
+    text-align: left;
+    width: fit-content;
+}
+
+.privacy-checkbox {
+    cursor: pointer;
+    /* Falls die Checkbox zu groß/klein ist, kannst du hier Breite/Höhe anpassen: */
+    width: 16px;
+    height: 16px;
+}
+
+.privacy-label {
+    cursor: pointer;
+    font-size: 14px; /* Optional an dein Design anpassen */
+}

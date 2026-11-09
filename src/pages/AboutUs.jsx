@@ -28,7 +28,8 @@ const heroOverlayStyle = {
 function AboutUsPage({ lang }) {
     const [formData, setFormData] = useState({
         message: '',
-        turnstileToken: ''
+        turnstileToken: '',
+        privacy: false
     });
 
     const messagioRef = useRef(null);
@@ -60,14 +61,25 @@ function AboutUsPage({ lang }) {
                 return;
             }
 
-            const EmailJS_serviceID = 'service_qa3r1ej';
-            const EmailJS_templateID = 'template_mrshrnl';
+
+            if(!formData.privacy){
+
+                alert("Bitte akzeptiere die Datenschutzrichtlinien zuerst!");
+                return;
+            }
+            const EmailJS_serviceID = 'service_n9toe59';
+            const EmailJS_templateID = '__ejs-test-mail-service__';
             const EmailJS_publicKey = 'dFpVpt98rEIko4TLa';
 
             const templateParams = {
                 message: formData.message,
                 'g-recaptcha-response': formData.turnstileToken
             };
+
+
+
+
+
 
             const response = await emailjs.send(
                 EmailJS_serviceID,
@@ -180,46 +192,78 @@ function AboutUsPage({ lang }) {
                 </h1>
 
                 {/* Integriertes E-MailJS Formular mit Turnstile */}
-                <form onSubmit={sendEmail} style={{ display: 'flex', flexDirection: 'column', gap: '15px', margin: '30px 0', padding: '25px', backgroundColor: '#fdfdfd', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
-                    <h3 style={{ margin: 0, color: '#e62b2b' }}>Invia un messaggio</h3>
+                <form onSubmit={sendEmail} style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '15px',
+                    margin: '30px 0',
+                    padding: '25px',
+                    backgroundColor: '#fdfdfd',
+                    borderRadius: '8px',
+                    border: '1px solid #e5e7eb'
+                }}>
+                    <h3 style={{margin: 0, color: '#e62b2b'}}>Invia un messaggio</h3>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                        <label htmlFor="message" style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>Messaggio (min. 10 caratteri)*:</label>
+                    <div style={{display: 'flex', flexDirection: 'column', gap: '5px'}}>
+                        <label htmlFor="message" style={{fontWeight: 'bold', fontSize: '0.9rem'}}>Messaggio (min. 10
+                            caratteri)*:</label>
                         <textarea
                             id="message"
                             ref={messagioRef}
                             value={formData.message}
-                            onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                            onChange={(e) => setFormData({...formData, message: e.target.value})}
                             rows="5"
                             placeholder="Scrivi qui il tuo messaggio..."
-                            style={{ padding: '10px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '1rem' }}
+                            style={{padding: '10px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '1rem'}}
                         />
                     </div>
 
-                    <div style={{ margin: '10px 0' }}>
+                    <div style={{margin: '10px 0'}}>
                         <Turnstile
                             ref={turnstileRef}
                             siteKey="0x4AAAAAAFpm7ahS6lg9KOLG"
                             onSuccess={(token) => {
-                                setFormData(prev => ({ ...prev, turnstileToken: token }));
+                                setFormData(prev => ({...prev, turnstileToken: token}));
                             }}
                             onError={() => {
                                 console.error("Turnstile Fehler");
-                                setFormData(prev => ({ ...prev, turnstileToken: '' }));
+                                setFormData(prev => ({...prev, turnstileToken: ''}));
                             }}
                             onExpire={() => {
-                                setFormData(prev => ({ ...prev, turnstileToken: '' }));
+                                setFormData(prev => ({...prev, turnstileToken: ''}));
                             }}
                         />
                     </div>
 
-                    <button type="submit" style={{ padding: '12px 20px', backgroundColor: '#e62b2b', color: 'white', fontWeight: 'bold', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '1rem' }}>
+                    <div className="privacy-container">
+                        <input
+                            type="checkbox"
+                            className="privacy-checkbox"
+                            id="privacy"
+                            name="privacy"
+                            checked={formData.privacy} // Verknüpft mit dem State
+                            onChange={(e) => setFormData({ ...formData, privacy: e.target.checked })} // Aktualisiert den State
+                        />
+                        <label className="privacy-label" htmlFor="privacy">
+                            Bitte akzeptiere die Datenschutzrichtlinien (DSG)
+                        </label>
+                    </div>
+                    <button type="submit" style={{
+                        padding: '12px 20px',
+                        backgroundColor: '#e62b2b',
+                        color: 'white',
+                        fontWeight: 'bold',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '1rem'
+                    }}>
                         Invia Messaggio
                     </button>
                 </form>
 
-                <h2 className="about-us" style={{ color: '#e62b2b', fontSize: '1.5rem', marginBottom: '10px' }}>
-                    Titocci Metalcostruzioni SAGL
+                <h2 className="about-us" style={{color: '#e62b2b', fontSize: '1.5rem', marginBottom: '10px'}}>
+                Titocci Metalcostruzioni SAGL
                 </h2>
 
                 <section style={{ lineHeight: '1.6', color: '#333', fontSize: '1rem' }}>
