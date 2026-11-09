@@ -26,6 +26,8 @@ import Google from "./assets/Google.png";
 import Verifizierungbild from "./assets/Verifizierung.gif";
 
 import './Styles/App.css';
+import ChatInput from "./pages/ChatInput.jsx";
+import ChatMessages from "./pages/ChatMessages.jsx";
 
 export const ThemeContext = createContext();
 
@@ -174,7 +176,9 @@ function MainContent() {
                         <Route path="/locarno" element={<Locarno lang={language} />} />
                         <Route path="/chatbot" element={<Chatbot lang={language} />} />
                         <Route path="/calculator" element={<Calculator lang={language} />} />
-                        <Route path="*" element={<Navigate to="/" replace />} />
+                        <Route path="/chatinput" element={<ChatInput lang={language} />} />
+                        <Route path="/chatmessage" element={<ChatMessages lang={language} />} />
+
                     </Routes>
                 </div>
             </main>

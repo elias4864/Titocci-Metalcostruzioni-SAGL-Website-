@@ -12,6 +12,14 @@ function ChatInput({ newMessage = "", isLoading = false, setNewMessage, submitNe
         }
     };
 
+
+    const scrollToInput = (inputRef) => {
+        if (inputRef.current) {
+            inputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    };
+
+
     const handleSubmit = (e) => {
         e.preventDefault();
         if (typeof submitNewMessage === 'function') {
@@ -34,6 +42,8 @@ function ChatInput({ newMessage = "", isLoading = false, setNewMessage, submitNe
                 onKeyDown={handleKeyDown}
                 disabled={isLoading}
                 autoFocus
+                onFocus={scrollToInput}
+                required={true}
             />
             <button
                 type="submit"
