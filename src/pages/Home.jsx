@@ -16,6 +16,8 @@ import Bauplan from '../assets/Bauplan.jfif';
 import Diplom from '../assets/Diplom.jfif';
 import Person from '../assets/Person.jfif';
 import Werkstattbild from '../assets/Werkstatt.jfif';
+import Locarnobild from '../assets/Locarno.jfif';
+
 import Redfacebook from "../assets/Redfacebook.jfif";
 import Kreislauf from '../assets/Statistiken.jfif';
 import Google from '../assets/Google.png';
@@ -85,7 +87,7 @@ const LATEST_PROPERTIES = [
         title: "Moderne Attikawohnung in Locarno",
         price: "CHF 1'250'000",
         location: "6600 Locarno",
-        image: Locarno, // Nutze deine vorhandenen Bild-Imports
+        image: Locarnobild, // Nutze deine vorhandenen Bild-Imports
         link: "/locarno"
     },
     {
@@ -116,7 +118,7 @@ function Home({lang}) {
         }, 3000);
 
         return () => clearInterval(interval);
-    }, []); 
+    }, []);
 
     const nextImage = () => {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % IMAGES.length);
