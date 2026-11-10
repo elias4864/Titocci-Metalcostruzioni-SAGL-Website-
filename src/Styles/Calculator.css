@@ -171,3 +171,25 @@
 .theme-3-key { background-color: hsl(268, 47%, 21%); color: hsl(52, 100%, 62%); box-shadow: 0 4px 0 hsl(290, 70%, 36%); }
 .theme-3-key-type-1 { background-color: hsl(281, 89%, 26%); color: #fff; box-shadow: 0 4px 0 hsl(285, 91%, 52%); }
 .theme-3-key-type-2 { background-color: hsl(176, 100%, 44%); color: hsl(198, 20%, 13%); box-shadow: 0 4px 0 hsl(177, 92%, 70%); }
+
+
+.ghost {
+    position: absolute;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.ghost-1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* text-wrap: wrap; - Falls hier Text steht, ist das okay, sonst kannst du es weglassen */
+}
+
+.header-switch-positions {
+    display: flex;
+    position: relative;
+    justify-content: space-between;
+    padding: 0 4px;
+    margin-bottom: 6px;
+}

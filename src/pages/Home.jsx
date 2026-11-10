@@ -106,7 +106,10 @@ const LATEST_PROPERTIES = [
         location:'6600 Locarno',
         image: Wand,
         link: "/locarno"
-    }
+    },
+
+
+
 ];
 
 function Home({lang}) {

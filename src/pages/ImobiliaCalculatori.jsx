@@ -44,6 +44,7 @@ export default function HousePriceCalculator() {
     const [imagePreview, setImagePreview] = useState(null);
     const [isOpen, setIsOpen] = useState(true);
     const [zinssatz, setZinssatz] = useState(2.5);
+    const [sendPdf, setSendPdf] = useState(true); // Neu: Checkbox für PDF-Export
 
     const currentYear = new Date().getFullYear();
 
@@ -122,6 +123,13 @@ export default function HousePriceCalculator() {
             return;
         }
 
+        // Wenn PDF-Export Checkbox aktiv ist -> Browser-Druckdialog öffnen (als PDF speicherbar)
+        if (sendPdf) {
+            setTimeout(() => {
+                window.print();
+            }, 500);
+        }
+
         if (!canton) {
             alert("Der Kanton ist leer.");
             return;
@@ -150,24 +158,21 @@ export default function HousePriceCalculator() {
 
         const pricePerQm = base * cantonFactor * conditionMult * groesseFactor * ageFactor * personenFactor * zinsFactor;
         const totalPrice = pricePerQm * qm;
-
-        const roundedPricePerQm = Math.round(pricePerQm);
-        const roundedTotalPrice = Math.round(totalPrice);
-        alert("Der Gesamtpreis der Imobillie beträgt"+roundedTotalPrice);
-        alert("Der Gesamtpreis der Imobillie pro Quadratmeter beträgt"+roundedPricePerQm);
+        alert("Der Gesamtpreis der Imobillie beträgt"+totalPrice);
+        alert("Der Gesamtpreis der Imobillie pro Quadratmeter beträgt"+pricePerQm);
         // Ergebnis inklusive verknüpftem Bild im State speichern
         setResult({
-            pricePerQm: roundedPricePerQm,
-            totalPrice: roundedTotalPrice,
+            pricePerQm: pricePerQm,
+            totalPrice: totalPrice,
             email: email,
             image: imagePreview
         });
 
         // E-Mail-Versand inklusive Bild aufrufen
-        sendEmailCalc(roundedTotalPrice, roundedPricePerQm, imagePreview);
+        sendEmailCalc(totalPrice, pricePerQm, imagePreview);
 
-        alert("Der Gesamtpreis der Immobilienwohnung pro Quadratmeter beträgt " + roundedPricePerQm + " CHF");
-        alert("Der Gesamtpreis der Immobilie beträgt " + roundedTotalPrice + " CHF");
+        alert("Der Gesamtpreis der Immobilienwohnung pro Quadratmeter beträgt " + pricePerQm + " CHF");
+        alert("Der Gesamtpreis der Immobilie beträgt " + totalPrice+ " CHF");
     };
 
     const currentGroesse = getGroesseCategory(qm);
@@ -326,6 +331,22 @@ export default function HousePriceCalculator() {
                                 onChange={(e) => setYear(Number(e.target.value))}
                                 style={{ width: '100%', cursor: 'pointer' }}
                             />
+                        </div>
+
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '5px' }}>
+                            <input
+                                type="checkbox"
+                                id="pdfCheckbox"
+                                checked={sendPdf}
+                                required
+                                placeholder="PDF Downdloaden"
+                                onChange={(e) => setSendPdf(e.target.checked)}
+                                style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                            />
+                            <label htmlFor="pdfCheckbox" style={{ fontSize: '14px', cursor: 'pointer',color:'gold' }}>
+                                Berichts-PDF direkt nach Berechnung herunterladen / drucken
+                            </label>
                         </div>
 
                         <button

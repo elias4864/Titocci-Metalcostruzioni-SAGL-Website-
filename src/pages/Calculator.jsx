@@ -6,10 +6,8 @@ import '../Styles/Calculator.css';
 import '../Styles/theme-1.css';
 import '../Styles/theme-2.css';
 import '../Styles/theme-3.css';
-import emailjs from "@emailjs/browser";
 
-
-// 1. Context exportieren, damit Key.jsx darauf zugreifen kann
+// 1. Context exportieren, damit untergeordnete Komponenten darauf zugreifen können
 export const ThemeContext = createContext("1");
 
 export default function Calculator() {
@@ -81,12 +79,14 @@ export default function Calculator() {
                 <div className="calc-container">
 
                     {/* Header mit Logo und Theme-Switch */}
+                    {/* Header mit Logo und Theme-Switch */}
                     <div className="calc-header">
                         <div className={`header-logo theme-${theme}-header-logo`}>Online Rechner</div>
                         <div className="calc-header-switch">
                             <span className={`header-switch-prompt theme-${theme}-header-switch-prompt`}>THEME</span>
-                            <div style={{ position: 'relative' }}>
-                                <div className="header-switch-positions">
+                            <div style={{ position: 'relative',marginBottom:'20px' }}>
+                                {/* Hier sorgt style={{ marginBottom: '8px' }} für den gewünschten Abstand nach unten zu den Toggles */}
+                                <div className="header-switch-positions" style={{ display: 'flex', justifyContent: 'space-between', padding: '0 4px', marginBottom: '30px' }}>
                                     <span className={`theme-${theme}-header-switch-position`}>1</span>
                                     <span className={`theme-${theme}-header-switch-position`}>2</span>
                                     <span className={`theme-${theme}-header-switch-position`}>3</span>
