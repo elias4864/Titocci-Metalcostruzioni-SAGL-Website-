@@ -1,65 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
-    <!-- Startseite (Home /) -->
+    <!-- Startseite -->
     <url>
-        <loc>https://elias4864.github.io/Titocci-Metalcostruzioni-SAGL-Website-/?utm_source=google&amp;utm_medium=organic&amp;utm_campaign=sitemap</loc>
+        <loc>https://elias4864.github.io/Titocci-Metalcostruzioni-SAGL-Website-/</loc>
         <lastmod>2026-10-28</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
 
-    <!-- Home (/home) -->
+    <!-- Chi Siamo -->
     <url>
-        <loc>https://elias4864.github.io/Titocci-Metalcostruzioni-SAGL-Website-/#/home?utm_source=google&amp;utm_medium=organic&amp;utm_campaign=sitemap</loc>
-        <lastmod>2026-10-28</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.9</priority>
-    </url>
-
-    <!-- Chi Siamo (/chi-siamo) -->
-    <url>
-        <loc>https://elias4864.github.io/Titocci-Metalcostruzioni-SAGL-Website-/#/chi-siamo?utm_source=google&amp;utm_medium=organic&amp;utm_campaign=sitemap</loc>
+        <loc>https://elias4864.github.io/Titocci-Metalcostruzioni-SAGL-Website-/chi-siamo</loc>
         <lastmod>2026-10-28</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
 
-    <!-- Servizi (/servizi) -->
+    <!-- Servizi -->
     <url>
-        <loc>https://elias4864.github.io/Titocci-Metalcostruzioni-SAGL-Website-/#/servizi?utm_source=google&amp;utm_medium=organic&amp;utm_campaign=sitemap</loc>
+        <loc>https://elias4864.github.io/Titocci-Metalcostruzioni-SAGL-Website-/servizi</loc>
         <lastmod>2026-10-28</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>
     </url>
 
-    <!-- Kontakte (/kontakte) -->
+    <!-- Kontakte -->
     <url>
-        <loc>https://elias4864.github.io/Titocci-Metalcostruzioni-SAGL-Website-/#/kontakte?utm_source=google&amp;utm_medium=organic&amp;utm_campaign=sitemap</loc>
+        <loc>https://elias4864.github.io/Titocci-Metalcostruzioni-SAGL-Website-/kontakte</loc>
         <lastmod>2026-10-28</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>
     </url>
 
-    <!-- Sitemap (/sitemap) -->
+    <!-- Sitemap -->
     <url>
-        <loc>https://elias4864.github.io/Titocci-Metalcostruzioni-SAGL-Website-/#/sitemap?utm_source=google&amp;utm_medium=organic&amp;utm_campaign=sitemap</loc>
+        <loc>https://elias4864.github.io/Titocci-Metalcostruzioni-SAGL-Website-/sitemap</loc>
         <lastmod>2026-10-28</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
     </url>
 
-    <!-- Impressum (/impressum) -->
+    <!-- Impressum -->
     <url>
-        <loc>https://elias4864.github.io/Titocci-Metalcostruzioni-SAGL-Website-/#/impressum?utm_source=google&amp;utm_medium=organic&amp;utm_campaign=sitemap</loc>
+        <loc>https://elias4864.github.io/Titocci-Metalcostruzioni-SAGL-Website-/impressum</loc>
         <lastmod>2026-10-28</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.3</priority>
     </url>
 
-    <!-- Privacy (/privacy) -->
+    <!-- Privacy -->
     <url>
-        <loc>https://elias4864.github.io/Titocci-Metalcostruzioni-SAGL-Website-/#/privacy?utm_source=google&amp;utm_medium=organic&amp;utm_campaign=sitemap</loc>
+        <loc>https://elias4864.github.io/Titocci-Metalcostruzioni-SAGL-Website-/privacy</loc>
         <lastmod>2026-10-28</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.3</priority>
