@@ -1,5 +1,7 @@
 import React, { useContext } from "react";
 import { ThemeContext } from "../pages/context/ThemeContext.js";
+import SEO from '../pages/SEO.jsx';
+
 
 function Header({ setTheme }) {
     const theme = useContext(ThemeContext);

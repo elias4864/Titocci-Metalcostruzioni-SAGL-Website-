@@ -1,5 +1,7 @@
 import { useContext } from "react";
 import { ThemeContext } from "../pages/context/ThemeContext.js";
+import SEO from '../pages/SEO.jsx';
+
 
 function Key({ text, type = 0, area = "", onClick }) {
     const theme = useContext(ThemeContext);

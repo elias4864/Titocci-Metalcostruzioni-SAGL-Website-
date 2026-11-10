@@ -17,6 +17,7 @@ import Diplom from '../assets/Diplom.jfif';
 import Person from '../assets/Person.jfif';
 import Werkstattbild from '../assets/Werkstatt.jfif';
 import Locarnobild from '../assets/Locarno.jfif';
+import SEO from '../pages/SEO.jsx';
 
 import Redfacebook from "../assets/Redfacebook.jfif";
 import Kreislauf from '../assets/Statistiken.jfif';
@@ -79,15 +80,13 @@ const heroOverlayStyle = {
     pointerEvents: 'none'
 };
 
-
-
 const LATEST_PROPERTIES = [
     {
         id: 1,
         title: "Moderne Attikawohnung in Locarno",
         price: "CHF 1'250'000",
         location: "6600 Locarno",
-        image: Locarnobild, // Nutze deine vorhandenen Bild-Imports
+        image: Locarnobild,
         link: "/locarno"
     },
     {
@@ -98,21 +97,17 @@ const LATEST_PROPERTIES = [
         image: Steinhaus,
         link: "/avegno"
     },
-
     {
         id: 3,
-        title:"Angenehmes Holzhaus in Locarno",
+        title: "Angenehmes Holzhaus in Locarno",
         price: "CHF 1'250'000",
-        location:'6600 Locarno',
+        location: '6600 Locarno',
         image: Wand,
         link: "/locarno"
     },
-
-
-
 ];
 
-function Home({lang}) {
+function Home({ lang }) {
     const [currentIndex, setCurrentIndex] = useState(0);
 
     useEffect(() => {
@@ -133,30 +128,25 @@ function Home({lang}) {
 
     const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-    /**
-     * Popup wird automatisch geöffnet  mit 3000 Sekunden Latenzzeit
-     */
     useEffect(() => {
-        // Öffnet das Popup automatisch beim Laden der Seite
         const timer = setTimeout(() => {
             setIsPopupOpen(true);
-        }, 3000); // 800ms Verzögerung für weichen Effekt
+        }, 3000);
 
         return () => clearTimeout(timer);
     }, []);
-
-    /**
-     *  Konstante um Popup-Modal schliessen
-     */
 
     const closePopup = () => {
         setIsPopupOpen(false);
     };
 
-
     return (
         <>
-
+            <SEO
+                title="Home"
+                description="Titocci Metalcostruzioni SAGL ad Avegno – Creazioni personalizzate in metallo dal 1973."
+                path="/home"
+            />
 
             {/* Hero Slider Container über die volle Displaybreite */}
             <div style={{
@@ -202,8 +192,7 @@ function Home({lang}) {
                             <li><Link to="/galeria" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' , borderBottom: '3px solid #e62b2b', paddingBottom: '4px'}}>Galleria</Link></li>
                             <li><Link to="/kontakte" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px' }}>Contatti</Link></li>
                             <li><Link to="/calculator" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px' }}>Online Calculator</Link></li>
-
-                            <li><Link to="/calculatori"  style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px' }}>Imobillien Preisrechner </Link> </li>
+                            <li><Link to="/calculatori" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px' }}>Imobillien Preisrechner</Link></li>
                         </ul>
                     </nav>
 
@@ -316,20 +305,18 @@ function Home({lang}) {
 
             <div className="orange-div">
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '30px', width: '100%', flexWrap: 'wrap' }}>
-                <img className="wirtschaft-img" src={Git} alt="Kreislauf" />
+                    <img className="wirtschaft-img" src={Git} alt="Kreislauf" />
 
-                <div className="banner-stats">
-                    <StatCard value={286} suffix="+" label="Progetti realizzati" />
-                    <StatCard value={286} label="Clienti soddisfatti" />
-                    <StatCard value={8} label="Progetti attivi" />
-                    <StatCard value={6} label="Progetti in attesa" />
+                    <div className="banner-stats">
+                        <StatCard value={286} suffix="+" label="Progetti realizzati" />
+                        <StatCard value={286} label="Clienti soddisfatti" />
+                        <StatCard value={8} label="Progetti attivi" />
+                        <StatCard value={6} label="Progetti in attesa" />
+                    </div>
                 </div>
-            </div>
             </div>
 
             <div className="home-container">
-                {/* Dein bestehender Home-Inhalt */}
-
                 {/* IMMOBILIEN POPUP MODAL */}
                 {isPopupOpen && (
                     <div className="modal-overlay" onClick={closePopup}>
@@ -364,8 +351,6 @@ function Home({lang}) {
                     </div>
                 )}
             </div>
-            );
-
         </>
     );
 }

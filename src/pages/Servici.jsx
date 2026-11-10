@@ -27,6 +27,8 @@ import Gitter4 from '../assets/Gitter4.jpg';
 import Gitter5 from '../assets/Gitter5.jpg';
 import Gitter6 from '../assets/Gitter6.jpg';
 import Innenhof from '../assets/Innenhof.jpg';
+import SEO from '../pages/SEO.jsx';
+
 
 import '../Styles/Servici.css';
 import '../Styles/TimeLineSection.css';

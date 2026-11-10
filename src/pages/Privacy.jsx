@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import React from "react";
 import Impressumbild from "../assets/Impressum.jpg";
 import '../Styles/Privacy.css';
+import SEO from '../pages/SEO.jsx';
+
 
 const navButtonStyle = {
     position: 'absolute',

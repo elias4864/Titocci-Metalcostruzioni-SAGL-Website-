@@ -1,4 +1,6 @@
 import React from "react";
+import SEO from '../pages/SEO.jsx';
+
 
 function LanguageSwitcher({ lang, onLanguageChange }) {
     return (

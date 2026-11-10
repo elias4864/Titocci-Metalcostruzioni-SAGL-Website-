@@ -4,6 +4,7 @@ import { useImmer } from 'use-immer';
 import ChatInput from '../pages/ChatInput.jsx';
 import ChatMessages from '../pages/ChatMessages.jsx';
 import '../Styles/Chatbot.css';
+import SEO from '../pages/SEO.jsx';
 
 function Chatbot({ lang }) {
     const [messages, setMessages] = useImmer([]);

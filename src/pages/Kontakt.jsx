@@ -13,6 +13,8 @@ import '../Styles/TimeLineSection.css';
 import RedFacebook from "../assets/Redfacebook.jfif";
 import RedGoogleMaps from "../assets/RedGoogleMaps.jfif";
 import ReCAPTCHA from "react-google-recaptcha";
+import SEO from '../pages/SEO.jsx';
+
 
 const heroOverlayStyle = {
     position: 'absolute',

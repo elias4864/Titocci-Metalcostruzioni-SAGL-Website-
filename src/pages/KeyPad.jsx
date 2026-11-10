@@ -1,6 +1,8 @@
 import React, { useContext } from "react";
 import { ThemeContext } from "../pages/context/ThemeContext.js";
 import Key from "./Key.jsx"; // Achte hier auf den korrekten relativen Pfad zu Key.jsx
+import SEO from '../pages/SEO.jsx';
+
 
 function Keypad({
                     addChar,

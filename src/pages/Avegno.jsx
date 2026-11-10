@@ -5,6 +5,7 @@ import Holztreppe from "../assets/Holztreppe.jpg";
 import Seitengitter from "../assets/Seitengitter.jpg";
 import Gitter4 from "../assets/Gitter4.jpg";
 import '../Styles/Avegno.css';
+import SEO from '../pages/SEO.jsx';
 
 import Calculator from '../pages/ImobiliaCalculatori.jsx';
 import {useNavigate} from 'react-router-dom';

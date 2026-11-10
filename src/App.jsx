@@ -19,6 +19,7 @@ import Privacy from "./pages/Privacy.jsx";
 import Impressumpage from "./pages/Impressum.jsx";
 import Avegno from "./pages/Avegno.jsx";
 import Locarno from "./pages/Locarno.jsx";
+import SEO from './pages/SEO.jsx';
 
 import Facebook from "./assets/Facebook.png";
 import Instagram from "./assets/Insagram.jfif";
@@ -178,6 +179,7 @@ function MainContent() {
                         <Route path="/calculator" element={<Calculator lang={language} />} />
                         <Route path="/chatinput" element={<ChatInput lang={language} />} />
                         <Route path="/chatmessage" element={<ChatMessages lang={language} />} />
+                        <Route path="/seo" element={<SEO lang={language} />} />
 
                     </Routes>
                 </div>

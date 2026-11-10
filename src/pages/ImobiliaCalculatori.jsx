@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import emailjs from "@emailjs/browser";
+import SEO from '../pages/SEO.jsx';
+
 import html2pdf from 'html2pdf.js';
 
 const CANTON_FACTORS = {

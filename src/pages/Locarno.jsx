@@ -4,6 +4,8 @@ import Impressumbild from "../assets/Impressum.jpg";
 import Holztreppe from "../assets/Holztreppe.jpg";
 import Seitengitter from "../assets/Seitengitter.jpg";
 import Gitter4 from "../assets/Gitter4.jpg";
+import SEO from '../pages/SEO.jsx';
+
 import '../Styles/Locarno.css';
 import {useNavigate} from 'react-router-dom';
 import React from "react";

@@ -2,6 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 import Impressumbild from "../assets/Impressum.jpg";
+import SEO from '../pages/SEO.jsx';
+
 
 import '../Styles/Galeria.css';
 

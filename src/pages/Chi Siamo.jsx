@@ -5,6 +5,8 @@ import Schleifen from '../assets/Schleifbild.jpg';
 import "../Styles/ChiSiamo.css";
 import { useNavigate } from 'react-router-dom';
 import "../Styles/TimeLineSection.css";
+import SEO from '../pages/SEO.jsx';
+
 
 const heroOverlayStyle = {
     position: 'relative',

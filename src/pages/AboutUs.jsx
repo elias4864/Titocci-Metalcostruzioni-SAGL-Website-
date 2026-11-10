@@ -4,6 +4,7 @@ import { Turnstile } from '@marsidev/react-turnstile';
 import emailjs from "@emailjs/browser";
 import UseAnimations from 'react-useanimations';
 import lock from 'react-useanimations/lib/lock';
+import SEO from '../pages/SEO.jsx';
 
 import Impressumbild from "../assets/Impressum.jpg";
 import "../Styles/AboutUs.css";

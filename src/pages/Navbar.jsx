@@ -144,6 +144,8 @@ function Navbar() {
                         <li><Link to="/aboutus" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>About Us</Link></li>
                         <li><Link to="/chatbot" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Leo AI-Assistant-Chatbot</Link></li>
                         <li><Link to="/chatinput" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>AI- Chatbot Input Message</Link></li>
+                        <li><Link to="/seo" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>SEO Page</Link></li>
+
 
                         <li><Link to="/chatmessages" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>AI-Output Message</Link></li>
 
