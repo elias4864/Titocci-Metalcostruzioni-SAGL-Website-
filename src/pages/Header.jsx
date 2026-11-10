@@ -3,7 +3,9 @@ import { ThemeContext } from "../pages/context/ThemeContext.js";
 
 function Header({ setTheme }) {
     const theme = useContext(ThemeContext);
-    const positions = [5, 28, 50];
+
+    // Pixel-Positionen für die 4 Themes (Passe die Werte je nach Breite an)
+    const positions = [5, 28, 50, 72];
 
     return (
         <header className="calc-header">
@@ -18,10 +20,12 @@ function Header({ setTheme }) {
                     <div className="ghost ghost-1" onClick={() => setTheme(1)}></div>
                     <div className="ghost ghost-2" onClick={() => setTheme(2)}></div>
                     <div className="ghost ghost-3" onClick={() => setTheme(3)}></div>
+                    <div className="ghost ghost-4" onClick={() => setTheme(4)}></div>
                     <div className="header-switch-positions">
                         <span className={`theme-${theme}-header-switch-position`}>1</span>
                         <span className={`theme-${theme}-header-switch-position`}>2</span>
                         <span className={`theme-${theme}-header-switch-position`}>3</span>
+                        <span className={`theme-${theme}-header-switch-position`}>4</span>
                     </div>
                 </div>
             </div>

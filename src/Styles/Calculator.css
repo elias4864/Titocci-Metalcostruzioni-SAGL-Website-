@@ -174,9 +174,11 @@
 
 
 .ghost {
-    position: absolute;
+    flex: 1;
+    height: 100%;
     cursor: pointer;
-    z-index: 10;
+    z-index: 2;
+    position:absolute;
 }
 
 .ghost-1 {
@@ -186,10 +188,34 @@
     /* text-wrap: wrap; - Falls hier Text steht, ist das okay, sonst kannst du es weglassen */
 }
 
-.header-switch-positions {
-    display: flex;
+
+.header-switch-toggle {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    transition: transform 0.2s ease-in-out;
+    z-index: 1;
+}
+
+.header-switch-container {
     position: relative;
-    justify-content: space-between;
-    padding: 0 4px;
-    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    border-radius: 15px;
+    padding: 5px;
+}
+
+
+/* Positionen des Toggles */
+.toggle-position-1 {
+    transform: translateX(0px);
+}
+
+.toggle-position-2 {
+    transform: translateX(22px);
+}
+
+.toggle-position-3 {
+    transform: translateX(44px);
 }

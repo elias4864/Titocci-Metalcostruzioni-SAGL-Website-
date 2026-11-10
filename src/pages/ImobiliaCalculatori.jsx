@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import emailjs from "@emailjs/browser";
+import html2pdf from 'html2pdf.js';
 
 const CANTON_FACTORS = {
     ZH: { name: 'Zürich (ZH)', factor: 1.35 },
@@ -9,6 +10,8 @@ const CANTON_FACTORS = {
     LU: { name: 'Luzern (LU)', factor: 1.15 },
     SG: { name: 'St. Gallen (SG)', factor: 0.90 },
     VS: { name: 'Wallis (VS)', factor: 0.85 },
+    ACS: { name: 'Aargau Central South (ACS)', factor: 1.05 },
+    EOX: { name: 'Ostschweiz Exklusiv (EOX)', factor: 1.10 },
     CH: { name: 'Übrige Schweiz', factor: 1.00 },
 };
 
@@ -44,7 +47,7 @@ export default function HousePriceCalculator() {
     const [imagePreview, setImagePreview] = useState(null);
     const [isOpen, setIsOpen] = useState(true);
     const [zinssatz, setZinssatz] = useState(2.5);
-    const [sendPdf, setSendPdf] = useState(true); // Neu: Checkbox für PDF-Export
+    const [exportPdf, setExportPdf] = useState(true);
 
     const currentYear = new Date().getFullYear();
 
@@ -88,7 +91,7 @@ export default function HousePriceCalculator() {
             const templateParams = {
                 subject: "Neue Immobilien-Berechnung von Titocci Metalconstruzione",
                 from_email: email,
-                message: `Wohnfläche: ${qm} m²\nKanton: ${canton}\nZinssatz: ${zinssatz}%\nGeschätzter Quadratmeterpreis: ${calculatedPricePerQm} CHF\nGeschätzter Gesamtpreis: ${calculatedTotalPrice} CHF`,
+                message: `Wohnfläche: ${qm} m²\nKanton: ${canton}\nZinssatz: ${zinssatz}%\nGeschätzter Quadratmeterpreis: ${calculatedPricePerQm.toFixed(2)} CHF\nGeschätzter Gesamtpreis: ${calculatedTotalPrice.toFixed(2)} CHF`,
                 to_email: "info@titocci.ch",
                 signup_date: new Date().toLocaleDateString('de-CH'),
                 image_url: attachedImage || "Kein Bild angehängt"
@@ -123,13 +126,6 @@ export default function HousePriceCalculator() {
             return;
         }
 
-        // Wenn PDF-Export Checkbox aktiv ist -> Browser-Druckdialog öffnen (als PDF speicherbar)
-        if (sendPdf) {
-            setTimeout(() => {
-                window.print();
-            }, 500);
-        }
-
         if (!canton) {
             alert("Der Kanton ist leer.");
             return;
@@ -145,12 +141,35 @@ export default function HousePriceCalculator() {
             return;
         }
 
+        if (exportPdf) {
+            setTimeout(() => {
+                // Das Element, das als PDF exportiert werden soll (hier die Ergebnis-Box oder der ganze Rechner)
+                const element = document.getElementById('immobilien-report');
+
+                if (element) {
+                    const options = {
+                        margin:       10,
+                        filename:     'Immobilien-Berechnung-Titocci.pdf',
+                        image:        { type: 'jpeg', quality: 0.98 },
+                        html2canvas:  { scale: 2, useCORS: true },
+                        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                    };
+
+                    html2pdf().from(element).set(options).save();
+                } else {
+                    // Fallback, falls das Element nicht gefunden wird
+                    window.print();
+                }
+            }, 600);
+        }
+
+
         const base = LOCATION_FACTORS[location].basePrice;
         const cantonFactor = CANTON_FACTORS[canton].factor;
         const conditionMult = CONDITION_FACTORS[condition].multiplier;
         const groesseFactor = getGroesseCategory(qm).multiplier;
 
-        // Vollständig korrigierte mathematische Faktoren ohne störende Bindestriche
+        // Mathematische Berechnungsfaktoren
         const age = Math.max(0, currentYear - year);
         const ageFactor = Math.max(0.6, 1 - (age * 0.005));
         const personenFactor = 1 + ((personen - 1) * 0.01);
@@ -158,9 +177,8 @@ export default function HousePriceCalculator() {
 
         const pricePerQm = base * cantonFactor * conditionMult * groesseFactor * ageFactor * personenFactor * zinsFactor;
         const totalPrice = pricePerQm * qm;
-        alert("Der Gesamtpreis der Imobillie beträgt"+totalPrice);
-        alert("Der Gesamtpreis der Imobillie pro Quadratmeter beträgt"+pricePerQm);
-        // Ergebnis inklusive verknüpftem Bild im State speichern
+
+        // Ergebnis im State speichern
         setResult({
             pricePerQm: pricePerQm,
             totalPrice: totalPrice,
@@ -168,11 +186,31 @@ export default function HousePriceCalculator() {
             image: imagePreview
         });
 
-        // E-Mail-Versand inklusive Bild aufrufen
-        sendEmailCalc(totalPrice, pricePerQm, imagePreview);
+        // PDF-Druckdialog auslösen, falls Checkbox aktiviert ist
+        if (exportPdf) {
+            setTimeout(() => {
+                // Das Element, das als PDF exportiert werden soll (hier die Ergebnis-Box oder der ganze Rechner)
+                const element = document.getElementById('immobilien-report');
 
-        alert("Der Gesamtpreis der Immobilienwohnung pro Quadratmeter beträgt " + pricePerQm + " CHF");
-        alert("Der Gesamtpreis der Immobilie beträgt " + totalPrice+ " CHF");
+                if (element) {
+                    const options = {
+                        margin:       10,
+                        filename:     'Immobilien-Berechnung-Titocci.pdf',
+                        image:        { type: 'jpeg', quality: 0.98 },
+                        html2canvas:  { scale: 2, useCORS: true },
+                        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                    };
+
+                    html2pdf().from(element).set(options).save();
+                } else {
+                    // Fallback, falls das Element nicht gefunden wird
+                    window.print();
+                }
+            }, 600);
+        }
+
+        // E-Mail-Versand aufrufen
+        sendEmailCalc(totalPrice, pricePerQm, imagePreview);
     };
 
     const currentGroesse = getGroesseCategory(qm);
@@ -182,7 +220,7 @@ export default function HousePriceCalculator() {
 
             {/* Header mit Toggle-Button */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: isOpen ? '15px' : '0' }}>
-                <h2 style={{ margin: 0, color: '#0070f3', fontSize: '24px', fontWeight: 'bold' ,textShadow:'brown 2px 2px'}}>Free Immobilienrechner</h2>
+                <h2 style={{ margin: 0, color: '#0070f3', fontSize: '24px', fontWeight: 'bold', textShadow: 'brown 2px 2px' }}>Free Immobilienrechner</h2>
                 <button
                     type="button"
                     onClick={() => setIsOpen(!isOpen)}
@@ -333,19 +371,19 @@ export default function HousePriceCalculator() {
                             />
                         </div>
 
-
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '5px' }}>
+                        <div  id="imobilien-report"style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '15px' }}>
                             <input
                                 type="checkbox"
-                                id="pdfCheckbox"
-                                checked={sendPdf}
-                                required
-                                placeholder="PDF Downdloaden"
-                                onChange={(e) => setSendPdf(e.target.checked)}
+                                id="immobilien-report"
+                                checked={exportPdf}
+                                onChange={(e) => setExportPdf(e.target.checked)}
                                 style={{ width: '18px', height: '18px', cursor: 'pointer' }}
                             />
-                            <label htmlFor="pdfCheckbox" style={{ fontSize: '14px', cursor: 'pointer',color:'gold' }}>
-                                Berichts-PDF direkt nach Berechnung herunterladen / drucken
+                            <label
+                                htmlFor="exportPdfCheckbox"
+                                style={{ fontSize: '14px', cursor: 'pointer', color: 'red' }}
+                            >
+                                Berichts-PDF direkt nach Berechnung exportieren
                             </label>
                         </div>
 
@@ -369,10 +407,10 @@ export default function HousePriceCalculator() {
                             )}
                             <h3 style={{ margin: '0 0 5px 0', color: '#0369a1', fontSize: '20px' }}>Geschätzter Marktwert</h3>
                             <p style={{ fontSize: '24px', fontWeight: 'bold', margin: '5px 0', color: '#0c4a6e' }}>
-                                {result.totalPrice.toLocaleString('de-CH')} CHF
+                                {Math.round(result.totalPrice).toLocaleString('de-CH')} CHF
                             </p>
                             <p style={{ fontSize: '14px', color: '#0369a1', margin: '0 0 10px 0' }}>
-                                ({result.pricePerQm.toLocaleString('de-CH')} CHF / m²)
+                                ({Math.round(result.pricePerQm).toLocaleString('de-CH')} CHF / m²)
                             </p>
                             <p style={{ fontSize: '13px', color: '#0369a1', margin: '10px 0 0 0' }}>
                                 Der Bericht wurde an <strong>{result.email}</strong> gesendet.

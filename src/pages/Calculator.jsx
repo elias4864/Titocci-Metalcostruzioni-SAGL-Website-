@@ -6,6 +6,7 @@ import '../Styles/Calculator.css';
 import '../Styles/theme-1.css';
 import '../Styles/theme-2.css';
 import '../Styles/theme-3.css';
+import '../Styles/theme-4.css';
 
 // 1. Context exportieren, damit untergeordnete Komponenten darauf zugreifen können
 export const ThemeContext = createContext("1");
@@ -34,7 +35,7 @@ export default function Calculator() {
         setCurrentInput(prev => prev + " " + op + " ");
     };
 
-    // Quadrat-Berechnung (x²)
+    // Quadrat-Berechnung (x²) - Korrigiert
     const handleSquare = () => {
         const value = parseFloat(currentInput);
         if (!isNaN(value)) {
@@ -63,7 +64,6 @@ export default function Calculator() {
     // Ergebnis berechnen (=)
     const handleEquals = () => {
         try {
-            // eval wird hier für den Taschenrechner-Prototyp genutzt
             const result = eval(currentInput);
             setCurrentInput(String(result));
         } catch (error) {
@@ -74,36 +74,31 @@ export default function Calculator() {
 
     return (
         <ThemeContext.Provider value={theme}>
-            {/* Wichtig: theme-${theme}-main und calc-wrapper müssen hier stehen, damit das CSS greift! */}
             <div className={`calc-wrapper theme-${theme}-main`}>
                 <div className="calc-container">
 
-                    {/* Header mit Logo und Theme-Switch */}
-                    {/* Header mit Logo und Theme-Switch */}
+                    {/* Header mit Logo und Theme-Switch für 4 Themes */}
                     <div className="calc-header">
                         <div className={`header-logo theme-${theme}-header-logo`}>Online Rechner</div>
                         <div className="calc-header-switch">
                             <span className={`header-switch-prompt theme-${theme}-header-switch-prompt`}>THEME</span>
-                            <div style={{ position: 'relative',marginBottom:'20px' }}>
-                                {/* Hier sorgt style={{ marginBottom: '8px' }} für den gewünschten Abstand nach unten zu den Toggles */}
+                            <div style={{ position: 'relative', marginBottom: '30px' }}>
+                                {/* Zahlen 1 bis 4 */}
                                 <div className="header-switch-positions" style={{ display: 'flex', justifyContent: 'space-between', padding: '0 4px', marginBottom: '30px' }}>
                                     <span className={`theme-${theme}-header-switch-position`}>1</span>
                                     <span className={`theme-${theme}-header-switch-position`}>2</span>
                                     <span className={`theme-${theme}-header-switch-position`}>3</span>
+                                    <span className={`theme-${theme}-header-switch-position`}>4</span>
                                 </div>
                                 <div className={`header-switch-container theme-${theme}-header-switch-container`}>
-                                    {/* Klickbare Bereiche für die Themes 1, 2 und 3 */}
+                                    {/* Klickbare Bereiche für die Themes 1 bis 4 */}
                                     <div className="ghost ghost-1" onClick={() => setTheme("1")}></div>
                                     <div className="ghost ghost-2" onClick={() => setTheme("2")}></div>
                                     <div className="ghost ghost-3" onClick={() => setTheme("3")}></div>
+                                    <div className="ghost ghost-4" onClick={() => setTheme("4")}></div>
 
                                     {/* Schieber / Toggle */}
-                                    <div
-                                        className={`header-switch-toggle theme-${theme}-header-switch-toggle`}
-                                        style={{
-                                            left: theme === "1" ? "5px" : theme === "2" ? "27px" : "49px"
-                                        }}
-                                    ></div>
+                                    <div className={`header-switch-toggle theme-${theme}-header-switch-toggle toggle-position-${theme}`}></div>
                                 </div>
                             </div>
                         </div>

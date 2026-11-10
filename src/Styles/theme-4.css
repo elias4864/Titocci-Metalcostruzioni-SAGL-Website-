@@ -1,0 +1,12 @@
+/* Der 4. Ghost-Bereich nimmt gleich viel Platz ein */
+.ghost-1, .ghost-2, .ghost-3, .ghost-4 {
+    flex: 1;
+    height: 100%;
+    cursor: pointer;
+    z-index: 2;
+}
+
+/* Die 4. Position für den Toggle-Schieber (Passe die Pixelwerte je nach Breite deines Containers an) */
+.toggle-position-4 {
+    transform: translateX(66px); /* Erhöhe diesen Wert falls der Schieber bei 4 zu weit links/rechts sitzt */
+}
