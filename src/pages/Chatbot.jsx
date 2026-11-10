@@ -50,7 +50,7 @@ function Chatbot({ lang }) {
             });
 
             if (!response.ok) {
-                throw new Error(`Server antwortete mit Status ${response.status}`);
+                throw new Error(`Server antwortete con Status ${response.status}`);
             }
 
             const data = await response.json();

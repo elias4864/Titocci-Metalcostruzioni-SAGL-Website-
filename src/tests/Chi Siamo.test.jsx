@@ -158,6 +158,17 @@ describe('Chi Siamo Component', () => {
         expect(header3[0]).toBeInTheDocument();
 
 
+        const element = screen.getByText((content, element) => {
+            const hasText = element.textContent;
+            const normalizedContent = hasText.replace(/\s+/g, " ").trim();
+            const targetText = "A partire da gennaio 2017 la nostra azienda viene tramutata in Sagl e con questa nuova formula potremo stare sempre a passo con i tempi, continuando a offrire i nostri servizi con passione e professionalità e costante evoluzione.".replace(/\s+/g, " ").trim();
+
+            // Prüfen, ob der Text enthalten ist UND es sich um ein <p>-Element handelt (oder keine Kinder hat)
+            return normalizedContent.includes(targetText) && element.tagName.toLowerCase() === 'p';
+        });
+
+        expect(element).toBeInTheDocument();
+
 
 
 
