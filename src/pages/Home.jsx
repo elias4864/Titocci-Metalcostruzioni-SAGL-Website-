@@ -15,6 +15,7 @@ import Git from '../assets/Git.png';
 import Bauplan from '../assets/Bauplan.jfif';
 import Diplom from '../assets/Diplom.jfif';
 import Person from '../assets/Person.jfif';
+import Gitter from '../assets/Gitter6.jpg';
 import Werkstattbild from '../assets/Werkstatt.jfif';
 import Locarnobild from '../assets/Locarno.jfif';
 import SEO from '../pages/SEO.jsx';
@@ -103,6 +104,16 @@ const LATEST_PROPERTIES = [
         price: "CHF 1'250'000",
         location: '6600 Locarno',
         image: Wand,
+        link: "/locarno"
+    },
+
+
+    {
+        id: 4,
+        title: "Angenehmes, moderne EInfamillienwohnung in Locarno",
+        price: "CHF 1'550'000",
+        location: '6600 Locarno',
+        image: Gitter,
         link: "/locarno"
     },
 ];

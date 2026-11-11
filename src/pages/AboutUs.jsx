@@ -35,6 +35,7 @@ function AboutUsPage({ lang }) {
     });
 
     const messagioRef = useRef(null);
+    const nomeRef = useRef(null);
     const turnstileRef = useRef(null);
 
     const scrollToInput = (inputRef) => {
@@ -223,6 +224,7 @@ function AboutUsPage({ lang }) {
                             value={formData.name}
                             onChange={(e) => setFormData({...formData, name: e.target.value})}
                             onFocus={scrollToInput}
+                            ref={nomeRef}
                             required
                             placeholder="Il tuo nome..."
                             style={{padding: '10px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '1rem'}}
