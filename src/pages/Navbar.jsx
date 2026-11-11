@@ -142,6 +142,9 @@ function Navbar() {
                         <li><Link to="/galeria"  onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Galleria</Link></li>
                         <li><Link to="/kontakte" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Contatti</Link></li>
                         <li><Link to="/aboutus" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>About Us</Link></li>
+                        <li><Link to="/sitemap" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Sitemap.xml</Link></li>
+
+
                         <li><Link to="/chatbot" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Leo AI-Assistant-Chatbot</Link></li>
                         <li><Link to="/chatinput" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>AI- Chatbot Input Message</Link></li>
                         <li><Link to="/seo" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>SEO Page</Link></li>
