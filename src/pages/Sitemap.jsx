@@ -59,17 +59,80 @@ function Sitemap() {
                     </span>
                 </li>
 
-                <li style={{ padding: '12px 15px',  backgroundColor: '#f9f9f9', fontWeight:'bold', borderRadius: '6px', borderLeft: '4px solid #e62b2b' }}>
+
+
+
+                    <li style={{ padding: '12px 15px', backgroundColor: '#f9f9f9',  fontWeight:'bold',borderRadius: '6px', borderLeft: '4px solid #e62b2b' }}>
+                        <Link to="/galeria" style={{ color: '#000', textDecoration: 'none', fontWeight: 'bold', fontSize: '1.1rem', display: 'block' }}>
+                            🖼️ ImobilliaCalculatori
+                        </Link>
+                        <span style={{ fontSize: '0.85rem', color: 'red', display: 'block', fontWeidht:'bold', marginTop: '3px' }}>
+                            Nutzen Sie unseren Online-Rechner für eine erste Schätzung Ihrer Metallbau- und Konstruktionsprojekte
+                    </span>
+                    </li>
+
+
+
+                    <li style={{ padding: '12px 15px', backgroundColor: '#f9f9f9',  fontWeight:'bold',borderRadius: '6px', borderLeft: '4px solid #e62b2b' }}>
+                        <Link to="/calculator" style={{ color: '#000', textDecoration: 'none', fontWeight: 'bold', fontSize: '1.1rem', display: 'block' }}>
+                            🖼️ Calculator
+                        </Link>
+                        <span style={{ fontSize: '0.85rem', color: 'red', display: 'block', fontWeidht:'bold', marginTop: '3px' }}>
+                            Nutzen Sie unseren Online-Rechner für eine erste Schätzung Ihrer Metallbau- und Konstruktionsprojekte
+                    </span>
+                    </li>
+
+
+
+                    <li style={{ padding: '12px 15px', backgroundColor: '#f9f9f9',  fontWeight:'bold',borderRadius: '6px', borderLeft: '4px solid #e62b2b' }}>
+                        <Link to="/locarno" style={{ color: '#000', textDecoration: 'none', fontWeight: 'bold', fontSize: '1.1rem', display: 'block' }}>
+                            🖼️ Imobillienhäuse in Locarno
+                        </Link>
+                        <span style={{ fontSize: '0.85rem', color: 'red', display: 'block', fontWeidht:'bold', marginTop: '3px' }}>
+                            Übersicht über Imobillienhäuse in Locarno
+                    </span>
+                    </li>
+
+
+
+
+
+
+                    <li style={{ padding: '12px 15px',  backgroundColor: '#f9f9f9', fontWeight:'bold', borderRadius: '6px', borderLeft: '4px solid #e62b2b' }}>
+                        <Link to="/kontakte" style={{ color: '#000', textDecoration: 'none', fontWeight: 'bold', fontSize: '1.1rem', display: 'block' }}>
+                            📞AboutUs
+                        </Link>
+                        <span style={{ fontSize: '0.85rem', color: 'red', fontWeight:`bold`, display: 'block', marginTop: '3px' }}>
+                            Entdecken Sie unser Handwerksunternehmen und unsere Erfahrung in Metallbau, Schlosserei und individuellem Schmiedehandwerk
+                    </span>
+                    </li>
+
+
+
+
+
+
+
+                    <li style={{ padding: '12px 15px',  backgroundColor: '#f9f9f9', fontWeight:'bold', borderRadius: '6px', borderLeft: '4px solid #e62b2b' }}>
                     <Link to="/kontakte" style={{ color: '#000', textDecoration: 'none', fontWeight: 'bold', fontSize: '1.1rem', display: 'block' }}>
                         📞 Contatti
                     </Link>
                     <span style={{ fontSize: '0.85rem', color: 'red', fontWeight:`bold`, display: 'block', marginTop: '3px' }}>
                         Mettiti in contatto con noi tramite il modulo online, telefono o visita la nostra sede ad Avegno.
                     </span>
-                </li>
+                    </li>
 
-                <li style={{ padding: '10px 15px' }}>
-                    <Link to="/impressum" style={{ color: '#444', textDecoration: 'none', fontWeight: 'bold', fontSize: '0.95rem' }}>
+                    <li style={{ padding: '12px 15px',  backgroundColor: '#f9f9f9', fontWeight:'bold', borderRadius: '6px', borderLeft: '4px solid #e62b2b' }}>
+                        <Link to="/chatbot" style={{ color: '#000', textDecoration: 'none', fontWeight: 'bold', fontSize: '1.1rem', display: 'block' }}>
+                            Chatbot
+                        </Link>
+                        <span style={{ fontSize: '0.85rem', color: 'red', fontWeight:`bold`, display: 'block', marginTop: '3px' }}>
+                       KI-Chabtot Leo beantwortert die alle Fragen der Zukunft!
+                    </span>
+                    </li>
+
+                <li style={{ padding: '12px 15px',  backgroundColor: '#f9f9f9', fontWeight:'bold', borderRadius: '6px', borderLeft: '4px solid #e62b2b' }}>
+                    <Link to="/impressum" style={{ color: '#444', textDecoration: 'none', fontWeight: 'bold', fontSize: '12px' }}>
                         📄 Impressum
                     </Link>
                     <span style={{ fontSize: '0.85rem', color: 'red', display: 'block',fontWeight:'bold', marginTop: '3px' }}>
@@ -77,8 +140,8 @@ function Sitemap() {
                     </span>
                 </li>
 
-                <li style={{ padding: '10px 15px' }}>
-                    <Link to="/privacy" style={{ color: '#444', textDecoration: 'none', fontWeight: '500', fontSize: '0.95rem' }}>
+                <li style={{padding: '12px 15px',  backgroundColor: '#f9f9f9', fontWeight:'bold', borderRadius: '6px', borderLeft: '4px solid #e62b2b' }}>
+                    <Link to="/privacy" style={{ color: '#444', textDecoration: 'none', fontWeight: '500', fontSize: '14px' }}>
                         🔒 Privacy Policy
                     </Link>
                     <span  style={{fontSize: '0.85rem', color: 'red', display: 'block',fontWeight:'bold', marginTop: '3px'}}>Ti preghiamo di accettare l'informativa sulla privacy</span>
