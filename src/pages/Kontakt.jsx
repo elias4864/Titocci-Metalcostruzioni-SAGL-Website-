@@ -34,15 +34,12 @@ const heroOverlayStyle = {
 };
 
 function Contatti({ lang: externalLang }) {
-    // Lokaler State für die Sprache (Initialisierung über Prop oder Standard "it")
     const [currentLang, setCurrentLang] = useState(externalLang || "it");
 
-    // Dokumentensprache bei Änderung im HTML-Tag aktualisieren
     useEffect(() => {
         document.documentElement.lang = currentLang;
     }, [currentLang]);
 
-    // Mapping für Google Maps Embed Sprache
     const mapLangMap = {
         de: "de",
         en: "en",
@@ -62,26 +59,29 @@ function Contatti({ lang: externalLang }) {
         messaggio: '',
         privacy: false,
         checkbox: '',
-        turnstileToken: ''
+        turnstileToken: '',
+        isAppointment: false,
+        appointmentDate: '',
+        appointmentTime: '',
+        appointmentReason: ''
     });
     const [isHovered, setIsHovered] = useState(false);
     const [captchaToken, setCaptchaToken] = useState(null);
 
-    // Input- und Container-Refs für reibungsloses Scrollen im Browser
     const emailInputRef = useRef(null);
     const recaptchaRef = useRef(null);
     const messagioRef = useRef(null);
     const checkboxRef = useRef(null);
     const nomeInputRef = useRef(null);
+    const appointmentReasonRef = useRef(null);
     const containerRef = useRef(null);
 
     const scrollToInput = (inputRef) => {
-        if (inputRef.current) {
+        if (inputRef && inputRef.current) {
             inputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     };
 
-    // reCAPTCHA v2 Site Key mit direktem Fallback
     const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY || "6Le-tQQuAAAAADd4dqSkP1Q06wIH8RyzRN5wtAzb";
 
     const handleChange = (e) => {
@@ -99,17 +99,14 @@ function Contatti({ lang: externalLang }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-
         try {
             if (!formData.privacy) {
                 alert('Bitte akzeptiere die Datenschutzbedingungen!.');
-                console.log('Bitte akzeptiere die DSG-Richtlinien');
                 throw new Error("Datenschutzbestimmungen nicht akzeptiert.");
             }
 
             if (!formData.turnstileToken) {
                 alert("Bitte bestätige, dass du kein Roboter bist!");
-                console.log("Token zum Verifizieren:", formData.turnstileToken);
                 return;
             }
             if (!captchaToken) {
@@ -132,6 +129,11 @@ function Contatti({ lang: externalLang }) {
                 throw new Error("Pflichtfelder fehlen.");
             }
 
+            if (formData.isAppointment && (!formData.appointmentDate || !formData.appointmentTime)) {
+                alert("Bitte wähle ein Datum und eine Uhrzeit für den Termin aus!");
+                throw new Error("Termindaten fehlen.");
+            }
+
             if (formData.nome.trim().length < 7) {
                 if (nomeInputRef.current) {
                     nomeInputRef.current.focus();
@@ -139,6 +141,11 @@ function Contatti({ lang: externalLang }) {
                 }
                 alert("Bitte gib einen gültigen Namen ein (mindestens 7 Zeichen)!");
                 throw new Error("Name zu kurz.");
+            }
+
+            if(formData.appointmentReason.length===0){
+                alert("Bitte gib eine Nachricht ein, wenn du ein Anliegen hast!");
+                return;
             }
 
             if (formData.messaggio.trim().length < 10) {
@@ -169,6 +176,10 @@ function Contatti({ lang: externalLang }) {
                 time: new Date().toLocaleString('it-CH'),
                 message: formData.messaggio,
                 privacy: formData.privacy,
+                is_appointment: formData.isAppointment ? "Ja" : "Nein",
+                appointment_date: formData.appointmentDate || "Nicht angegeben",
+                appointment_time: formData.appointmentTime || "Nicht angegeben",
+                appointment_reason: formData.appointmentReason || "Nicht angegeben",
                 'g-recaptcha-response': captchaToken
             };
 
@@ -180,14 +191,18 @@ function Contatti({ lang: externalLang }) {
             );
 
             console.log('SUCCESS!', response.status, response.text);
-            alert('Vielen Dank! Deine Nachricht wurde erfolgreich versendet.');
+            alert(formData.isAppointment ? 'Vielen Dank! Deine Termin-Anfrage wurde erfolgreich versendet.' : 'Vielen Dank! Deine Nachricht wurde erfolgreich versendet.');
 
             setFormData({
                 nome: '',
                 email: '',
                 messaggio: '',
                 privacy: false,
-                turnstileToken: ''
+                turnstileToken: '',
+                isAppointment: false,
+                appointmentDate: '',
+                appointmentTime: '',
+                appointmentReason: ''
             });
 
             setCaptchaToken(null);
@@ -227,7 +242,6 @@ function Contatti({ lang: externalLang }) {
                         zIndex: 20,
                         background: 'linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)'
                     }}>
-                        {/* Sprach-Dropdown in der Navbar */}
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <label htmlFor="language" style={{ color: 'white', fontSize: '13px', fontWeight: 'bold' }}>
                                 Google Maps Language:
@@ -263,15 +277,13 @@ function Contatti({ lang: externalLang }) {
                             margin: 0,
                             padding: 0
                         }}>
-                            <li><Link to="/" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold',  borderBottom: '3px solid #e62b2b', paddingBottom: '4px', fontSize: '14px'}}>Home</Link></li>
-                            <li><Link to="/chi-siamo" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold',  borderBottom: '3px solid #e62b2b', paddingBottom: '4px', fontSize: '14px' }}>Chi siamo</Link></li>
+                            <li><Link to="/" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px', fontSize: '14px'}}>Home</Link></li>
+                            <li><Link to="/chi-siamo" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px', fontSize: '14px' }}>Chi siamo</Link></li>
                             <li><Link to="/servizi" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px', fontSize: '14px' }}>Servizi</Link></li>
                             <li><Link to="/galleria" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px', fontSize: '14px' }}>Galleria</Link></li>
                             <li><Link to="/kontakte" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px', fontSize: '14px' }}>Contatti</Link></li>
-                            <li><Link to="/calculator" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px',fontSize: '14px' }}>Online Calculator</Link></li>
-
-                            <li><Link to="/calculatori"  style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px', fontSize:'14px' }}>Imobillien Preisrechner </Link> </li>
-
+                            <li><Link to="/calculator" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px', fontSize: '14px' }}>Online Calculator</Link></li>
+                            <li><Link to="/calculatori" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px', fontSize: '14px' }}>Imobillien Preisrechner</Link></li>
                         </ul>
                     </nav>
 
@@ -279,14 +291,11 @@ function Contatti({ lang: externalLang }) {
                         src={Kontakt}
                         alt="Contatti"
                         style={{
-                            width: '100%', // Hinweis: 300vw ist oft extrem breit, passe es nach Bedarf an
+                            width: '100%',
                             height: '700px',
                             objectFit: 'cover',
                             display: 'block',
-                            filter: 'brightness(0.8)' // Statt 0.5 hier 0.8 oder 1 (100% Originalhelligkeit)
-                            // Hier wird der State-Wert dynamisch eingesetzt:
-
-
+                            filter: 'brightness(0.8)'
                         }}
                     />
 
@@ -353,18 +362,92 @@ function Contatti({ lang: externalLang }) {
                                 style={{
                                     width: '100%',
                                     padding: '10px 12px',
-                                    border: '1px solid #ccc',
+                                    border: '1px solid red',
                                     borderRadius: '4px',
                                     fontSize: '1rem',
-                                    boxSizing: 'border-box',
-                                    borderColor:'red',
-                                    borderWeight:'bold'
+                                    boxSizing: 'border-box'
                                 }}
                             />
                         </div>
 
+                        {/* Terminvereinbarungs-Box */}
+                        <div style={{ backgroundColor: 'gold', padding: '15px', borderRadius: '6px', border: '1px solid #e0e0e0' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: formData.isAppointment ? '15px' : '0' }}>
+                                <input
+                                    type="checkbox"
+                                    name="isAppointment"
+                                    checked={formData.isAppointment}
+                                    onChange={handleChange}
+                                    id="appointment-check"
+                                    style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                                />
+                                <label htmlFor="appointment-check" style={{ fontSize: '0.95rem', fontWeight: 'bold',backgroundColor:'gold', color: '#333', cursor: 'pointer' }}>
+                                    📅 Möchten Sie einen Termin vereinbaren? (Richiedi un appuntamento)
+                                </label>
+                            </div>
+
+                            {formData.isAppointment && (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '10px', borderTop: '1px solid #ddd', paddingTop: '12px' }}>
+                                    {/* Datum & Uhrzeit nebeneinander */}
+                                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                                        <div style={{ flex: '1 1 180px' }}>
+                                            <label style={{ display: 'block', fontSize: '0.8rem', color: '#666', marginBottom: '4px' }}>Gewünschtes Datum*</label>
+                                            <input
+                                                type="date"
+                                                name="appointmentDate"
+                                                value={formData.appointmentDate}
+                                                onChange={handleChange}
+                                                required={formData.isAppointment}
+                                                style={{ width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }}
+                                            />
+                                        </div>
+                                        <div style={{ flex: '1 1 180px' }}>
+                                            <label style={{ display: 'block', fontSize: '0.8rem', color: '#666', marginBottom: '4px' }}>Gewünschte Uhrzeit*</label>
+                                            <input
+                                                type="time"
+                                                name="appointmentTime"
+                                                value={formData.appointmentTime}
+                                                onChange={handleChange}
+                                                required={formData.isAppointment}
+                                                style={{ width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Dein Anliegen als Textarea darunter */}
+                                    <div>
+                                        <label
+                                            htmlFor="appointmentReason"
+                                            style={{ display: 'block', fontSize: '0.85rem', color: '#555', fontWeight: 'bold', marginBottom: '5px' }}
+                                        >
+                                            Dein Anliegen
+                                        </label>
+                                        <textarea
+                                            id="appointmentReason"
+                                            name="appointmentReason"
+                                            rows={4}
+                                            value={formData.appointmentReason}
+                                            placeholder="Dein Anliegen"
+                                            ref={appointmentReasonRef}
+                                            onChange={handleChange}
+                                            onFocus={() => scrollToInput(appointmentReasonRef)}
+                                            style={{
+                                                width: '100%',
+                                                padding: '10px 12px',
+                                                border: '1px solid #ccc',
+                                                borderRadius: '6px',
+                                                fontSize: '0.95rem',
+                                                boxSizing: 'border-box',
+                                                resize: 'vertical'
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
                         <div>
-                            <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '5px' }}>Messaggio*</label>
+                            <label style={{ display: 'block', fontSize: '0.85rem', color: '#666', marginBottom: '5px' }}>Ihr Anliegen*</label>
                             <textarea
                                 name="messaggio"
                                 rows="5"
@@ -415,7 +498,6 @@ function Contatti({ lang: externalLang }) {
                             </label>
                         </div>
 
-                        {/* Sauberes reCAPTCHA-Kästchen */}
                         <div style={{ margin: '15px 0', minHeight: '78px' }}>
                             <ReCAPTCHA
                                 ref={recaptchaRef}
@@ -441,7 +523,7 @@ function Contatti({ lang: externalLang }) {
                                 marginBottom: '40px',
                             }}
                         >
-                            INVIO
+                            {formData.isAppointment ? 'TERMIN ANFRAGEN' : 'INVIO'}
                         </button>
                     </form>
                 </div>
@@ -490,7 +572,6 @@ function Contatti({ lang: externalLang }) {
                         </a>
                     </div>
 
-                    {/* Dynamische Google Maps Karte */}
                     <section className="footer-section map-section" style={{ width: '100%', marginTop: '30px', overflow: 'hidden' }}>
                         <iframe
                             src={mapUrl}
