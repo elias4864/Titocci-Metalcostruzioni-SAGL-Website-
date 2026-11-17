@@ -12,9 +12,9 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://titoccimetal.ch/" />
 
-  <!-- Favicons & Touch Icons -->
-  <link rel="icon" type="image/png" href="/src/assets/Navicon.png" />
-  <link rel="apple-touch-icon" href="/src/assets/Navicon.png" />
+  <!-- Favicons & Touch Icons (Mit ./ statt / am Anfang) -->
+  <link rel="icon" type="image/png" href="./src/assets/Navicon.png" />
+  <link rel="apple-touch-icon" href="./src/assets/Navicon.png" />
 
   <!-- Open Graph / Facebook / WhatsApp (Social Media SEO) -->
   <meta property="og:type" content="website" />
@@ -22,7 +22,7 @@
   <meta property="og:site_name" content="Titocci Metalcostruzioni SAGL" />
   <meta property="og:title" id="og-title" content="Titocci Metalcostruzioni SAGL – Metallbau &amp; Schmiedearbeiten" />
   <meta property="og:description" id="og-description" content="Ihr Experte für hochwertige Metallbau-, Schlosserei- und Schmiedearbeiten nach Maß." />
-  <meta property="og:image" content="/src/assets/Navicon.png" />
+  <meta property="og:image" content="./src/assets/Navicon.png" />
 
   <!-- Twitter Cards -->
   <meta name="twitter:card" content="summary_large_image" />
@@ -74,50 +74,26 @@
       } else if (path.includes('/privacy')) {
         title = "Datenschutz- Titocci Metalcostruzioni SAGL";
         description = "Informationen zum Datenschutz und der Verarbeitung personenbezogener Daten bei Titocci Metalcostruzioni SAGL.";
-      }
-
-      else if(path.includes('/chatbot')){
+      } else if(path.includes('/chatbot')){
         title = "Chatbot- Titocci Metalcostruzioni SAGL";
         description = "KI-Chabtot Leo beantwortert die alle Fragen der Zukunft!";
-      }
-
-
-
-      else if(path.includes('/chatinput')){
+      } else if(path.includes('/chatinput')){
         title = "Chatbot Message Input- Titocci Metalcostruzioni SAGL";
         description = "KI-Chabtot Leo Input Message .";
-      }
-
-
-      else if(path.includes('/chatmessage')){
+      } else if(path.includes('/chatmessage')){
         title = "Chatbot Message Output - Titocci Metalcostruzioni SAGL";
         description = "KI-Chabtot Leo Output  Message .";
-      }
-
-
-
-
-
-      else if(path.includes('/avegno')){
+      } else if(path.includes('/avegno')){
         title = "Avegno-Titocci Metalconstrutioni SAGL"
         description = "Übersicht über Imobillienhäuse in Avegno.";
-
-
-      }
-
-
-      else if(path.includes('/locarno')){
+      } else if(path.includes('/locarno')){
         title = "Locarno-Titocci Metalconstrutioni SAGL"
         description = "Übersicht über Imobillienhäuse in Locarno.";
-
-      }
-
-      else if(path.includes('/calculator')){
+      } else if(path.includes('/calculator')){
         title="Online Calculator- Titocci Metalconstruzione SAGL";
         description="Der ultimative Online-Preisrechner für die Titocci Metalconstruzione SAGL erstellt mit allen Operationen integriert!";
       }
 
-      // Title & Meta Description im DOM setzen
       document.title = title;
 
       let metaDesc = document.querySelector('meta[name="description"]');
@@ -128,7 +104,6 @@
       }
       metaDesc.setAttribute('content', description);
 
-      // Social Media Open Graph & Twitter Tags synchronisieren
       const ogTitle = document.getElementById('og-title');
       const ogDesc = document.getElementById('og-description');
       const twTitle = document.getElementById('twitter-title');
@@ -140,7 +115,6 @@
       if (twDesc) twDesc.setAttribute('content', description);
     }
 
-    // Event-Listener für Client-Side Routing
     window.addEventListener('popstate', updateMetaData);
     document.addEventListener('DOMContentLoaded', updateMetaData);
 
@@ -156,13 +130,14 @@
 
 <body>
 <!-- Barrierefreiheit: Tastatur-Navigation direkt zum Hauptinhalt -->
-<a href="#main-content" style="position:absolute; left:-9999px; top:auto; width:1px; height:1px; overflow:hidden;" onfocus="this.style.position='static'; this.style.width='auto'; this.style.height='auto';">
+<a href="#main-content" class="skip-link">
   Zum Hauptinhalt springen
 </a>
 
 <!-- Haupt-Container für React App -->
-<div id="root" role="main"></div>
+<div id="root"></div>
 
+<!-- Korrigiert: ./ statt / am Anfang -->
 <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>
