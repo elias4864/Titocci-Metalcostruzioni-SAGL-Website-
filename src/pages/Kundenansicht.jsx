@@ -7,6 +7,8 @@ import Seitengitter from "../assets/Seitengitter.jpg";
 import Gitter4 from "../assets/Gitter4.jpg";
 import Calculator from "../pages/ImobiliaCalculatori.jsx";
 
+import emailjs from "@emailjs/browser";
+
 const KundenansichtImmobilien = ({ lang = "de" }) => {
     const translations = {
         de: {
@@ -32,6 +34,9 @@ const KundenansichtImmobilien = ({ lang = "de" }) => {
             nameLabel: "Name / Immobilienverwaltung / Firma",
             emailLabel: "E-Mail-Adresse",
             datumLabel: "Wunschdatum",
+            wunschpersonLabel: "Wunschperson / Ansprechperson",
+            wunschpersonPlaceholder: "z.B. Projektleitung / Berater",
+            telefonLabel: "Wunschtelefonnummer",
             nachrichtLabel: "Angaben zum Objekt (z.B. Anzahl Einheiten, Laufmeter, Besonderheiten)",
             absendenBtn: "Buchungsanfrage senden",
             erfolgMsg: "Vielen Dank! Ihre Terminanfrage für die Kundenberatung wurde erfasst.",
@@ -61,6 +66,9 @@ const KundenansichtImmobilien = ({ lang = "de" }) => {
             nameLabel: "Nome / Amministrazione / Azienda",
             emailLabel: "Indirizzo e-mail",
             datumLabel: "Data desiderata",
+            wunschpersonLabel: "Referente / Persona desiderata",
+            wunschpersonPlaceholder: "es. responsabile progetto / consulente",
+            telefonLabel: "Numero di telefono desiderato",
             nachrichtLabel: "Dettagli sull'immobile (es. unità, metri lineari, note)",
             absendenBtn: "Invia richiesta di prenotazione",
             erfolgMsg: "Grazie! La tua richiesta di appuntamento per la consulenza clienti è stata registrata.",
@@ -90,6 +98,9 @@ const KundenansichtImmobilien = ({ lang = "de" }) => {
             nameLabel: "Name / Property Management / Company",
             emailLabel: "Email Address",
             datumLabel: "Preferred Date",
+            wunschpersonLabel: "Preferred Contact Person",
+            wunschpersonPlaceholder: "e.g. project lead / advisor",
+            telefonLabel: "Preferred Phone Number",
             nachrichtLabel: "Property details (e.g. units, linear meters, access notes)",
             absendenBtn: "Send booking request",
             erfolgMsg: "Thank you! Your client consultation request has been received.",
@@ -119,6 +130,9 @@ const KundenansichtImmobilien = ({ lang = "de" }) => {
             nameLabel: "Nom / Régie / Entreprise",
             emailLabel: "Adresse e-mail",
             datumLabel: "Date souhaitée",
+            wunschpersonLabel: "Interlocuteur souhaité",
+            wunschpersonPlaceholder: "ex. chef de projet / conseiller",
+            telefonLabel: "Numéro de téléphone souhaité",
             nachrichtLabel: "Détails du bien (ex. logements, mètres linéaires, remarques)",
             absendenBtn: "Envoyer la demande",
             erfolgMsg: "Merci ! Votre demande de rendez-vous client a bien été enregistrée.",
@@ -178,6 +192,8 @@ const KundenansichtImmobilien = ({ lang = "de" }) => {
     const [customerName, setCustomerName] = useState("");
     const [customerEmail, setCustomerEmail] = useState("");
     const [preferredDate, setPreferredDate] = useState("");
+    const [preferredPerson, setPreferredPerson] = useState("");
+    const [preferredTel, setPreferredTel] = useState("");
     const [notes, setNotes] = useState("");
     const [submitted, setSubmitted] = useState(false);
 
@@ -534,6 +550,48 @@ const KundenansichtImmobilien = ({ lang = "de" }) => {
                                     type="date"
                                     value={preferredDate}
                                     onChange={(e) => setPreferredDate(e.target.value)}
+                                    style={{
+                                        width: "100%",
+                                        padding: "10px",
+                                        borderRadius: "6px",
+                                        backgroundColor: "#252525",
+                                        color: "#ffffff",
+                                        border: "1px solid #3f3f3f",
+                                        boxSizing: "border-box"
+                                    }}
+                                />
+                            </div>
+
+                            <div>
+                                <label style={{ display: "block", fontSize: "12px", color: "#aaaaaa", marginBottom: "6px" }}>
+                                    {t.wunschpersonLabel}
+                                </label>
+                                <input
+                                    type="text"
+                                    value={preferredPerson}
+                                    onChange={(e) => setPreferredPerson(e.target.value)}
+                                    placeholder={t.wunschpersonPlaceholder}
+                                    style={{
+                                        width: "100%",
+                                        padding: "11px",
+                                        borderRadius: "6px",
+                                        backgroundColor: "#252525",
+                                        color: "#ffffff",
+                                        border: "1px solid #3f3f3f",
+                                        boxSizing: "border-box"
+                                    }}
+                                />
+                            </div>
+
+                            <div>
+                                <label style={{ display: "block", fontSize: "12px", color: "#aaaaaa", marginBottom: "6px" }}>
+                                    {t.telefonLabel}
+                                </label>
+                                <input
+                                    type="tel"
+                                    value={preferredTel}
+                                    onChange={(e) => setPreferredTel(e.target.value)}
+                                    placeholder="+41 ..."
                                     style={{
                                         width: "100%",
                                         padding: "10px",
