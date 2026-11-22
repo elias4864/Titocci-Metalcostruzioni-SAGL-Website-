@@ -15,7 +15,6 @@ import RedGoogleMaps from "../assets/RedGoogleMaps.jfif";
 import ReCAPTCHA from "react-google-recaptcha";
 import SEO from '../pages/SEO.jsx';
 
-
 const heroOverlayStyle = {
     position: 'absolute',
     top: '50%',
@@ -63,7 +62,8 @@ function Contatti({ lang: externalLang }) {
         isAppointment: false,
         appointmentDate: '',
         appointmentTime: '',
-        appointmentReason: ''
+        appointmentReason: '',
+        person: ''
     });
     const [isHovered, setIsHovered] = useState(false);
     const [captchaToken, setCaptchaToken] = useState(null);
@@ -73,6 +73,7 @@ function Contatti({ lang: externalLang }) {
     const messagioRef = useRef(null);
     const checkboxRef = useRef(null);
     const nomeInputRef = useRef(null);
+    const personRef = useRef(null);
     const appointmentReasonRef = useRef(null);
     const containerRef = useRef(null);
 
@@ -101,7 +102,7 @@ function Contatti({ lang: externalLang }) {
 
         try {
             if (!formData.privacy) {
-                alert('Bitte akzeptiere die Datenschutzbedingungen!.');
+                alert('Bitte akzeptiere die Datenschutzbedingungen!');
                 throw new Error("Datenschutzbestimmungen nicht akzeptiert.");
             }
 
@@ -134,36 +135,22 @@ function Contatti({ lang: externalLang }) {
                 throw new Error("Termindaten fehlen.");
             }
 
-            if (formData.nome.trim().length < 7) {
+            if (formData.nome.trim().length < 3) {
                 if (nomeInputRef.current) {
                     nomeInputRef.current.focus();
                     scrollToInput(nomeInputRef);
                 }
-                alert("Bitte gib einen gültigen Namen ein (mindestens 7 Zeichen)!");
+                alert("Bitte gib einen gültigen Namen ein!");
                 throw new Error("Name zu kurz.");
             }
 
-            if(formData.appointmentReason.length===0){
-                alert("Bitte gib eine Nachricht ein, wenn du ein Anliegen hast!");
-                return;
-            }
-
-            if (formData.messaggio.trim().length < 10) {
+            if (formData.messaggio.trim().length < 5) {
                 if (messagioRef.current) {
                     messagioRef.current.focus();
                     scrollToInput(messagioRef);
                 }
-                alert("Die Nachricht ist zu kurz (mindestens 10 Zeichen)!");
+                alert("Die Nachricht ist zu kurz!");
                 throw new Error("Nachricht zu kurz.");
-            }
-
-            if (formData.email.trim().length < 10) {
-                if (emailInputRef.current) {
-                    emailInputRef.current.focus();
-                    scrollToInput(emailInputRef);
-                }
-                alert("Bitte gib eine gültige E-Mail-Adresse ein!");
-                throw new Error("E-Mail ungültig.");
             }
 
             const EmailJS_serviceID = 'service_n9toe59';
@@ -175,10 +162,11 @@ function Contatti({ lang: externalLang }) {
                 from_email: formData.email,
                 time: new Date().toLocaleString('it-CH'),
                 message: formData.messaggio,
-                privacy: formData.privacy,
+                privacy: formData.privacy ? "Ja" : "Nein",
                 is_appointment: formData.isAppointment ? "Ja" : "Nein",
                 appointment_date: formData.appointmentDate || "Nicht angegeben",
                 appointment_time: formData.appointmentTime || "Nicht angegeben",
+                appointment_person: formData.person || "Keine bestimmte Person",
                 appointment_reason: formData.appointmentReason || "Nicht angegeben",
                 'g-recaptcha-response': captchaToken
             };
@@ -202,7 +190,8 @@ function Contatti({ lang: externalLang }) {
                 isAppointment: false,
                 appointmentDate: '',
                 appointmentTime: '',
-                appointmentReason: ''
+                appointmentReason: '',
+                person: ''
             });
 
             setCaptchaToken(null);
@@ -217,6 +206,7 @@ function Contatti({ lang: externalLang }) {
 
     return (
         <div ref={containerRef} className="rot" style={{ backgroundColor: '#ffffff', minHeight: '100vh' }}>
+            <SEO />
             {/* Hero Header Section */}
             <div style={{
                 width: '100vw',
@@ -277,13 +267,12 @@ function Contatti({ lang: externalLang }) {
                             margin: 0,
                             padding: 0
                         }}>
-                            <li><Link to="/" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px', fontSize: '14px'}}>Home</Link></li>
+                            <li><Link to="/" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px', fontSize: '14px' }}>Home</Link></li>
                             <li><Link to="/chi-siamo" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px', fontSize: '14px' }}>Chi siamo</Link></li>
                             <li><Link to="/servizi" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px', fontSize: '14px' }}>Servizi</Link></li>
-                            <li><Link to="/galleria" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px', fontSize: '14px' }}>Galleria</Link></li>
+                            <li><Link to="/galeria" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px', fontSize: '14px' }}>Galleria</Link></li>
                             <li><Link to="/kontakte" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px', fontSize: '14px' }}>Contatti</Link></li>
                             <li><Link to="/calculator" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px', fontSize: '14px' }}>Online Calculator</Link></li>
-                            <li><Link to="/calculatori" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px', fontSize: '14px' }}>Imobillien Preisrechner</Link></li>
                         </ul>
                     </nav>
 
@@ -362,7 +351,7 @@ function Contatti({ lang: externalLang }) {
                                 style={{
                                     width: '100%',
                                     padding: '10px 12px',
-                                    border: '1px solid red',
+                                    border: '1px solid #ccc',
                                     borderRadius: '4px',
                                     fontSize: '1rem',
                                     boxSizing: 'border-box'
@@ -371,7 +360,7 @@ function Contatti({ lang: externalLang }) {
                         </div>
 
                         {/* Terminvereinbarungs-Box */}
-                        <div style={{ backgroundColor: 'gold', padding: '15px', borderRadius: '6px', border: '1px solid #e0e0e0' }}>
+                        <div style={{ backgroundColor: '#fdf8e2', padding: '15px', borderRadius: '6px', border: '1px solid #e0e0e0' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: formData.isAppointment ? '15px' : '0' }}>
                                 <input
                                     type="checkbox"
@@ -381,14 +370,13 @@ function Contatti({ lang: externalLang }) {
                                     id="appointment-check"
                                     style={{ width: '18px', height: '18px', cursor: 'pointer' }}
                                 />
-                                <label htmlFor="appointment-check" style={{ fontSize: '0.95rem', fontWeight: 'bold',backgroundColor:'gold', color: '#333', cursor: 'pointer' }}>
+                                <label htmlFor="appointment-check" style={{ fontSize: '0.95rem', fontWeight: 'bold', color: '#333', cursor: 'pointer' }}>
                                     📅 Möchten Sie einen Termin vereinbaren? (Richiedi un appuntamento)
                                 </label>
                             </div>
 
                             {formData.isAppointment && (
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '10px', borderTop: '1px solid #ddd', paddingTop: '12px' }}>
-                                    {/* Datum & Uhrzeit nebeneinander */}
                                     <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                                         <div style={{ flex: '1 1 180px' }}>
                                             <label style={{ display: 'block', fontSize: '0.8rem', color: '#666', marginBottom: '4px' }}>Gewünschtes Datum*</label>
@@ -414,20 +402,48 @@ function Contatti({ lang: externalLang }) {
                                         </div>
                                     </div>
 
-                                    {/* Dein Anliegen als Textarea darunter */}
+                                    <div>
+                                        <label htmlFor="person-select" style={{ display: 'block', fontSize: '0.85rem', color: '#555', fontWeight: 'bold', marginBottom: '5px' }}>
+                                            Kontaktperson
+                                        </label>
+                                        <select
+                                            id="person-select"
+                                            name="person"
+                                            value={formData.person}
+                                            onChange={handleChange}
+                                            ref={personRef}
+                                            onFocus={() => scrollToInput(personRef)}
+                                            style={{
+                                                width: '100%',
+                                                padding: '10px 12px',
+                                                border: '1px solid #ccc',
+                                                borderRadius: '6px',
+                                                fontSize: '0.95rem',
+                                                boxSizing: 'border-box',
+                                                backgroundColor: '#fff',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            <option value="">-- Kontaktperson auswählen --</option>
+                                            <option value="Marco Titocci">Marco Titocci</option>
+                                            <option value="Giovanni Titocci">Giovanni Titocci</option>
+                                            <option value="Allgemein / Beliebig">Allgemein / Beliebig</option>
+                                        </select>
+                                    </div>
+
                                     <div>
                                         <label
                                             htmlFor="appointmentReason"
                                             style={{ display: 'block', fontSize: '0.85rem', color: '#555', fontWeight: 'bold', marginBottom: '5px' }}
                                         >
-                                            Dein Anliegen
+                                            Dein Anliegen (Termin)
                                         </label>
                                         <textarea
                                             id="appointmentReason"
                                             name="appointmentReason"
-                                            rows={4}
+                                            rows={3}
                                             value={formData.appointmentReason}
-                                            placeholder="Dein Anliegen"
+                                            placeholder="Details zum Termin..."
                                             ref={appointmentReasonRef}
                                             onChange={handleChange}
                                             onFocus={() => scrollToInput(appointmentReasonRef)}
