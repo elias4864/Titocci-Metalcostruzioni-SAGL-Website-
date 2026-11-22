@@ -286,7 +286,7 @@ export default function HousePriceCalculator() {
             alert(
                 'Der Bericht wurde erfolgreich an ' +
                 email +
-                ' und an die  Titocci Metalcostruzioni gesendet!'
+                ' und an die Titocci Metalcostruzioni gesendet!'
             );
         } catch (error) {
             console.error('Fehler beim E-Mail-Versand:', error.message);
@@ -294,7 +294,9 @@ export default function HousePriceCalculator() {
     };
 
     const handleCalculate = (e) => {
-        e.preventDefault();
+        if (e && typeof e.preventDefault === 'function') {
+            e.preventDefault();
+        }
 
         if (!qm || qm <= 0) {
             alert('Bitte gib eine gültige Wohnfläche ein.');
@@ -304,14 +306,12 @@ export default function HousePriceCalculator() {
             alert('Bitte geben Sie eine gültige E-Mail-Adresse ein.');
             return;
         }
-
-        if(!age<=0){
-            alert("Bitte gib ein gültiges Baualter der Imobillien ein");
+        if (!year || year < 1850 || year > currentYear) {
+            alert(`Bitte gib ein gültiges Baujahr (1850–${currentYear}) ein.`);
             return;
         }
-
-        if(!zinsFactor>=0){
-            alert("Der Zinssat ist negativ, bitte einen gültigen Zinssatz eingeben");
+        if (zinssatz < 0) {
+            alert('Der Zinssatz ist negativ, bitte einen gültigen Zinssatz eingeben.');
             return;
         }
 
@@ -335,9 +335,6 @@ export default function HousePriceCalculator() {
             personenFactor *
             zinsFactor;
         const totalPrice = pricePerQm * qm;
-
-        alert('Der Gesamtpreis pro Quadratmeter beträgt ' + pricePerQm.toFixed(2) + ' CHF');
-        alert('Der Gesamtpreis der Immobilie beträgt ' + totalPrice.toFixed(2) + ' CHF');
 
         const jahresZins = totalPrice * (zinssatz / 100);
         const monatlicherZins = jahresZins / 12;
@@ -391,8 +388,7 @@ export default function HousePriceCalculator() {
                 border: '1px solid rgba(226, 232, 240, 0.8)',
                 boxShadow:
                     '0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01)',
-                color: 'black',
-                backgroundColor: 'red',
+                color: '#0f172a',
             }}
         >
             <SEO title="Immobilienrechner - Titocci Metalcostruzioni SAGL" />
@@ -450,9 +446,7 @@ export default function HousePriceCalculator() {
                                     display: 'block',
                                     marginBottom: '5px',
                                     fontWeight: 'bold',
-                                    color: 'red',
-                                    fontSize: '20px',
-                                    textShadow: 'brown 2px 2px',
+                                    color: '#0f172a',
                                 }}
                             >
                                 Foto der Immobilie hochladen:
@@ -763,273 +757,104 @@ export default function HousePriceCalculator() {
                             />
                         </div>
 
-                        <div
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                                marginTop: '10px',
-                            }}
-                        >
+                        <div>
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    marginBottom: '5px',
+                                }}
+                            >
+                                <label style={{ fontWeight: 'bold' }}>Personen:</label>
+                                <span style={{ fontWeight: 'bold', color: '#2563eb' }}>{personen}</span>
+                            </div>
+                            <input
+                                type="range"
+                                min="1"
+                                max="10"
+                                value={personen}
+                                onChange={(e) => setPersonen(Number(e.target.value))}
+                                style={{ width: '100%', cursor: 'pointer' }}
+                            />
+                        </div>
+
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px' }}>
                             <input
                                 type="checkbox"
-                                id="exportPdfCheckbox"
                                 checked={exportPdf}
                                 onChange={(e) => setExportPdf(e.target.checked)}
-                                style={{ width: '18px', height: '18px' }}
                             />
-                            <label
-                                htmlFor="exportPdfCheckbox"
-                                style={{ fontSize: '14px', cursor: 'pointer' }}
-                            >
-                                Professionelles PDF-Kurzgutachten direkt exportieren
-                            </label>
-                        </div>
+                            PDF-Kurzgutachten nach Berechnung automatisch herunterladen
+                        </label>
 
                         <button
                             type="submit"
+                            onClick={handleCalculate}
                             style={{
-                                padding: '12px',
-                                backgroundColor: '#2563eb',
-                                color: '#fff',
+                                backgroundColor: '#16a34a',
+                                color: '#ffffff',
                                 border: 'none',
-                                borderRadius: '6px',
+                                padding: '12px',
+                                borderRadius: '8px',
+                                fontWeight: '700',
+                                fontSize: '15px',
                                 cursor: 'pointer',
-                                fontWeight: 'bold',
-                                fontSize: '16px',
-                                marginTop: '10px',
                             }}
                         >
-                            Immobilie bewerten & PDF erhalten
+                            Immobilie berechnen &amp; Bericht senden
                         </button>
                     </form>
 
-                    {/* ERGEBNIS-BOX + EXPORT-AKTIONEN */}
                     {result && (
                         <div style={{ marginTop: '20px' }}>
+                            <div
+                                ref={reportRef}
+                                style={{
+                                    padding: '16px',
+                                    borderRadius: '12px',
+                                    backgroundColor: '#ffffff',
+                                    border: '1px solid #e2e8f0',
+                                }}
+                            >
+                                <h3 style={{ marginTop: 0 }}>Bewertungsergebnis ({result.date})</h3>
+                                <p>
+                                    <strong>Geschätzter Gesamtwert:</strong>{' '}
+                                    {Math.round(result.totalPrice).toLocaleString('de-CH')} CHF
+                                </p>
+                                <p>
+                                    <strong>Preis pro m²:</strong>{' '}
+                                    {Math.round(result.pricePerQm).toLocaleString('de-CH')} CHF
+                                </p>
+                                <p>
+                                    <strong>Eigenkapital (20%):</strong>{' '}
+                                    {Math.round(result.eigenkapital20).toLocaleString('de-CH')} CHF
+                                </p>
+                                <p>
+                                    <strong>Monatliche Zinsbelastung ({result.zinssatz}%):</strong>{' '}
+                                    ~{Math.round(result.monatlicherZins).toLocaleString('de-CH')} CHF
+                                </p>
+                            </div>
+
                             <div
                                 style={{
                                     display: 'flex',
                                     flexWrap: 'wrap',
                                     gap: '8px',
-                                    marginBottom: '12px',
+                                    marginTop: '12px',
                                 }}
                             >
-                                <button
-                                    type="button"
-                                    onClick={triggerPdfDownload}
-                                    style={{
-                                        padding: '8px 12px',
-                                        backgroundColor: '#1d4ed8',
-                                        color: '#fff',
-                                        border: 'none',
-                                        borderRadius: '6px',
-                                        cursor: 'pointer',
-                                        fontSize: '13px',
-                                        fontWeight: '600',
-                                    }}
-                                >
-                                    PDF herunterladen
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={handleExportCsv}
-                                    style={{
-                                        padding: '8px 12px',
-                                        backgroundColor: '#0f766e',
-                                        color: '#fff',
-                                        border: 'none',
-                                        borderRadius: '6px',
-                                        cursor: 'pointer',
-                                        fontSize: '13px',
-                                        fontWeight: '600',
-                                    }}
-                                >
+                                <button type="button" onClick={handleExportCsv}>
                                     CSV exportieren
                                 </button>
-                                <button
-                                    type="button"
-                                    onClick={handleExportJson}
-                                    style={{
-                                        padding: '8px 12px',
-                                        backgroundColor: '#334155',
-                                        color: '#fff',
-                                        border: 'none',
-                                        borderRadius: '6px',
-                                        cursor: 'pointer',
-                                        fontSize: '13px',
-                                        fontWeight: '600',
-                                    }}
-                                >
+                                <button type="button" onClick={handleExportJson}>
                                     JSON exportieren
                                 </button>
-                                <button
-                                    type="button"
-                                    onClick={handleCopySummary}
-                                    style={{
-                                        padding: '8px 12px',
-                                        backgroundColor: copySuccess ? '#15803d' : '#e2e8f0',
-                                        color: copySuccess ? '#fff' : '#0f172a',
-                                        border: 'none',
-                                        borderRadius: '6px',
-                                        cursor: 'pointer',
-                                        fontSize: '13px',
-                                        fontWeight: '600',
-                                    }}
-                                >
-                                    {copySuccess ? 'Kopiert!' : 'Text kopieren'}
+                                <button type="button" onClick={triggerPdfDownload}>
+                                    PDF herunterladen
                                 </button>
-                            </div>
-
-                            <div
-                                ref={reportRef}
-                                id="immobilien-report-pdf"
-                                style={{
-                                    padding: '20px',
-                                    backgroundColor: '#ffffff',
-                                    border: '2px solid #2563eb',
-                                    borderRadius: '8px',
-                                    color: '#0f172a',
-                                }}
-                            >
-                                <div
-                                    style={{
-                                        borderBottom: '2px solid #e2e8f0',
-                                        paddingBottom: '10px',
-                                        marginBottom: '15px',
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                    }}
-                                >
-                                    <div>
-                                        <h3 style={{ margin: 0, color: '#2563eb', fontSize: '18px' }}>
-                                            Titocci Metalcostruzioni SAGL
-                                        </h3>
-                                        <small style={{ color: '#64748b' }}>
-                                            Immobilien-Marktwertanalyse vom {result.date}
-                                        </small>
-                                    </div>
-                                    <span
-                                        style={{
-                                            fontSize: '12px',
-                                            backgroundColor: '#eff6ff',
-                                            color: '#1d4ed8',
-                                            padding: '4px 8px',
-                                            borderRadius: '4px',
-                                            fontWeight: 'bold',
-                                        }}
-                                    >
-                                        Zertifiziert
-                                    </span>
-                                </div>
-
-                                {result.image && (
-                                    <img
-                                        src={result.image}
-                                        alt="Immobilie"
-                                        style={{
-                                            width: '100%',
-                                            maxHeight: '160px',
-                                            objectFit: 'cover',
-                                            borderRadius: '6px',
-                                            marginBottom: '12px',
-                                        }}
-                                    />
-                                )}
-
-                                <div
-                                    style={{
-                                        textAlign: 'center',
-                                        backgroundColor: '#f8fafc',
-                                        padding: '15px',
-                                        borderRadius: '6px',
-                                        marginBottom: '15px',
-                                    }}
-                                >
-                                    <p style={{ fontSize: '13px', color: '#64748b', margin: '0 0 5px 0' }}>
-                                        Geschätzter Gesamtwert
-                                    </p>
-                                    <p
-                                        style={{
-                                            fontSize: '26px',
-                                            fontWeight: '800',
-                                            margin: '0',
-                                            color: '#0f172a',
-                                        }}
-                                    >
-                                        {Math.round(result.totalPrice).toLocaleString('de-CH')} CHF
-                                    </p>
-                                    <p
-                                        style={{
-                                            fontSize: '14px',
-                                            color: '#2563eb',
-                                            margin: '5px 0 0 0',
-                                            fontWeight: '600',
-                                        }}
-                                    >
-                                        ({Math.round(result.pricePerQm).toLocaleString('de-CH')} CHF / m²)
-                                    </p>
-                                </div>
-
-                                <div
-                                    style={{
-                                        fontSize: '13px',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        gap: '6px',
-                                        marginBottom: '15px',
-                                        borderTop: '1px solid #e2e8f0',
-                                        borderBottom: '1px solid #e2e8f0',
-                                        padding: '10px 0',
-                                    }}
-                                >
-                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <span>Wohnfläche / Region:</span>
-                                        <strong>
-                                            {result.qm} m² ({result.cantonName})
-                                        </strong>
-                                    </div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <span>Zustand & Baujahr:</span>
-                                        <strong>
-                                            {result.conditionName} ({result.year})
-                                        </strong>
-                                    </div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <span>Empf. Eigenkapital (20%):</span>
-                                        <strong>
-                                            {Math.round(result.eigenkapital20).toLocaleString('de-CH')} CHF
-                                        </strong>
-                                    </div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <span>Monatliche Zinsbelastung:</span>
-                                        <strong>
-                                            ~ {Math.round(result.monatlicherZins).toLocaleString('de-CH')} CHF / Mt.
-                                        </strong>
-                                    </div>
-                                    {result.pdfName && (
-                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                            <span>Hochgeladenes PDF:</span>
-                                            <strong>
-                                                {result.pdfName} ({result.pdfSizeKb} KB)
-                                            </strong>
-                                        </div>
-                                    )}
-                                </div>
-
-                                <p
-                                    style={{
-                                        fontSize: '11px',
-                                        color: '#64748b',
-                                        textAlign: 'center',
-                                        margin: '0',
-                                    }}
-                                >
-                                    Dieser Bericht wurde automatisch an <strong>{result.email}</strong>{' '}
-                                    übermittelt.
-                                    <br />© Titocci Metalcostruzioni SAGL – Alle Rechte vorbehalten.
-                                </p>
+                                <button type="button" onClick={handleCopySummary}>
+                                    {copySuccess ? 'Kopiert!' : 'Zusammenfassung kopieren'}
+                                </button>
                             </div>
                         </div>
                     )}

@@ -20,6 +20,7 @@ import Impressumpage from "./pages/Impressum.jsx";
 import Avegno from "./pages/Avegno.jsx";
 import Locarno from "./pages/Locarno.jsx";
 import SEO from './pages/SEO.jsx';
+import ImobiliaPortale from "./pages/ImobiliaPortale.jsx";
 
 import Facebook from "./assets/Facebook.png";
 import Instagram from "./assets/Insagram.jfif";
@@ -180,6 +181,7 @@ function MainContent() {
                         <Route path="/chatinput" element={<ChatInput lang={language} />} />
                         <Route path="/chatmessage" element={<ChatMessages lang={language} />} />
                         <Route path="/seo" element={<SEO lang={language} />} />
+                        <Route path="/imobiliaportale" element={<ImobiliaPortale lang={language} />}/>
 
                     </Routes>
                 </div>

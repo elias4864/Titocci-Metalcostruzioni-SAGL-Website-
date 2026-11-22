@@ -204,6 +204,8 @@ function Home({ lang }) {
                             <li><Link to="/kontakte" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px' }}>Contatti</Link></li>
                             <li><Link to="/calculator" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px' }}>Online Calculator</Link></li>
                             <li><Link to="/calculatori" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px' }}>Imobillien Preisrechner</Link></li>
+                            <li><Link to="/imobiliaportale" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px' }}>Imobillienportal </Link></li>
+
                         </ul>
                     </nav>
 
