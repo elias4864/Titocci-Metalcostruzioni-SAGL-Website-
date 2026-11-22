@@ -156,6 +156,8 @@ function Navbar() {
                         <li><Link to="/calculatori" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Online Imobillien Preisrechner</Link></li>
                         <li><Link to="/calculator" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Online Calculator Operationen</Link></li>
                         <li><Link to="/imobiliaportale" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Imobillienportal</Link></li>
+                        <li><Link to="/customers" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Kundenansicht</Link></li>
+
 
 
 

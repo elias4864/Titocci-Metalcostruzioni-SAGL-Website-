@@ -20,6 +20,7 @@ import Impressumpage from "./pages/Impressum.jsx";
 import Avegno from "./pages/Avegno.jsx";
 import Locarno from "./pages/Locarno.jsx";
 import SEO from './pages/SEO.jsx';
+import Customers from './pages/Kundenansicht.jsx';
 import ImobiliaPortale from "./pages/ImobiliaPortale.jsx";
 
 import Facebook from "./assets/Facebook.png";
@@ -30,6 +31,7 @@ import Verifizierungbild from "./assets/Verifizierung.gif";
 import './Styles/App.css';
 import ChatInput from "./pages/ChatInput.jsx";
 import ChatMessages from "./pages/ChatMessages.jsx";
+import Kundenansicht from "./pages/Kundenansicht.jsx";
 
 export const ThemeContext = createContext();
 
@@ -182,6 +184,8 @@ function MainContent() {
                         <Route path="/chatmessage" element={<ChatMessages lang={language} />} />
                         <Route path="/seo" element={<SEO lang={language} />} />
                         <Route path="/imobiliaportale" element={<ImobiliaPortale lang={language} />}/>
+                        <Route path="/customers" element={<Customers lang={language} />}/>
+
 
                     </Routes>
                 </div>
