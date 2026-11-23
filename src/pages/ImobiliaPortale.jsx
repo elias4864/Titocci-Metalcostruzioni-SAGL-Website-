@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import Schleifbild from "../assets/Schleifen3.jpg";
 import Impressumbild from "../assets/Impressum.jpg";
@@ -191,8 +191,8 @@ const ImmobilienPortal = ({ lang = "de" }) => {
     const [selectedTender, setSelectedTender] = useState(null);
 
     // Formular- & Kalkulations-States
-    const [companyName, setCompanyName] = useState("");
-    const [email, setEmail] = useState("");
+    const [companyName, setCompanyName] = useState(() => currentUser?.firmaOderName || "");
+    const [email, setEmail] = useState(() => currentUser?.email || "");
     const [phone, setPhone] = useState("");
     const [projectNotes, setProjectNotes] = useState("");
     const [qm, setQm] = useState(120);
@@ -202,7 +202,31 @@ const ImmobilienPortal = ({ lang = "de" }) => {
     const [bookingSubmitted, setBookingSubmitted] = useState(false);
     const [submitError, setSubmitError] = useState("");
 
+    const workspaceRef = useRef(null);
+    const companyInputRef = useRef(null);
+
+    const scrollToInput = (targetRef = companyInputRef) => {
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                const el = targetRef?.current;
+                if (el) {
+                    el.scrollIntoView({ behavior: "smooth", block: "center" });
+                    if (typeof el.focus === "function") {
+                        el.focus({ preventScroll: true });
+                    }
+                }
+            }, 60);
+        });
+    };
+
     const isValidEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+
+    const openAuthModal = (mode = "login") => {
+        setAuthMode(mode);
+        setAuthError("");
+        setAuthSuccess("");
+        setShowAuthModal(true);
+    };
 
     const handleAuthSubmit = (e) => {
         e.preventDefault();
@@ -215,7 +239,12 @@ const ImmobilienPortal = ({ lang = "de" }) => {
             return;
         }
 
-        const storedUsers = JSON.parse(localStorage.getItem("titocci_kunden") || "[]");
+        let storedUsers = [];
+        try {
+            storedUsers = JSON.parse(localStorage.getItem("titocci_kunden") || "[]");
+        } catch {
+            storedUsers = [];
+        }
 
         if (authMode === "register") {
             if (!firmaOderName.trim()) {
@@ -250,6 +279,9 @@ const ImmobilienPortal = ({ lang = "de" }) => {
             setCompanyName(newUser.firmaOderName);
             setEmail(newUser.email);
             if (newUser.immobilienObjekt) setLocationInput(newUser.immobilienObjekt);
+
+            setAuthPassword("");
+            setAuthPasswordConfirm("");
             setAuthSuccess("Kundenkonto & Immobilie registriert!");
             setShowAuthModal(false);
         } else {
@@ -266,6 +298,8 @@ const ImmobilienPortal = ({ lang = "de" }) => {
             setCompanyName(foundUser.firmaOderName);
             setEmail(foundUser.email);
             if (foundUser.immobilienObjekt) setLocationInput(foundUser.immobilienObjekt);
+
+            setAuthPassword("");
             setAuthSuccess(`Willkommen, ${foundUser.firmaOderName}!`);
             setShowAuthModal(false);
         }
@@ -285,11 +319,13 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                                  } = {}) => {
         if (!isValidEmail(email)) {
             alert("Bitte gib eine gültige E-Mail-Adresse ein.");
+            scrollToInput(companyInputRef);
             return false;
         }
 
         setIsSending(true);
         setSubmitError("");
+        setBookingSubmitted(false);
 
         try {
             const totalNum = Number(calculatedTotalPrice) || 0;
@@ -309,6 +345,7 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                 visit_date: visitDate || "Kein Wunschdatum angegeben",
                 message:
                     `${detailsBlock}` +
+                    `Kunde / Konto: ${currentUser ? `${currentUser.firmaOderName} (${currentUser.kundenTyp})` : "Gast"}\n` +
                     `Objekttyp: ${selectedPropertyType}\n` +
                     `Gewerk: ${selectedService}\n` +
                     `Standort: ${locationInput}\n` +
@@ -426,13 +463,22 @@ const ImmobilienPortal = ({ lang = "de" }) => {
         e.preventDefault();
         setBookingSubmitted(false);
         setActiveTab("rechner");
-        const element = document.getElementById("portal-workspace");
-        if (element) element.scrollIntoView({ behavior: "smooth" });
+        scrollToInput(workspaceRef);
     };
 
     const handleDirectReservation = async (e) => {
         e.preventDefault();
         await sendEmailCalc({ customMessage: projectNotes });
+    };
+
+    const handleRequestTenderOffer = (tender) => {
+        setSelectedTender(tender.id);
+        setLocationInput(tender.location);
+        setProjectNotes(
+            `Anfrage zu Ausschreibung ${tender.id} (${tender.title}, ${tender.bkp}, Volumen: ${tender.volume}).`
+        );
+        setActiveTab("rechner");
+        scrollToInput(companyInputRef);
     };
 
     return (
@@ -466,6 +512,7 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                         <button
                             type="button"
                             onClick={() => setShowAuthModal(false)}
+                            aria-label="Schliessen"
                             style={{
                                 position: "absolute",
                                 top: "14px",
@@ -598,29 +645,48 @@ const ImmobilienPortal = ({ lang = "de" }) => {
             )}
 
             {/* HERO SECTION */}
-            <div style={{ position: "relative", width: "100%", minHeight: "720px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                <nav style={{
+            <div
+                style={{
                     position: "relative",
                     width: "100%",
+                    minHeight: "720px",
                     display: "flex",
+                    flexDirection: "column",
                     justifyContent: "space-between",
-                    alignItems: "center",
-                    padding: "20px 50px",
-                    boxSizing: "border-box",
-                    zIndex: 20,
-                    gap: "16px",
-                    flexWrap: "wrap",
-                    background: "linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%)"
-                }}>
+                    backgroundImage: `linear-gradient(180deg, rgba(10,10,10,0.72) 0%, rgba(17,17,17,0.95) 100%), url(${Schleifbild})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center"
+                }}
+            >
+                <nav
+                    style={{
+                        position: "relative",
+                        width: "100%",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        padding: "20px 50px",
+                        boxSizing: "border-box",
+                        zIndex: 20,
+                        gap: "16px",
+                        flexWrap: "wrap",
+                        background: "linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%)"
+                    }}
+                >
                     <div style={{ fontWeight: "bold", fontSize: "20px", letterSpacing: "1px", color: "#e62b2b" }}>
                         TITOCCI <span style={{ color: "#fff", fontWeight: "300" }}>METALCOSTRUZIONI</span>
                     </div>
+
                     <ul style={{ display: "flex", listStyle: "none", gap: "24px", margin: 0, padding: 0, flexWrap: "wrap", alignItems: "center" }}>
                         <li><Link to="/" style={{ color: "white", textDecoration: "none", fontWeight: "bold", fontSize: "14px" }}>{t.home}</Link></li>
                         <li><Link to="/chi-siamo" style={{ color: "white", textDecoration: "none", fontWeight: "bold", fontSize: "14px" }}>{t.chiSiamo}</Link></li>
                         <li><Link to="/servizi" style={{ color: "white", textDecoration: "none", fontWeight: "bold", fontSize: "14px" }}>{t.servizi}</Link></li>
                         <li><Link to="/galeria" style={{ color: "white", textDecoration: "none", fontWeight: "bold", fontSize: "14px" }}>{t.galeria}</Link></li>
-                        <li><span style={{ color: "white", fontWeight: "bold", borderBottom: "3px solid #e62b2b", paddingBottom: "4px", fontSize: "14px", cursor: "pointer" }}>{t.immobilien}</span></li>
+                        <li>
+                            <span style={{ color: "white", fontWeight: "bold", borderBottom: "3px solid #e62b2b", paddingBottom: "4px", fontSize: "14px", cursor: "pointer" }}>
+                                {t.immobilien}
+                            </span>
+                        </li>
                         <li><Link to="/kontakte" style={{ color: "white", textDecoration: "none", fontWeight: "bold", fontSize: "14px" }}>{t.kontakte}</Link></li>
                         <li>
                             {currentUser ? (
@@ -632,12 +698,13 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                                         type="button"
                                         onClick={handleLogout}
                                         style={{
-                                            padding: "6px 12px",
+                                            padding: "7px 14px",
                                             borderRadius: "6px",
                                             border: "1px solid #555",
                                             backgroundColor: "#222",
                                             color: "#fff",
                                             fontSize: "12px",
+                                            fontWeight: "bold",
                                             cursor: "pointer"
                                         }}
                                     >
@@ -647,15 +714,15 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                             ) : (
                                 <button
                                     type="button"
-                                    onClick={() => { setAuthMode("login"); setShowAuthModal(true); }}
+                                    onClick={() => openAuthModal("login")}
                                     style={{
-                                        padding: "7px 14px",
+                                        padding: "8px 16px",
                                         borderRadius: "6px",
-                                        border: "1px solid #e62b2b",
-                                        backgroundColor: "rgba(230, 43, 43, 0.2)",
+                                        border: "none",
+                                        backgroundColor: "#e62b2b",
                                         color: "#fff",
-                                        fontWeight: "bold",
                                         fontSize: "12px",
+                                        fontWeight: "bold",
                                         cursor: "pointer"
                                     }}
                                 >
@@ -666,121 +733,89 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                     </ul>
                 </nav>
 
-                <img
-                    src={Schleifbild}
-                    alt="Titocci Metalcostruzioni Immobilien"
-                    style={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        zIndex: 1
-                    }}
-                />
-                <div style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    height: "100%",
-                    background: "linear-gradient(180deg, rgba(0,0,0,0.65) 0%, rgba(17,17,17,0.95) 100%)",
-                    zIndex: 2
-                }} />
-
-                <div style={{ position: "relative", zIndex: 10, maxWidth: "1200px", margin: "40px auto 20px", padding: "0 20px", textAlign: "center" }}>
-                    <span style={{
-                        backgroundColor: "rgba(230, 43, 43, 0.2)",
-                        border: "1px solid #e62b2b",
-                        color: "#ff6b6b",
-                        padding: "6px 14px",
-                        borderRadius: "20px",
-                        fontSize: "12px",
-                        fontWeight: "bold",
-                        letterSpacing: "1.5px"
-                    }}>
+                {/* HERO CONTENT + SCHNELLSUCHE */}
+                <div style={{ maxWidth: "1100px", width: "100%", margin: "0 auto", padding: "40px 24px 70px", boxSizing: "border-box", zIndex: 10 }}>
+                    <div style={{ color: "#e62b2b", fontWeight: "bold", fontSize: "13px", letterSpacing: "2px", marginBottom: "10px" }}>
                         {t.heroTag}
-                    </span>
-                    <h1 style={{ fontSize: "3.5rem", fontWeight: "bold", margin: "18px 0 10px", textShadow: "2px 2px 10px rgba(0,0,0,0.8)" }}>
-                        {t.heroTitle}
-                    </h1>
-                    <p style={{ fontSize: "1.2rem", color: "#cccccc", maxWidth: "750px", margin: "0 auto 40px" }}>
+                    </div>
+                    <h1 style={{ fontSize: "2.8rem", margin: "0 0 12px", lineHeight: 1.15 }}>{t.heroTitle}</h1>
+                    <p style={{ color: "#ddd", fontSize: "1.1rem", maxWidth: "740px", margin: "0 0 28px" }}>
                         {t.heroSubtitle}
                     </p>
 
-                    <form onSubmit={handleBookingSearch} style={{
-                        backgroundColor: "#1e1e1e",
-                        border: "2px solid #e62b2b",
-                        borderRadius: "12px",
-                        padding: "20px",
-                        display: "grid",
-                        gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))",
-                        gap: "15px",
-                        textAlign: "left",
-                        boxShadow: "0 15px 35px rgba(0,0,0,0.7)"
-                    }}>
+                    <form
+                        onSubmit={handleBookingSearch}
+                        style={{
+                            display: "grid",
+                            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+                            gap: "12px",
+                            backgroundColor: "rgba(24, 24, 24, 0.92)",
+                            border: "1px solid #333",
+                            padding: "20px",
+                            borderRadius: "10px"
+                        }}
+                    >
                         <div>
-                            <label style={{ display: "block", fontSize: "12px", color: "#aaa", marginBottom: "6px" }}>{t.objektTyp}</label>
+                            <label style={{ display: "block", fontSize: "12px", color: "#bbb", marginBottom: "6px" }}>{t.objektTyp}</label>
                             <select
                                 value={selectedPropertyType}
                                 onChange={(e) => setSelectedPropertyType(e.target.value)}
-                                style={{ width: "100%", padding: "12px", borderRadius: "6px", backgroundColor: "#2a2a2a", color: "#fff", border: "1px solid #444" }}
+                                style={{ width: "100%", padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
                             >
-                                <option>Mehrfamilienhaus / Wohnbau</option>
-                                <option>Einfamilienhaus / Villa</option>
-                                <option>Gewerbe- & Industriebau</option>
-                                <option>Öffentliche Ausschreibung (BKP)</option>
+                                <option value="Mehrfamilienhaus / Wohnbau">Mehrfamilienhaus / Wohnbau</option>
+                                <option value="Einfamilienhaus / Villa">Einfamilienhaus / Villa</option>
+                                <option value="Gewerbe- & Industrieobjekt">Gewerbe- & Industrieobjekt</option>
+                                <option value="Öffentliche Ausschreibung">Öffentliche Ausschreibung</option>
                             </select>
                         </div>
 
                         <div>
-                            <label style={{ display: "block", fontSize: "12px", color: "#aaa", marginBottom: "6px" }}>{t.gewerkTyp}</label>
+                            <label style={{ display: "block", fontSize: "12px", color: "#bbb", marginBottom: "6px" }}>{t.gewerkTyp}</label>
                             <select
                                 value={selectedService}
                                 onChange={(e) => setSelectedService(e.target.value)}
-                                style={{ width: "100%", padding: "12px", borderRadius: "6px", backgroundColor: "#2a2a2a", color: "#fff", border: "1px solid #444" }}
+                                style={{ width: "100%", padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
                             >
-                                <option>Parapetti & Balkongeländer</option>
-                                <option>Ringhiere & Treppenanlagen</option>
-                                <option>Cancellate & Automatische Tore</option>
-                                <option>Garten- & Sicherheitszäune</option>
-                                <option>Komplett-Los Metallbau</option>
+                                <option value="Parapetti & Balkongeländer">Parapetti & Balkongeländer</option>
+                                <option value="Treppen & Innengeländer">Treppen & Innengeländer</option>
+                                <option value="Einfahrtstore & Sicherheitsgitter">Einfahrtstore & Sicherheitsgitter</option>
+                                <option value="Areal- & Gartenzäune">Areal- & Gartenzäune</option>
                             </select>
                         </div>
 
                         <div>
-                            <label style={{ display: "block", fontSize: "12px", color: "#aaa", marginBottom: "6px" }}>{t.standort}</label>
+                            <label style={{ display: "block", fontSize: "12px", color: "#bbb", marginBottom: "6px" }}>{t.standort}</label>
                             <input
                                 type="text"
                                 value={locationInput}
                                 onChange={(e) => setLocationInput(e.target.value)}
-                                style={{ width: "100%", padding: "12px", borderRadius: "6px", backgroundColor: "#2a2a2a", color: "#fff", border: "1px solid #444", boxSizing: "border-box" }}
+                                style={{ width: "100%", padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444", boxSizing: "border-box" }}
                             />
                         </div>
 
                         <div>
-                            <label style={{ display: "block", fontSize: "12px", color: "#aaa", marginBottom: "6px" }}>{t.terminWunsch}</label>
+                            <label style={{ display: "block", fontSize: "12px", color: "#bbb", marginBottom: "6px" }}>{t.terminWunsch}</label>
                             <input
                                 type="date"
                                 value={visitDate}
                                 onChange={(e) => setVisitDate(e.target.value)}
-                                style={{ width: "100%", padding: "11px", borderRadius: "6px", backgroundColor: "#2a2a2a", color: "#fff", border: "1px solid #444", boxSizing: "border-box" }}
+                                style={{ width: "100%", padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444", boxSizing: "border-box" }}
                             />
                         </div>
 
-                        <div style={{ display: "flex", alignItems: "flex-end" }}>
-                            <button type="submit" style={{
-                                width: "100%",
-                                padding: "13px 18px",
-                                backgroundColor: "#e62b2b",
-                                color: "#fff",
-                                border: "none",
-                                borderRadius: "6px",
-                                fontWeight: "bold",
-                                cursor: "pointer",
-                                fontSize: "14px"
-                            }}>
+                        <div style={{ gridColumn: "1 / -1", display: "flex", justifyContent: "flex-end", marginTop: "6px" }}>
+                            <button
+                                type="submit"
+                                style={{
+                                    padding: "12px 24px",
+                                    borderRadius: "6px",
+                                    border: "none",
+                                    backgroundColor: "#e62b2b",
+                                    color: "#fff",
+                                    fontWeight: "bold",
+                                    cursor: "pointer"
+                                }}
+                            >
                                 {t.suchenBtn}
                             </button>
                         </div>
@@ -788,19 +823,28 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                 </div>
             </div>
 
-            {/* WORKSPACE */}
-            <div id="portal-workspace" style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px 20px 80px" }}>
-                <div style={{ display: "flex", gap: "12px", borderBottom: "1px solid #333", paddingBottom: "15px", marginBottom: "35px", flexWrap: "wrap" }}>
+            {/* WORKSPACE: TABS & INHALTE */}
+            <div
+                ref={workspaceRef}
+                id="portal-workspace"
+                style={{
+                    maxWidth: "1150px",
+                    margin: "0 auto",
+                    padding: "40px 24px 80px",
+                    scrollMarginTop: "24px"
+                }}
+            >
+                <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginBottom: "30px", borderBottom: "1px solid #2b2b2b", paddingBottom: "14px" }}>
                     <button
                         type="button"
                         onClick={() => setActiveTab("ausschreibungen")}
                         style={{
-                            padding: "12px 24px",
-                            borderRadius: "8px",
+                            padding: "10px 18px",
+                            borderRadius: "6px",
                             border: "none",
-                            cursor: "pointer",
                             fontWeight: "bold",
-                            backgroundColor: activeTab === "ausschreibungen" ? "#e62b2b" : "#222",
+                            cursor: "pointer",
+                            backgroundColor: activeTab === "ausschreibungen" ? "#e62b2b" : "#1f1f1f",
                             color: "#fff"
                         }}
                     >
@@ -810,12 +854,12 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                         type="button"
                         onClick={() => setActiveTab("kunden")}
                         style={{
-                            padding: "12px 24px",
-                            borderRadius: "8px",
+                            padding: "10px 18px",
+                            borderRadius: "6px",
                             border: "none",
-                            cursor: "pointer",
                             fontWeight: "bold",
-                            backgroundColor: activeTab === "kunden" ? "#e62b2b" : "#222",
+                            cursor: "pointer",
+                            backgroundColor: activeTab === "kunden" ? "#e62b2b" : "#1f1f1f",
                             color: "#fff"
                         }}
                     >
@@ -825,12 +869,12 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                         type="button"
                         onClick={() => setActiveTab("rechner")}
                         style={{
-                            padding: "12px 24px",
-                            borderRadius: "8px",
+                            padding: "10px 18px",
+                            borderRadius: "6px",
                             border: "none",
-                            cursor: "pointer",
                             fontWeight: "bold",
-                            backgroundColor: activeTab === "rechner" ? "#e62b2b" : "#222",
+                            cursor: "pointer",
+                            backgroundColor: activeTab === "rechner" ? "#e62b2b" : "#1f1f1f",
                             color: "#fff"
                         }}
                     >
@@ -840,252 +884,199 @@ const ImmobilienPortal = ({ lang = "de" }) => {
 
                 {/* TAB 1: AUSSCHREIBUNGEN */}
                 {activeTab === "ausschreibungen" && (
-                    <div style={{ display: "grid", gap: "25px" }}>
-                        {tenders.map((item) => (
-                            <div key={item.id} style={{
-                                display: "grid",
-                                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-                                backgroundColor: "#1a1a1a",
-                                borderRadius: "12px",
-                                overflow: "hidden",
-                                border: "1px solid #2e2e2e"
-                            }}>
-                                <img src={item.image} alt={item.title} style={{ width: "100%", height: "100%", minHeight: "230px", objectFit: "cover" }} />
-                                <div style={{ padding: "25px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                                    <div>
-                                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px", flexWrap: "wrap", gap: "8px" }}>
-                                            <span style={{ fontSize: "12px", color: "#999", fontWeight: "bold" }}>REF: {item.id} • {item.location}</span>
-                                            <span style={{
-                                                padding: "4px 12px",
-                                                borderRadius: "20px",
+                    <div style={{ display: "grid", gap: "20px" }}>
+                        {tenders.map((tender) => (
+                            <div
+                                key={tender.id}
+                                style={{
+                                    display: "grid",
+                                    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+                                    gap: "20px",
+                                    backgroundColor: "#191919",
+                                    border: "1px solid #2c2c2c",
+                                    borderRadius: "10px",
+                                    padding: "20px",
+                                    alignItems: "center"
+                                }}
+                            >
+                                <img
+                                    src={tender.image}
+                                    alt={tender.title}
+                                    style={{ width: "100%", height: "190px", objectFit: "cover", borderRadius: "8px" }}
+                                />
+                                <div style={{ gridColumn: "span 2" }}>
+                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px" }}>
+                                        <span style={{ fontSize: "12px", color: "#aaa" }}>{tender.id} • {tender.location}</span>
+                                        <span
+                                            style={{
                                                 fontSize: "12px",
                                                 fontWeight: "bold",
-                                                backgroundColor: item.isOpen ? "rgba(46, 204, 113, 0.15)" : "rgba(241, 196, 15, 0.15)",
-                                                color: item.isOpen ? "#2ecc71" : "#f1c40f"
-                                            }}>
-                                                {item.status}
-                                            </span>
-                                        </div>
-
-                                        <h3 style={{ margin: "0 0 8px", fontSize: "1.4rem", color: "#fff" }}>{item.title}</h3>
-                                        <p style={{ margin: "0 0 15px", color: "#bbb", fontSize: "14px" }}>{item.type} — <strong>{item.volume}</strong></p>
-
-                                        <div style={{ display: "flex", gap: "15px", fontSize: "13px", color: "#ccc", marginBottom: "15px", flexWrap: "wrap" }}>
-                                            <span style={{ backgroundColor: "#262626", padding: "5px 10px", borderRadius: "5px" }}>
-                                                <strong>{t.bkpLabel}:</strong> {item.bkp}
-                                            </span>
-                                            <span style={{ backgroundColor: "#262626", padding: "5px 10px", borderRadius: "5px" }}>
-                                                <strong>{t.fristLabel}:</strong> {item.deadline}
-                                            </span>
-                                        </div>
-
-                                        <ul style={{ margin: "0 0 20px", paddingLeft: "18px", color: "#aaa", fontSize: "13px" }}>
-                                            {item.specs.map((spec, idx) => (
-                                                <li key={idx} style={{ marginBottom: "4px" }}>{spec}</li>
-                                            ))}
-                                        </ul>
-                                    </div>
-
-                                    <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                setSelectedTender(item.id);
-                                                setProjectNotes(`Anfrage zu Ausschreibung ${item.id} (${item.title})`);
-                                                setActiveTab("rechner");
-                                            }}
-                                            style={{
-                                                backgroundColor: "#e62b2b",
-                                                color: "#fff",
-                                                border: "none",
-                                                padding: "10px 20px",
-                                                borderRadius: "6px",
-                                                fontWeight: "bold",
-                                                cursor: "pointer"
+                                                padding: "4px 10px",
+                                                borderRadius: "999px",
+                                                backgroundColor: tender.isOpen ? "rgba(46, 204, 113, 0.16)" : "rgba(230, 43, 43, 0.16)",
+                                                color: tender.isOpen ? "#2ecc71" : "#ff6b6b"
                                             }}
                                         >
-                                            {t.offerteBtn}
-                                        </button>
+                                            {tender.status}
+                                        </span>
                                     </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
-
-                {/* TAB 2: KUNDENANSICHT & OBJEKT-KATALOG */}
-                {activeTab === "kunden" && (
-                    <div style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-                        gap: "25px"
-                    }}>
-                        {clientPackages.map((pkg, idx) => (
-                            <div key={idx} style={{
-                                backgroundColor: "#1a1a1a",
-                                borderRadius: "12px",
-                                overflow: "hidden",
-                                border: "1px solid #2e2e2e",
-                                display: "flex",
-                                flexDirection: "column",
-                                justifyContent: "space-between"
-                            }}>
-                                <div>
-                                    <img
-                                        src={pkg.img}
-                                        alt={pkg.title}
-                                        style={{ width: "100%", height: "190px", objectFit: "cover" }}
-                                    />
-                                    <div style={{ padding: "20px" }}>
-                                        <h3 style={{ margin: "0 0 10px", fontSize: "1.2rem" }}>{pkg.title}</h3>
-                                        <p style={{ margin: "0 0 14px", color: "#bbb", fontSize: "14px", lineHeight: 1.5 }}>
-                                            {pkg.desc}
-                                        </p>
-                                        <p style={{ margin: 0, color: "#ff6b6b", fontWeight: "bold", fontSize: "13px" }}>
-                                            {pkg.priceHint}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div style={{ padding: "0 20px 20px", display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                                    <h3 style={{ margin: "8px 0", fontSize: "1.25rem" }}>{tender.title}</h3>
+                                    <p style={{ margin: "0 0 10px", color: "#ccc", fontSize: "14px" }}>
+                                        <strong>{t.bkpLabel}:</strong> {tender.bkp} | <strong>Volumen:</strong> {tender.volume} | <strong>{t.fristLabel}:</strong> {tender.deadline}
+                                    </p>
+                                    <ul style={{ margin: "0 0 14px", paddingLeft: "18px", color: "#bbb", fontSize: "13px" }}>
+                                        {tender.specs.map((spec) => (
+                                            <li key={spec}>{spec}</li>
+                                        ))}
+                                    </ul>
                                     <button
                                         type="button"
-                                        onClick={() => {
-                                            setSelectedService(pkg.title);
-                                            setProjectNotes(`Anfrage zu Leistungspaket: ${pkg.title}`);
-                                            setActiveTab("rechner");
-                                        }}
+                                        onClick={() => handleRequestTenderOffer(tender)}
                                         style={{
+                                            padding: "10px 18px",
+                                            borderRadius: "6px",
+                                            border: "none",
                                             backgroundColor: "#e62b2b",
                                             color: "#fff",
-                                            border: "none",
-                                            padding: "9px 14px",
-                                            borderRadius: "6px",
                                             fontWeight: "bold",
-                                            cursor: "pointer",
-                                            fontSize: "13px"
+                                            cursor: "pointer"
                                         }}
                                     >
                                         {t.offerteBtn}
                                     </button>
-                                    {pkg.link && (
-                                        <a
-                                            href={pkg.link}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            style={{
-                                                color: "#ddd",
-                                                border: "1px solid #444",
-                                                padding: "9px 14px",
-                                                borderRadius: "6px",
-                                                textDecoration: "none",
-                                                fontSize: "13px"
-                                            }}
-                                        >
-                                            Details
-                                        </a>
-                                    )}
                                 </div>
                             </div>
                         ))}
                     </div>
                 )}
 
-                {/* TAB 3: KALKULATOR & OFFERTANFRAGE */}
+                {/* TAB 2: KUNDENANSICHT & KATALOG */}
+                {activeTab === "kunden" && (
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "20px" }}>
+                        {clientPackages.map((pkg) => (
+                            <div
+                                key={pkg.title}
+                                style={{
+                                    backgroundColor: "#191919",
+                                    border: "1px solid #2c2c2c",
+                                    borderRadius: "10px",
+                                    overflow: "hidden",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    justifyContent: "space-between"
+                                }}
+                            >
+                                <div>
+                                    <img
+                                        src={pkg.img}
+                                        alt={pkg.title}
+                                        style={{ width: "100%", height: "170px", objectFit: "cover" }}
+                                    />
+                                    <div style={{ padding: "18px" }}>
+                                        <h3 style={{ margin: "0 0 8px", fontSize: "1.1rem" }}>{pkg.title}</h3>
+                                        <p style={{ margin: "0 0 12px", color: "#ccc", fontSize: "14px", lineHeight: 1.5 }}>{pkg.desc}</p>
+                                        <div style={{ fontWeight: "bold", color: "#e62b2b", fontSize: "13px" }}>{pkg.priceHint}</div>
+                                    </div>
+                                </div>
+                                <div style={{ padding: "0 18px 18px" }}>
+                                    <a
+                                        href={pkg.link}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        style={{
+                                            display: "inline-block",
+                                            padding: "8px 14px",
+                                            borderRadius: "6px",
+                                            backgroundColor: "#282828",
+                                            color: "#fff",
+                                            textDecoration: "none",
+                                            fontSize: "13px",
+                                            fontWeight: "bold"
+                                        }}
+                                    >
+                                        Details ansehen →
+                                    </a>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                {/* TAB 3: KALKULATOR & DIREKT-BUCHUNG */}
                 {activeTab === "rechner" && (
-                    <div style={{ display: "grid", gap: "35px" }}>
-                        <div style={{
-                            backgroundColor: "#1a1a1a",
-                            borderRadius: "12px",
-                            padding: "25px",
-                            border: "1px solid #2e2e2e"
-                        }}>
-                            <Calculator
-                                qm={qm}
-                                setQm={setQm}
-                                canton={canton}
-                                setCanton={setCanton}
-                                zinssatz={zinssatz}
-                                setZinssatz={setZinssatz}
-                                onSendEmail={sendEmailCalc}
-                                isSending={isSending}
-                            />
-                        </div>
+                    <div style={{ display: "grid", gap: "32px" }}>
+                        <Calculator
+                            qm={qm}
+                            setQm={setQm}
+                            canton={canton}
+                            setCanton={setCanton}
+                            zinssatz={zinssatz}
+                            setZinssatz={setZinssatz}
+                            onSendEmail={sendEmailCalc}
+                        />
 
                         <form
                             onSubmit={handleDirectReservation}
                             style={{
-                                backgroundColor: "#1a1a1a",
-                                borderRadius: "12px",
-                                padding: "25px",
-                                border: "1px solid #2e2e2e",
+                                backgroundColor: "#191919",
+                                border: "1px solid #2c2c2c",
+                                borderRadius: "10px",
+                                padding: "24px",
                                 display: "grid",
-                                gap: "15px"
+                                gap: "14px"
                             }}
                         >
-                            <h3 style={{ margin: 0, fontSize: "1.4rem" }}>{t.bookingTitle}</h3>
+                            <h3 style={{ margin: 0, fontSize: "1.3rem" }}>{t.bookingTitle}</h3>
                             <p style={{ margin: 0, color: "#bbb", fontSize: "14px" }}>{t.bookingSub}</p>
 
-                            {selectedTender && (
-                                <div style={{ fontSize: "13px", color: "#ff6b6b" }}>
-                                    Gewählte Referenz: <strong>{selectedTender}</strong>
-                                </div>
-                            )}
-
-                            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "15px" }}>
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "12px" }}>
                                 <input
+                                    ref={companyInputRef}
                                     type="text"
                                     placeholder={t.namePlaceholder}
                                     value={companyName}
                                     onChange={(e) => setCompanyName(e.target.value)}
-                                    style={{ padding: "12px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
+                                    required
+                                    style={{ padding: "11px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444", scrollMarginTop: "120px" }}
                                 />
                                 <input
                                     type="email"
-                                    required
                                     placeholder={t.emailPlaceholder}
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    style={{ padding: "12px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
+                                    required
+                                    style={{ padding: "11px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
                                 />
                                 <input
                                     type="tel"
                                     placeholder={t.phonePlaceholder}
                                     value={phone}
                                     onChange={(e) => setPhone(e.target.value)}
-                                    style={{ padding: "12px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
+                                    style={{ padding: "11px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
                                 />
                             </div>
 
                             <textarea
-                                rows={4}
+                                rows="4"
                                 placeholder={t.projektDetails}
                                 value={projectNotes}
                                 onChange={(e) => setProjectNotes(e.target.value)}
-                                style={{ padding: "12px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444", resize: "vertical" }}
+                                style={{ padding: "11px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444", resize: "vertical" }}
                             />
 
-                            {bookingSubmitted && (
-                                <div style={{ color: "#2ecc71", fontSize: "14px", fontWeight: "bold" }}>
-                                    {t.bookingSuccess}
-                                </div>
-                            )}
-                            {submitError && (
-                                <div style={{ color: "#ff6b6b", fontSize: "14px", fontWeight: "bold" }}>
-                                    {submitError}
-                                </div>
-                            )}
+                            {submitError && <div style={{ color: "#ff7b7b", fontSize: "13px" }}>{submitError}</div>}
+                            {bookingSubmitted && <div style={{ color: "#2ecc71", fontSize: "13px" }}>{t.bookingSuccess}</div>}
 
                             <div>
                                 <button
                                     type="submit"
                                     disabled={isSending}
                                     style={{
-                                        backgroundColor: "#e62b2b",
-                                        color: "#fff",
-                                        border: "none",
                                         padding: "12px 24px",
                                         borderRadius: "6px",
+                                        border: "none",
+                                        backgroundColor: "#e62b2b",
+                                        color: "#fff",
                                         fontWeight: "bold",
                                         cursor: isSending ? "not-allowed" : "pointer",
                                         opacity: isSending ? 0.7 : 1
