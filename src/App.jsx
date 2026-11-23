@@ -18,6 +18,7 @@ import Imobiliacalculatori from "./pages/ImobiliaCalculatori.jsx";
 import Privacy from "./pages/Privacy.jsx";
 import Impressumpage from "./pages/Impressum.jsx";
 import Avegno from "./pages/Avegno.jsx";
+
 import Locarno from "./pages/Locarno.jsx";
 import SEO from './pages/SEO.jsx';
 import Customers from './pages/Kundenansicht.jsx';
@@ -185,6 +186,7 @@ function MainContent() {
                         <Route path="/seo" element={<SEO lang={language} />} />
                         <Route path="/imobiliaportale" element={<ImobiliaPortale lang={language} />}/>
                         <Route path="/customers" element={<Customers lang={language} />}/>
+
 
 
                     </Routes>
