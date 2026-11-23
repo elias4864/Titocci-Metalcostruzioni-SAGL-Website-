@@ -347,6 +347,14 @@ export default function HousePriceCalculator() {
             return;
         }
 
+        if(!phone.length<8 || phone.length===0){
+            alert("Die Telefonnummer ist zu kurz oder ungültig bitte eine gültige eingeben!");
+            return;
+        }
+
+
+
+
         const base = LOCATION_FACTORS[location].basePrice;
         const cantonFactor = CANTON_FACTORS[canton].factor;
         const conditionMult = CONDITION_FACTORS[condition].multiplier;
@@ -666,7 +674,7 @@ export default function HousePriceCalculator() {
 
                         <div>
                             <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                                Ihre E-Mail-Adresse:
+                                E-Mail-Adresse:
                             </label>
                             <input
                                 type="email"
@@ -687,7 +695,13 @@ export default function HousePriceCalculator() {
                         <div>
                             <label
                                 htmlFor="phoneInput"
-                                style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}
+                                style={{
+                                    display: 'block',
+                                    marginBottom: '6px',
+                                    fontWeight: 600,
+                                    fontSize: '14px',
+                                    color: '#0f172a',
+                                }}
                             >
                                 Ihre Telefonnummer:
                             </label>
@@ -699,7 +713,7 @@ export default function HousePriceCalculator() {
                                 onChange={(e) => setPhone(e.target.value)}
                                 style={{
                                     width: '100%',
-                                    padding: '8px',
+                                    padding: '20px',
                                     borderRadius: '4px',
                                     border: '1px solid #ccc',
                                     boxSizing: 'border-box',
