@@ -539,19 +539,23 @@ export default function HousePriceCalculator() {
                         <button
                             type="button"
                             onClick={handleExportTxt}
+                            placeholder="Telefonnummer bitte eingeben..."
+
                             onFocus={reportRef}
+
+
                             style={{
-                                backgroundColor: '#475569',
-                                color: '#fff',
+                                backgroundColor: 'blue',
+                                color: 'orangered',
                                 border: 'none',
                                 padding: '8px 12px',
                                 borderRadius: '6px',
                                 cursor: 'pointer',
-                                fontSize: '13px',
+                                fontSize: '30px',
                                 fontWeight: '600',
                             }}
                         >
-                            TXT speichern
+                            Als TXT speichern
                         </button>
 
                         {/* PDF-Upload (Grundriss / Exposé / Dokument) */}
