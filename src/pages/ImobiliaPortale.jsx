@@ -2,9 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import { User, Briefcase, MapPin, Building2, ExternalLink } from "lucide-react";
 import emailjs from "@emailjs/browser";
 
-const EMAILJS_SERVICE_ID = "service_n9toe59";
-const EMAILJS_TEMPLATE_ID = "template_mrshrnl";
-const EMAILJS_PUBLIC_KEY = "dFpVpt98rEIko4TLa";
 
 const GEWERK_CONFIG = {
     "Parapetti & Balkongeländer": {
@@ -110,6 +107,9 @@ const ImmobilienPortal = ({ lang = "de" }) => {
             return null;
         }
     });
+    const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || "";
+    const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || "";
+    const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || "";
     const [showAuthModal, setShowAuthModal] = useState(false);
     const [authMode, setAuthMode] = useState("login");
     const [privacyAccepted, setPrivacyAccepted] = useState(false);
@@ -127,6 +127,7 @@ const ImmobilienPortal = ({ lang = "de" }) => {
     const [selectedService, setSelectedService] = useState("Parapetti & Balkongeländer");
     const [locationInput, setLocationInput] = useState("Avegno / Vallemaggia");
     const [visitDate, setVisitDate] = useState("");
+
     const [visitTime, setVisitTime] = useState("");
     const [selectedTender, setSelectedTender] = useState(null);
 

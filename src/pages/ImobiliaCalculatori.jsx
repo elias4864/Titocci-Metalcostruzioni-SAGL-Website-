@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import emailjs from '@emailjs/browser';
 import html2pdf from 'html2pdf.js';
 import SEO from '../pages/SEO.jsx';
@@ -38,6 +38,16 @@ const GROESSE = {
 };
 
 const MAX_PDF_BYTES = 10 * 1024 * 1024;
+const EMAILJS_SERVICE_ID = 'service_n9toe59';
+const EMAILJS_TEMPLATE_ID = 'template_mrshrnl';
+const EMAILJS_PUBLIC_KEY = 'dFpVpt98rEIko4TLa';
+
+const getGroesseCategory = (qmValue) => {
+    if (qmValue <= 45) return GROESSE.small;
+    if (qmValue <= 90) return GROESSE.medium;
+    if (qmValue <= 150) return GROESSE.large;
+    return GROESSE.extra_large;
+};
 
 export default function HousePriceCalculator() {
     const [qm, setQm] = useState(75);
@@ -49,7 +59,9 @@ export default function HousePriceCalculator() {
     const [zinssatz, setZinssatz] = useState(2.5);
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
-
+    const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || "";
+    const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || "";
+    const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || "";
     const [result, setResult] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
     const [isOpen, setIsOpen] = useState(true);
@@ -62,15 +74,11 @@ export default function HousePriceCalculator() {
 
     const reportRef = useRef(null);
     const pdfInputRef = useRef(null);
+    const emailInputRef = useRef(null);
     const pdfUrlRef = useRef(null);
     const currentYear = new Date().getFullYear();
 
-    const getGroesseCategory = (qmValue) => {
-        if (qmValue <= 45) return GROESSE.small;
-        if (qmValue <= 90) return GROESSE.medium;
-        if (qmValue <= 150) return GROESSE.large;
-        return GROESSE.extra_large;
-    };
+    const currentGroesse = useMemo(() => getGroesseCategory(qm), [qm]);
 
     const setPdfObjectUrl = (nextUrl) => {
         if (pdfUrlRef.current) {
@@ -86,6 +94,16 @@ export default function HousePriceCalculator() {
             }
         };
     }, []);
+
+    const focusEmailField = () => {
+        requestAnimationFrame(() => {
+            const el = emailInputRef.current;
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                el.focus({ preventScroll: true });
+            }
+        });
+    };
 
     const handleImageChange = (e) => {
         const file = e.target.files?.[0];
@@ -152,6 +170,7 @@ export default function HousePriceCalculator() {
             `Lage: ${data.locationName}`,
             `Zustand: ${data.conditionName}`,
             `Baujahr: ${data.year}`,
+            `Personen: ${data.personen}`,
             `Eigenkapital (20%): ${Math.round(data.eigenkapital20).toLocaleString('de-CH')} CHF`,
             `Monatliche Zinsbelastung (${data.zinssatz}%): ~${Math.round(data.monatlicherZins).toLocaleString('de-CH')} CHF`,
             `E-Mail: ${data.email}`,
@@ -161,17 +180,20 @@ export default function HousePriceCalculator() {
             .filter(Boolean)
             .join('\n');
 
-    const handleExportTxt = () => {
+    const triggerDownload = (content, mimeType, extension) => {
         if (!result) return;
-
-        const textContent = buildSummaryText(result);
-        const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8;' });
+        const blob = new Blob([content], { type: mimeType });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `Immobilien-Bewertung-${result.canton}-${new Date().toISOString().slice(0, 10)}.txt`;
+        link.download = `Immobilien-Bewertung-${result.canton}-${new Date().toISOString().slice(0, 10)}.${extension}`;
         link.click();
         URL.revokeObjectURL(url);
+    };
+
+    const handleExportTxt = () => {
+        if (!result) return;
+        triggerDownload(buildSummaryText(result), 'text/plain;charset=utf-8;', 'txt');
     };
 
     const triggerPdfDownload = () => {
@@ -200,6 +222,7 @@ export default function HousePriceCalculator() {
             ['Lage', result.locationName],
             ['Zustand', result.conditionName],
             ['Baujahr', String(result.year)],
+            ['Personen', String(result.personen)],
             ['Hypothekarzins (%)', String(result.zinssatz)],
             ['Geschaetzter Preis pro m2 (CHF)', result.pricePerQm.toFixed(2)],
             ['Geschaetzter Gesamtwert (CHF)', result.totalPrice.toFixed(2)],
@@ -216,15 +239,7 @@ export default function HousePriceCalculator() {
             )
             .join('\n');
 
-        const blob = new Blob(['\uFEFF' + csvContent], {
-            type: 'text/csv;charset=utf-8;',
-        });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `Immobilien-Bewertung-${result.canton}-${new Date().toISOString().slice(0, 10)}.csv`;
-        link.click();
-        URL.revokeObjectURL(url);
+        triggerDownload('\uFEFF' + csvContent, 'text/csv;charset=utf-8;', 'csv');
     };
 
     const handleExportJson = () => {
@@ -256,15 +271,7 @@ export default function HousePriceCalculator() {
             },
         };
 
-        const blob = new Blob([JSON.stringify(payload, null, 2)], {
-            type: 'application/json',
-        });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `Immobilien-Bewertung-${result.canton}-${new Date().toISOString().slice(0, 10)}.json`;
-        link.click();
-        URL.revokeObjectURL(url);
+        triggerDownload(JSON.stringify(payload, null, 2), 'application/json', 'json');
     };
 
     const handleCopySummary = async () => {
@@ -287,18 +294,18 @@ export default function HousePriceCalculator() {
     ) => {
         setIsSending(true);
         try {
-            const serviceID = 'service_n9toe59';
-            const templateID = 'template_mrshrnl';
-            const publicKey = 'dFpVpt98rEIko4TLa';
-
             const templateParams = {
                 subject: 'Neue Immobilien-Berechnung von Titocci Metalcostruzioni',
-                from_email: email,
-                phone: phone || 'Keine Telefonnummer angegeben',
+                from_email: email.trim(),
+                phone: phone.trim() || 'Keine Telefonnummer angegeben',
                 message: [
                     `Wohnfläche: ${qm} m²`,
                     `Kanton: ${canton}`,
-                    `Telefon: ${phone || 'Nicht angegeben'}`,
+                    `Lage: ${location}`,
+                    `Zustand: ${condition}`,
+                    `Baujahr: ${year}`,
+                    `Personen: ${personen}`,
+                    `Telefon: ${phone.trim() || 'Nicht angegeben'}`,
                     `Zinssatz: ${zinssatz}%`,
                     `Geschätzter Quadratmeterpreis: ${calculatedPricePerQm.toFixed(2)} CHF`,
                     `Geschätzter Gesamtpreis: ${calculatedTotalPrice.toFixed(2)} CHF`,
@@ -310,9 +317,14 @@ export default function HousePriceCalculator() {
                 pdf_filename: attachedPdfName || 'Kein PDF hochgeladen',
             };
 
-            await emailjs.send(serviceID, templateID, templateParams, publicKey);
+            await emailjs.send(
+                EMAILJS_SERVICE_ID,
+                EMAILJS_TEMPLATE_ID,
+                templateParams,
+                EMAILJS_PUBLIC_KEY
+            );
             alert(
-                `Der Bericht wurde erfolgreich an ${email} und an Titocci Metalcostruzioni gesendet!`
+                `Der Bericht wurde erfolgreich an ${email.trim()} und an Titocci Metalcostruzioni gesendet!`
             );
         } catch (error) {
             console.error('Fehler beim E-Mail-Versand:', error);
@@ -332,19 +344,27 @@ export default function HousePriceCalculator() {
         }
         if (!trimmedEmail || !trimmedEmail.includes('@')) {
             alert('Bitte gib eine gültige E-Mail-Adresse ein.');
+            focusEmailField();
             return;
         }
 
-        const base = LOCATION_FACTORS[location].basePrice;
-        const cantonFactor = CANTON_FACTORS[canton].factor;
-        const conditionMult = CONDITION_FACTORS[condition].multiplier;
-        const groesseObj = getGroesseCategory(qm);
-        const groesseFactor = groesseObj.multiplier;
+        const safeLocation = LOCATION_FACTORS[location] || LOCATION_FACTORS.suburb;
+        const safeCanton = CANTON_FACTORS[canton] || CANTON_FACTORS.CH;
+        const safeCondition = CONDITION_FACTORS[condition] || CONDITION_FACTORS.good;
 
-        const age = Math.max(0, currentYear - year);
+        const base = safeLocation.basePrice;
+        const cantonFactor = safeCanton.factor;
+        const conditionMult = safeCondition.multiplier;
+        const groesseFactor = currentGroesse.multiplier;
+
+        const safeYear = Math.min(currentYear, Math.max(1850, Number(year) || currentYear));
+        const safePersonen = Math.max(1, Number(personen) || 1);
+        const safeZins = Math.max(0, Number(zinssatz) || 0);
+
+        const age = Math.max(0, currentYear - safeYear);
         const ageFactor = Math.max(0.6, 1 - age * 0.005);
-        const personenFactor = 1 + (personen - 1) * 0.01;
-        const zinsFactor = Math.max(0.85, 1 + (zinssatz - 2.0) * 0.03);
+        const personenFactor = 1 + (safePersonen - 1) * 0.01;
+        const zinsFactor = Math.max(0.85, 1 + (safeZins - 2.0) * 0.03);
 
         const pricePerQm =
             base *
@@ -356,22 +376,22 @@ export default function HousePriceCalculator() {
             zinsFactor;
         const totalPrice = pricePerQm * qm;
 
-        const jahresZins = totalPrice * (zinssatz / 100);
+        const jahresZins = totalPrice * (safeZins / 100);
         const monatlicherZins = jahresZins / 12;
         const eigenkapital20 = totalPrice * 0.20;
 
         const calculationResult = {
             qm,
             canton,
-            cantonName: CANTON_FACTORS[canton].name,
+            cantonName: safeCanton.name,
             location,
-            locationName: LOCATION_FACTORS[location].name,
+            locationName: safeLocation.name,
             condition,
-            conditionName: CONDITION_FACTORS[condition].name,
-            groesseName: groesseObj.name,
-            year,
-            personen,
-            zinssatz,
+            conditionName: safeCondition.name,
+            groesseName: currentGroesse.name,
+            year: safeYear,
+            personen: safePersonen,
+            zinssatz: safeZins,
             pricePerQm,
             totalPrice,
             email: trimmedEmail,
@@ -393,12 +413,10 @@ export default function HousePriceCalculator() {
         );
     };
 
-    const currentGroesse = getGroesseCategory(qm);
-
     return (
         <div
             style={{
-                maxWidth: '520px',
+                maxWidth: '540px',
                 margin: '20px auto',
                 padding: '24px',
                 fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
@@ -622,6 +640,7 @@ export default function HousePriceCalculator() {
                         </label>
                         <input
                             id="emailInput"
+                            ref={emailInputRef}
                             type="email"
                             placeholder="name@beispiel.ch"
                             value={email}
@@ -649,6 +668,7 @@ export default function HousePriceCalculator() {
                             type="tel"
                             placeholder="+41 44 000 00 00"
                             value={phone}
+                            required
                             onChange={(e) => setPhone(e.target.value)}
                             style={{
                                 width: '100%',
@@ -687,31 +707,164 @@ export default function HousePriceCalculator() {
                         </span>
                     </div>
 
-                    <div>
-                        <label
-                            htmlFor="cantonSelect"
-                            style={{ display: 'block', marginBottom: '6px', fontWeight: 600, fontSize: '14px' }}
-                        >
-                            Kanton / Region:
-                        </label>
-                        <select
-                            id="cantonSelect"
-                            value={canton}
-                            onChange={(e) => setCanton(e.target.value)}
-                            style={{
-                                width: '100%',
-                                padding: '10px 12px',
-                                borderRadius: '8px',
-                                border: '1px solid #cbd5e1',
-                                backgroundColor: '#fff',
-                            }}
-                        >
-                            {Object.entries(CANTON_FACTORS).map(([key, val]) => (
-                                <option key={key} value={key}>
-                                    {val.name}
-                                </option>
-                            ))}
-                        </select>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        <div>
+                            <label
+                                htmlFor="cantonSelect"
+                                style={{ display: 'block', marginBottom: '6px', fontWeight: 600, fontSize: '14px' }}
+                            >
+                                Kanton / Region:
+                            </label>
+                            <select
+                                id="cantonSelect"
+                                value={canton}
+                                onChange={(e) => setCanton(e.target.value)}
+                                style={{
+                                    width: '100%',
+                                    padding: '10px 12px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #cbd5e1',
+                                    backgroundColor: '#fff',
+                                }}
+                            >
+                                {Object.entries(CANTON_FACTORS).map(([key, val]) => (
+                                    <option key={key} value={key}>
+                                        {val.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label
+                                htmlFor="locationSelect"
+                                style={{ display: 'block', marginBottom: '6px', fontWeight: 600, fontSize: '14px' }}
+                            >
+                                Lage:
+                            </label>
+                            <select
+                                id="locationSelect"
+                                value={location}
+                                onChange={(e) => setLocation(e.target.value)}
+                                style={{
+                                    width: '100%',
+                                    padding: '10px 12px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #cbd5e1',
+                                    backgroundColor: '#fff',
+                                }}
+                            >
+                                {Object.entries(LOCATION_FACTORS).map(([key, val]) => (
+                                    <option key={key} value={key}>
+                                        {val.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        <div>
+                            <label
+                                htmlFor="conditionSelect"
+                                style={{ display: 'block', marginBottom: '6px', fontWeight: 600, fontSize: '14px' }}
+                            >
+                                Zustand:
+                            </label>
+                            <select
+                                id="conditionSelect"
+                                value={condition}
+                                onChange={(e) => setCondition(e.target.value)}
+                                style={{
+                                    width: '100%',
+                                    padding: '10px 12px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #cbd5e1',
+                                    backgroundColor: '#fff',
+                                }}
+                            >
+                                {Object.entries(CONDITION_FACTORS).map(([key, val]) => (
+                                    <option key={key} value={key}>
+                                        {val.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label
+                                htmlFor="yearInput"
+                                style={{ display: 'block', marginBottom: '6px', fontWeight: 600, fontSize: '14px' }}
+                            >
+                                Baujahr:
+                            </label>
+                            <input
+                                id="yearInput"
+                                type="number"
+                                min="1850"
+                                max={currentYear}
+                                value={year}
+                                onChange={(e) => setYear(Number(e.target.value))}
+                                style={{
+                                    width: '100%',
+                                    padding: '10px 12px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #cbd5e1',
+                                    boxSizing: 'border-box',
+                                }}
+                            />
+                        </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        <div>
+                            <label
+                                htmlFor="personenInput"
+                                style={{ display: 'block', marginBottom: '6px', fontWeight: 600, fontSize: '14px' }}
+                            >
+                                Personen:
+                            </label>
+                            <input
+                                id="personenInput"
+                                type="number"
+                                min="1"
+                                max="20"
+                                value={personen}
+                                onChange={(e) => setPersonen(Number(e.target.value))}
+                                style={{
+                                    width: '100%',
+                                    padding: '10px 12px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #cbd5e1',
+                                    boxSizing: 'border-box',
+                                }}
+                            />
+                        </div>
+
+                        <div>
+                            <label
+                                htmlFor="zinsInput"
+                                style={{ display: 'block', marginBottom: '6px', fontWeight: 600, fontSize: '14px' }}
+                            >
+                                Hypothekarzins (%):
+                            </label>
+                            <input
+                                id="zinsInput"
+                                type="number"
+                                step="0.05"
+                                min="0"
+                                max="15"
+                                value={zinssatz}
+                                onChange={(e) => setZinssatz(Number(e.target.value))}
+                                style={{
+                                    width: '100%',
+                                    padding: '10px 12px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #cbd5e1',
+                                    boxSizing: 'border-box',
+                                }}
+                            />
+                        </div>
                     </div>
 
                     <button
@@ -732,88 +885,116 @@ export default function HousePriceCalculator() {
                     </button>
 
                     {result && (
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                            <button
-                                type="button"
-                                onClick={handleExportTxt}
+                        <>
+                            <div
+                                ref={reportRef}
                                 style={{
-                                    backgroundColor: '#2563eb',
-                                    color: '#ffffff',
-                                    border: 'none',
-                                    padding: '8px 12px',
-                                    borderRadius: '6px',
-                                    cursor: 'pointer',
-                                    fontSize: '13px',
-                                    fontWeight: 600,
+                                    padding: '16px',
+                                    borderRadius: '12px',
+                                    backgroundColor: '#ffffff',
+                                    border: '1px solid #cbd5e1',
                                 }}
                             >
-                                Als TXT speichern
-                            </button>
-                            <button
-                                type="button"
-                                onClick={handleExportCsv}
-                                style={{
-                                    backgroundColor: '#0f766e',
-                                    color: '#ffffff',
-                                    border: 'none',
-                                    padding: '8px 12px',
-                                    borderRadius: '6px',
-                                    cursor: 'pointer',
-                                    fontSize: '13px',
-                                    fontWeight: 600,
-                                }}
-                            >
-                                Als CSV speichern
-                            </button>
-                            <button
-                                type="button"
-                                onClick={handleExportJson}
-                                style={{
-                                    backgroundColor: '#475569',
-                                    color: '#ffffff',
-                                    border: 'none',
-                                    padding: '8px 12px',
-                                    borderRadius: '6px',
-                                    cursor: 'pointer',
-                                    fontSize: '13px',
-                                    fontWeight: 600,
-                                }}
-                            >
-                                Als JSON speichern
-                            </button>
-                            <button
-                                type="button"
-                                onClick={handleCopySummary}
-                                style={{
-                                    backgroundColor: '#334155',
-                                    color: '#ffffff',
-                                    border: 'none',
-                                    padding: '8px 12px',
-                                    borderRadius: '6px',
-                                    cursor: 'pointer',
-                                    fontSize: '13px',
-                                    fontWeight: 600,
-                                }}
-                            >
-                                {copySuccess ? 'Kopiert!' : 'Kopieren'}
-                            </button>
-                            <button
-                                type="button"
-                                onClick={triggerPdfDownload}
-                                style={{
-                                    backgroundColor: '#7c3aed',
-                                    color: '#ffffff',
-                                    border: 'none',
-                                    padding: '8px 12px',
-                                    borderRadius: '6px',
-                                    cursor: 'pointer',
-                                    fontSize: '13px',
-                                    fontWeight: 600,
-                                }}
-                            >
-                                PDF-Report
-                            </button>
-                        </div>
+                                <h3 style={{ margin: '0 0 8px', fontSize: '16px' }}>
+                                    Kurzgutachten ({result.date})
+                                </h3>
+                                <div style={{ fontSize: '20px', fontWeight: 700, color: '#15803d', marginBottom: '8px' }}>
+                                    {Math.round(result.totalPrice).toLocaleString('de-CH')} CHF
+                                    <span style={{ fontSize: '13px', fontWeight: 500, color: '#475569', marginLeft: '8px' }}>
+                                        ({Math.round(result.pricePerQm).toLocaleString('de-CH')} CHF / m²)
+                                    </span>
+                                </div>
+                                <div style={{ fontSize: '13px', color: '#334155', lineHeight: 1.5 }}>
+                                    <div>Objekt: {result.qm} m² ({result.groesseName}), Baujahr {result.year}</div>
+                                    <div>Region: {result.cantonName} – {result.locationName} ({result.conditionName})</div>
+                                    <div>Eigenkapital (20%): <strong>{Math.round(result.eigenkapital20).toLocaleString('de-CH')} CHF</strong></div>
+                                    <div>Monatlicher Zins ({result.zinssatz}%): <strong>~{Math.round(result.monatlicherZins).toLocaleString('de-CH')} CHF</strong></div>
+                                </div>
+                            </div>
+
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                                <button
+                                    type="button"
+                                    onClick={handleExportTxt}
+                                    style={{
+                                        backgroundColor: '#2563eb',
+                                        color: '#ffffff',
+                                        border: 'none',
+                                        padding: '8px 12px',
+                                        borderRadius: '6px',
+                                        cursor: 'pointer',
+                                        fontSize: '13px',
+                                        fontWeight: 600,
+                                    }}
+                                >
+                                    Als TXT speichern
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleExportCsv}
+                                    style={{
+                                        backgroundColor: '#0f766e',
+                                        color: '#ffffff',
+                                        border: 'none',
+                                        padding: '8px 12px',
+                                        borderRadius: '6px',
+                                        cursor: 'pointer',
+                                        fontSize: '13px',
+                                        fontWeight: 600,
+                                    }}
+                                >
+                                    Als CSV speichern
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleExportJson}
+                                    style={{
+                                        backgroundColor: '#475569',
+                                        color: '#ffffff',
+                                        border: 'none',
+                                        padding: '8px 12px',
+                                        borderRadius: '6px',
+                                        cursor: 'pointer',
+                                        fontSize: '13px',
+                                        fontWeight: 600,
+                                    }}
+                                >
+                                    Als JSON speichern
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleCopySummary}
+                                    style={{
+                                        backgroundColor: '#334155',
+                                        color: '#ffffff',
+                                        border: 'none',
+                                        padding: '8px 12px',
+                                        borderRadius: '6px',
+                                        cursor: 'pointer',
+                                        fontSize: '13px',
+                                        fontWeight: 600,
+                                    }}
+                                >
+                                    {copySuccess ? 'Kopiert!' : 'Kopieren'}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={triggerPdfDownload}
+                                    style={{
+                                        backgroundColor: '#7c3aed',
+                                        color: '#ffffff',
+                                        border: 'none',
+                                        padding: '8px 12px',
+                                        borderRadius: '6px',
+                                        cursor: 'pointer',
+                                        fontSize: '13px',
+                                        fontWeight: 600,
+                                    }}
+                                >
+                                    PDF-Report
+                                </button>
+                            </div>
+                        </>
                     )}
                 </form>
             )}
