@@ -1,11 +1,5 @@
-import React, { useState, useRef } from "react";
-import { Link } from "react-router-dom";
-import Schleifbild from "../assets/Schleifen3.jpg";
-import Impressumbild from "../assets/Impressum.jpg";
-import Holztreppe from "../assets/Holztreppe.jpg";
-import Seitengitter from "../assets/Seitengitter.jpg";
-import Gitter4 from "../assets/Gitter4.jpg";
-import Calculator from "../pages/ImobiliaCalculatori.jsx";
+import React, { useState, useRef, useEffect } from "react";
+import { User, Briefcase, MapPin, Building2, ExternalLink } from "lucide-react";
 import emailjs from "@emailjs/browser";
 
 const EMAILJS_SERVICE_ID = "service_n9toe59";
@@ -54,6 +48,11 @@ const ABOUT_ME_PROFILE = {
     location: "Zürich / Tessin (CH)",
     summary:
         "Entwicklung moderner Web- und Kalkulationslösungen mit Fokus auf klare Nutzerführung, B2B-Ausschreibungen, interaktive Preisrechner und saubere Frontend-/Backend-Architektur.",
+    highlights: [
+        "Schnittstelle zwischen Immobilien-/Kalkulationslogik, UI/UX und Webentwicklung",
+        "Strukturierte Offert- und Ausschreibungs-Workflows für B2B & Immobilien",
+        "Responsive React-Oberflächen mit direktem E-Mail-Report-Versand"
+    ],
     skills: ["React & Vite", "TypeScript / JavaScript", "Kalkulations- & Offert-Workflows", "SEO & Responsive UI"],
     links: [
         { label: "Portfolio", url: "https://elias-portfolio.eljourka.workers.dev" },
@@ -147,8 +146,17 @@ const ImmobilienPortal = ({ lang = "de" }) => {
     const [bookingSubmitted, setBookingSubmitted] = useState(false);
     const [submitError, setSubmitError] = useState("");
 
-    const workspaceRef = useRef(null);
     const companyInputRef = useRef(null);
+
+    useEffect(() => {
+        if (currentUser) {
+            setCompanyName(currentUser.firmaOderName || "");
+            setEmail(currentUser.email || "");
+            if (currentUser.immobilienObjekt) {
+                setLocationInput(currentUser.immobilienObjekt);
+            }
+        }
+    }, [currentUser]);
 
     const activeGewerk = GEWERK_CONFIG[selectedService] || GEWERK_CONFIG["Parapetti & Balkongeländer"];
     const activeMaterial = MATERIAL_FACTORS[materialType] || MATERIAL_FACTORS["Stahl feuerverzinkt & pulverbeschichtet"];
@@ -183,21 +191,6 @@ const ImmobilienPortal = ({ lang = "de" }) => {
         setAuthSuccess("");
         setPrivacyAccepted(false);
         setShowAuthModal(true);
-    };
-
-    const handleResetCalculation = () => {
-        setLfm(45);
-        setMaterialType("Stahl feuerverzinkt & pulverbeschichtet");
-        setMontageType("Standard-Montage");
-        setEigenmittelQuote(20);
-        setSelectedTender(null);
-        setProjectNotes("");
-        setBookingSubmitted(false);
-        setSubmitError("");
-    };
-
-    const handlePrintSummary = () => {
-        window.print();
     };
 
     const handleAuthSubmit = (e) => {
@@ -252,10 +245,6 @@ const ImmobilienPortal = ({ lang = "de" }) => {
             localStorage.setItem("titocci_kunden", JSON.stringify([...storedUsers, newUser]));
             localStorage.setItem("titocci_current_user", JSON.stringify(newUser));
             setCurrentUser(newUser);
-            setCompanyName(newUser.firmaOderName);
-            setEmail(newUser.email);
-            if (newUser.immobilienObjekt) setLocationInput(newUser.immobilienObjekt);
-
             setAuthPassword("");
             setAuthPasswordConfirm("");
             setAuthSuccess("Kundenkonto & Immobilie registriert!");
@@ -271,10 +260,6 @@ const ImmobilienPortal = ({ lang = "de" }) => {
 
             localStorage.setItem("titocci_current_user", JSON.stringify(foundUser));
             setCurrentUser(foundUser);
-            setCompanyName(foundUser.firmaOderName);
-            setEmail(foundUser.email);
-            if (foundUser.immobilienObjekt) setLocationInput(foundUser.immobilienObjekt);
-
             setAuthPassword("");
             setAuthSuccess(`Willkommen, ${foundUser.firmaOderName}!`);
             setShowAuthModal(false);
@@ -293,16 +278,16 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                                      attachedPdfName = "",
                                      customMessage = ""
                                  } = {}) => {
+        setSubmitError("");
+        setBookingSubmitted(false);
+
         if (!isValidEmail(email)) {
-            alert("Bitte gib eine gültige E-Mail-Adresse ein.");
+            setSubmitError("Bitte gib eine gültige E-Mail-Adresse ein.");
             scrollToInput(companyInputRef);
             return false;
         }
 
         setIsSending(true);
-        setSubmitError("");
-        setBookingSubmitted(false);
-
         const finalTotal = Number(calculatedTotalPrice) || estimatedMetalworkCost;
         const finalPerQm = Number(calculatedPricePerQm) || 0;
 
@@ -353,11 +338,6 @@ const ImmobilienPortal = ({ lang = "de" }) => {
             );
 
             setBookingSubmitted(true);
-            alert(
-                "Der Bericht wurde erfolgreich an " +
-                email.trim() +
-                " und an die Titocci Metalcostruzioni gesendet!"
-            );
             return true;
         } catch (error) {
             console.error("Fehler beim E-Mail-Versand:", error);
@@ -368,104 +348,112 @@ const ImmobilienPortal = ({ lang = "de" }) => {
         }
     };
 
-    const tenders = [
-        {
-            id: "TI-2026-084",
-            title: "Residenza Valle Maggia – Balkonbrüstungen & Treppengeländer",
-            location: "6670 Avegno",
-            type: "Neubau Mehrfamilienhaus (12 Einheiten)",
-            bkp: "BKP 272 Metallbauarbeiten",
-            volume: "ca. 145 lfm Geländer + 3 Fluchttreppen",
-            deadline: "15.12.2026",
-            status: t.statusOffen,
-            isOpen: true,
-            image: Impressumbild,
-            specs: ["Feuerverzinkter Stahl & Pulverbeschichtung Anthrazit", "SIA 358 Normkonformität", "Inkl. Statik & Montage vor Ort"]
-        },
-        {
-            id: "TI-2026-091",
-            title: "Villa & Gartenanlage Ascona – Sicherheitszaun & Einfahrtstor",
-            location: "6612 Ascona",
-            type: "Privatimmobilie / Luxussanierung",
-            bkp: "BKP 421 Garten- & Einfriedungsarbeiten",
-            volume: "68 lfm Schmiedeeisen-Zaun + elektrisches Schiebetor",
-            deadline: "22.12.2026",
-            status: t.statusOffen,
-            isOpen: true,
-            image: Gitter4,
-            specs: ["Massanfertigung nach Architektenplan", "Motorisierter Torantrieb & Zutrittskontrolle", "Korrosionsschutz Klasse C4"]
-        },
-        {
-            id: "TI-2026-077",
-            title: "Gewerbepark Locarno – Innentreppen & Sicherheitsgitter",
-            location: "6600 Locarno",
-            type: "Gewerbe- & Verwaltungsgebäude",
-            bkp: "BKP 272.2 Treppen & Podeste",
-            volume: "4 Stockwerke Stahltreppen mit Holzstufen",
-            deadline: "Laufend",
-            status: t.statusInArbeit,
-            isOpen: false,
-            image: Holztreppe,
-            specs: ["Kombination Rohstahl & Eiche massiv", "Brandschutz-Anforderungen erfüllt", "Schallentkoppelte Wandbefestigung"]
-        }
-    ];
-
-    const clientPackages = [
-        {
-            title: "Parapetti & Balkonsysteme (SIA 358)",
-            desc: "Komplettsanierung oder Neubau von Balkon- und Terrassenbrüstungen für Mehrfamilienhäuser. Wartungsarm, witterungsbeständig und architektonisch anpassbar.",
-            priceHint: "Ab CHF 320.– / lfm inkl. Montage",
-            img: Impressumbild,
-            link: "https://titocci.ch/a/avegno/parapetti-ad-avegno/"
-        },
-        {
-            title: "Treppenhaus- & Innengeländer (Ringhiere)",
-            desc: "Moderne Handläufe, Absturzsicherungen und Stahltreppen für Wohn- und Geschäftshäuser. Perfekte Integration mit Holz, Glas oder Edelstahl.",
-            priceHint: "Ab CHF 290.– / lfm inkl. Montage",
-            img: Holztreppe,
-            link: "https://titocci.ch/a/avegno/ringhiere-ad-avegno/"
-        },
-        {
-            title: "Einfahrts- & Sicherheitsanlagen (Cancellate)",
-            desc: "Automatisierte Schiebe- und Flügeltore für Wohnanlagen, Tiefgaragen und Gewerbeareale inklusive Schliessanlagen.",
-            priceHint: "Richtpreis nach Aufmass",
-            img: Gitter4,
-            link: "https://titocci.ch/a/avegno/cancellate-in-ferro-ad-avegno/"
-        },
-        {
-            title: "Areal- & Garteneinfriedungen",
-            desc: "Massgefertigte Grundstücksabgrenzungen und Sichtschutzsysteme aus Stahl und Schmiedeeisen für gepflegte Immobilienanlagen.",
-            priceHint: "Ab CHF 240.– / lfm inkl. Montage",
-            img: Seitengitter,
-            link: "https://titocci.ch/a/avegno/cancellate-per-giardino-ad-avegno/"
-        }
-    ];
-
-    const handleBookingSearch = (e) => {
-        e.preventDefault();
-        setBookingSubmitted(false);
-        setActiveTab("rechner");
-        scrollToInput(workspaceRef);
-    };
-
-    const handleDirectReservation = async (e) => {
-        e.preventDefault();
-        await sendEmailCalc({ customMessage: projectNotes });
-    };
-
-    const handleRequestTenderOffer = (tender) => {
-        setSelectedTender(tender.id);
-        setLocationInput(tender.location);
-        setProjectNotes(
-            `Anfrage zu Ausschreibung ${tender.id} (${tender.title}, ${tender.bkp}, Volumen: ${tender.volume}).`
-        );
-        setActiveTab("rechner");
-        scrollToInput(companyInputRef);
-    };
-
     return (
         <div style={{ backgroundColor: "#111111", color: "#ffffff", minHeight: "100vh", fontFamily: "sans-serif" }}>
-            {/* LOGIN & REGISTRIERUNGS-MODAL */}
+            <header
+                style={{
+                    maxWidth: "900px",
+                    margin: "0 auto",
+                    padding: "16px 20px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    borderBottom: "1px solid #262626"
+                }}
+            >
+                <div>
+                    <div style={{ fontSize: "11px", letterSpacing: "0.08em", color: "#ff6b6b" }}>{t.heroTag}</div>
+                    <h1 style={{ margin: "2px 0 0", fontSize: "1.35rem" }}>{t.heroTitle}</h1>
+                </div>
+
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    {currentUser ? (
+                        <>
+                            <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "#ddd" }}>
+                                <User size={15} color="#2ecc71" />
+                                {currentUser.firmaOderName}
+                            </span>
+                            <button
+                                type="button"
+                                onClick={handleLogout}
+                                style={{
+                                    padding: "7px 12px",
+                                    borderRadius: "6px",
+                                    border: "1px solid #444",
+                                    backgroundColor: "#222",
+                                    color: "#fff",
+                                    fontSize: "12px",
+                                    cursor: "pointer"
+                                }}
+                            >
+                                {t.logoutBtn}
+                            </button>
+                        </>
+                    ) : (
+                        <button
+                            type="button"
+                            onClick={() => openAuthModal("login")}
+                            style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "6px",
+                                padding: "8px 14px",
+                                borderRadius: "6px",
+                                border: "none",
+                                backgroundColor: "#e62b2b",
+                                color: "#fff",
+                                fontSize: "13px",
+                                fontWeight: "bold",
+                                cursor: "pointer"
+                            }}
+                        >
+                            <User size={15} />
+                            <span>{t.loginBtn}</span>
+                        </button>
+                    )}
+                </div>
+            </header>
+
+            <section
+                aria-label="Profil Person"
+                style={{
+                    maxWidth: "900px",
+                    margin: "24px auto",
+                    padding: "20px",
+                    borderRadius: "10px",
+                    backgroundColor: "#1a1a1a",
+                    border: "1px solid #2e2e2e"
+                }}
+            >
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
+                    <User size={20} color="#e62b2b" />
+                    <strong>{ABOUT_ME_PROFILE.name}</strong>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#ccc", fontSize: "14px", marginBottom: "6px" }}>
+                    <Briefcase size={16} />
+                    <span>{ABOUT_ME_PROFILE.role}</span>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#aaa", fontSize: "14px", marginBottom: "12px" }}>
+                    <MapPin size={16} />
+                    <span>{ABOUT_ME_PROFILE.location}</span>
+                </div>
+                <p style={{ margin: "0 0 12px", color: "#ddd", fontSize: "14px" }}>{ABOUT_ME_PROFILE.summary}</p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
+                    {ABOUT_ME_PROFILE.links.map((item) => (
+                        <a
+                            key={item.url}
+                            href={item.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "#ff6b6b", fontSize: "13px" }}
+                        >
+                            <span>{item.label}</span>
+                            <ExternalLink size={14} />
+                        </a>
+                    ))}
+                </div>
+            </section>
+
             {showAuthModal && (
                 <div
                     style={{
@@ -509,8 +497,9 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                             ✕
                         </button>
 
-                        <h3 style={{ margin: "0 0 14px", fontSize: "1.4rem" }}>
-                            {authMode === "login" ? "Login-Ansicht" : "Kunde & Immobilie registrieren"}
+                        <h3 style={{ margin: "0 0 14px", fontSize: "1.4rem", display: "flex", alignItems: "center", gap: "8px" }}>
+                            <User size={20} color="#e62b2b" />
+                            <span>{authMode === "login" ? "Login-Ansicht" : "Kunde & Immobilie registrieren"}</span>
                         </h3>
 
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginBottom: "18px" }}>
@@ -557,12 +546,19 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                                     fontSize: "13px"
                                 }}
                             >
-                                <div style={{ color: "#2ecc71", fontWeight: "bold", marginBottom: "4px" }}>
-                                    Aktive Session: {currentUser.firmaOderName}
+                                <div style={{ color: "#2ecc71", fontWeight: "bold", marginBottom: "4px", display: "flex", alignItems: "center", gap: "6px" }}>
+                                    <User size={15} />
+                                    <span>Aktive Session: {currentUser.firmaOderName}</span>
                                 </div>
-                                <div style={{ color: "#bbb" }}>{currentUser.kundenTyp} • {currentUser.email}</div>
+                                <div style={{ color: "#bbb", display: "flex", alignItems: "center", gap: "6px" }}>
+                                    <Building2 size={14} />
+                                    <span>{currentUser.kundenTyp} • {currentUser.email}</span>
+                                </div>
                                 {currentUser.immobilienObjekt && (
-                                    <div style={{ color: "#aaa", marginTop: "2px" }}>Objekt: {currentUser.immobilienObjekt}</div>
+                                    <div style={{ color: "#aaa", marginTop: "4px", display: "flex", alignItems: "center", gap: "6px" }}>
+                                        <MapPin size={14} />
+                                        <span>Objekt: {currentUser.immobilienObjekt}</span>
+                                    </div>
                                 )}
                                 <button
                                     type="button"
@@ -667,698 +663,12 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                                     cursor: "pointer"
                                 }}
                             >
-                                {authMode === "login" ? "Einloggen" : "Konto & Immobilie registrieren"}
+                                {authMode === "login" ? "Einloggen" : "Konto erstellen"}
                             </button>
                         </form>
                     </div>
                 </div>
             )}
-
-            {/* HERO & NAVIGATION */}
-            <div
-                style={{
-                    position: "relative",
-                    width: "100%",
-                    minHeight: "680px",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                    backgroundImage: `linear-gradient(180deg, rgba(10,10,10,0.72) 0%, rgba(17,17,17,0.95) 100%), url(${Schleifbild})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center"
-                }}
-            >
-                <nav
-                    style={{
-                        position: "relative",
-                        width: "100%",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        padding: "20px 50px",
-                        boxSizing: "border-box",
-                        zIndex: 20,
-                        gap: "16px",
-                        flexWrap: "wrap",
-                        background: "linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%)"
-                    }}
-                >
-                    <div style={{ fontWeight: "bold", fontSize: "20px", letterSpacing: "1px", color: "#e62b2b" }}>
-                        TITOCCI <span style={{ color: "#fff", fontWeight: "300" }}>METALCOSTRUZIONI</span>
-                    </div>
-
-                    <ul style={{ display: "flex", listStyle: "none", gap: "24px", margin: 0, padding: 0, flexWrap: "wrap", alignItems: "center" }}>
-                        <li><Link to="/" style={{ color: "white", textDecoration: "none", fontWeight: "bold", fontSize: "14px" }}>{t.home}</Link></li>
-                        <li><Link to="/chi-siamo" style={{ color: "white", textDecoration: "none", fontWeight: "bold", fontSize: "14px" }}>{t.chiSiamo}</Link></li>
-                        <li><Link to="/servizi" style={{ color: "white", textDecoration: "none", fontWeight: "bold", fontSize: "14px" }}>{t.servizi}</Link></li>
-                        <li><Link to="/galeria" style={{ color: "white", textDecoration: "none", fontWeight: "bold", fontSize: "14px" }}>{t.galeria}</Link></li>
-                        <li>
-                            <span style={{ color: "white", fontWeight: "bold", borderBottom: "3px solid #e62b2b", paddingBottom: "4px", fontSize: "14px" }}>
-                                {t.immobilien}
-                            </span>
-                        </li>
-                        <li><Link to="/kontakte" style={{ color: "white", textDecoration: "none", fontWeight: "bold", fontSize: "14px" }}>{t.kontakte}</Link></li>
-                        <li>
-                            <img src="src/assets/About.jpg"></img>
-                            {currentUser ? (
-                                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                                    <button
-                                        type="button"
-                                        onClick={() => { setActiveTab("aboutme"); scrollToInput(workspaceRef); }}
-                                        style={{
-                                            background: "none",
-                                            border: "none",
-                                            fontSize: "12px",
-                                            color: "#2ecc71",
-                                            fontWeight: "bold",
-                                            cursor: "pointer",
-                                            padding: 0
-                                        }}
-                                    >
-                                        {currentUser.firmaOderName}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={handleLogout}
-                                        style={{
-                                            padding: "7px 12px",
-                                            borderRadius: "6px",
-                                            border: "1px solid #555",
-                                            backgroundColor: "#222",
-                                            color: "#fff",
-                                            fontSize: "12px",
-                                            cursor: "pointer"
-                                        }}
-                                    >
-                                        {t.logoutBtn}
-                                    </button>
-                                </div>
-                            ) : (
-                                <button
-                                    type="button"
-                                    onClick={() => openAuthModal("login")}
-                                    style={{
-                                        padding: "8px 14px",
-                                        borderRadius: "6px",
-                                        border: "none",
-                                        backgroundColor: "#e62b2b",
-                                        color: "#fff",
-                                        fontWeight: "bold",
-                                        fontSize: "12px",
-                                        cursor: "pointer"
-                                    }}
-                                >
-                                    {t.loginBtn}
-                                </button>
-                            )}
-                        </li>
-                    </ul>
-                </nav>
-
-                <div style={{ maxWidth: "1100px", margin: "40px auto", padding: "0 24px", width: "100%", boxSizing: "border-box" }}>
-                    <div style={{ color: "#e62b2b", fontWeight: "bold", fontSize: "12px", letterSpacing: "1.5px", marginBottom: "10px" }}>
-                        {t.heroTag}
-                    </div>
-                    <h1 style={{ fontSize: "2.8rem", margin: "0 0 12px" }}>{t.heroTitle}</h1>
-                    <p style={{ color: "#ddd", fontSize: "1.1rem", maxWidth: "760px", marginBottom: "28px" }}>
-                        {t.heroSubtitle}
-                    </p>
-
-                    <form
-                        onSubmit={handleBookingSearch}
-                        style={{
-                            display: "grid",
-                            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-                            gap: "12px",
-                            backgroundColor: "rgba(24,24,24,0.95)",
-                            padding: "20px",
-                            borderRadius: "10px",
-                            border: "1px solid #333"
-                        }}
-                    >
-                        <div>
-                            <label style={{ display: "block", fontSize: "12px", color: "#bbb", marginBottom: "6px" }}>{t.objektTyp}</label>
-                            <select
-                                value={selectedPropertyType}
-                                onChange={(e) => setSelectedPropertyType(e.target.value)}
-                                style={{ width: "100%", padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
-                            >
-                                <option value="Mehrfamilienhaus / Wohnbau">Mehrfamilienhaus / Wohnbau</option>
-                                <option value="Gewerbe & Industrie">Gewerbe & Industrie</option>
-                                <option value="Privatimmobilie / Villa">Privatimmobilie / Villa</option>
-                                <option value="Öffentliche Ausschreibung">Öffentliche Ausschreibung</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label style={{ display: "block", fontSize: "12px", color: "#bbb", marginBottom: "6px" }}>{t.gewerkTyp}</label>
-                            <select
-                                value={selectedService}
-                                onChange={(e) => setSelectedService(e.target.value)}
-                                style={{ width: "100%", padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
-                            >
-                                {Object.keys(GEWERK_CONFIG).map((gewerk) => (
-                                    <option key={gewerk} value={gewerk}>{gewerk}</option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div>
-                            <label style={{ display: "block", fontSize: "12px", color: "#bbb", marginBottom: "6px" }}>{t.standort}</label>
-                            <input
-                                type="text"
-                                value={locationInput}
-                                onChange={(e) => setLocationInput(e.target.value)}
-                                style={{ width: "100%", padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444", boxSizing: "border-box" }}
-                            />
-                        </div>
-
-                        <div>
-                            <label style={{ display: "block", fontSize: "12px", color: "#bbb", marginBottom: "6px" }}>{t.terminWunsch}</label>
-                            <input
-                                type="date"
-                                value={visitDate}
-                                onChange={(e) => setVisitDate(e.target.value)}
-                                style={{ width: "100%", padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444", boxSizing: "border-box" }}
-                            />
-                        </div>
-
-                        <div style={{ display: "flex", alignItems: "flex-end" }}>
-                            <button
-                                type="submit"
-                                style={{
-                                    width: "100%",
-                                    padding: "11px 16px",
-                                    borderRadius: "6px",
-                                    border: "none",
-                                    backgroundColor: "#e62b2b",
-                                    color: "#fff",
-                                    fontWeight: "bold",
-                                    cursor: "pointer"
-                                }}
-                            >
-                                {t.suchenBtn}
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            {/* WORKSPACE BEREICH */}
-            <div ref={workspaceRef} style={{ maxWidth: "1100px", margin: "40px auto", padding: "0 24px 60px" }}>
-                {/* VERBESSERTE LOGIN- & KONTEN-LEISTE */}
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        flexWrap: "wrap",
-                        gap: "12px",
-                        backgroundColor: "#171717",
-                        border: "1px solid #2b2b2b",
-                        borderRadius: "10px",
-                        padding: "14px 18px",
-                        marginBottom: "20px"
-                    }}
-                >
-                    {currentUser ? (
-                        <>
-                            <div style={{ fontSize: "13px" }}>
-                                <span style={{ color: "#2ecc71", fontWeight: "bold" }}>Eingeloggt:</span>{" "}
-                                <strong>{currentUser.firmaOderName}</strong> ({currentUser.kundenTyp} • {currentUser.email})
-                            </div>
-                            <div style={{ display: "flex", gap: "10px" }}>
-                                <button
-                                    type="button"
-                                    onClick={() => setActiveTab("aboutme")}
-                                    style={{
-                                        padding: "7px 12px",
-                                        borderRadius: "6px",
-                                        border: "1px solid #444",
-                                        backgroundColor: "#232323",
-                                        color: "#fff",
-                                        fontSize: "12px",
-                                        cursor: "pointer"
-                                    }}
-                                >
-                                    Profil ansehen
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={handleLogout}
-                                    style={{
-                                        padding: "7px 12px",
-                                        borderRadius: "6px",
-                                        border: "none",
-                                        backgroundColor: "#e62b2b",
-                                        color: "#fff",
-                                        fontSize: "12px",
-                                        fontWeight: "bold",
-                                        cursor: "pointer"
-                                    }}
-                                >
-                                    {t.logoutBtn}
-                                </button>
-                            </div>
-                        </>
-                    ) : (
-                        <>
-                            <div style={{ fontSize: "13px", color: "#ccc" }}>
-                                <strong>Gast-Modus:</strong> Melden Sie sich an, um Unternehmensdaten automatisch in Kalkulation und Offerten zu übernehmen.
-                            </div>
-                            <div style={{ display: "flex", gap: "10px" }}>
-                                <button
-                                    type="button"
-                                    onClick={() => openAuthModal("login")}
-                                    style={{
-                                        padding: "8px 14px",
-                                        borderRadius: "6px",
-                                        border: "none",
-                                        backgroundColor: "#e62b2b",
-                                        color: "#fff",
-                                        fontSize: "12px",
-                                        fontWeight: "bold",
-                                        cursor: "pointer"
-                                    }}
-                                >
-                                    Login
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => openAuthModal("register")}
-                                    style={{
-                                        padding: "8px 14px",
-                                        borderRadius: "6px",
-                                        border: "1px solid #444",
-                                        backgroundColor: "#232323",
-                                        color: "#fff",
-                                        fontSize: "12px",
-                                        cursor: "pointer"
-                                    }}
-                                >
-                                    Konto erstellen
-                                </button>
-                            </div>
-                        </>
-                    )}
-                </div>
-
-                {/* TABS */}
-                <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginBottom: "28px", borderBottom: "1px solid #2c2c2c", paddingBottom: "14px" }}>
-                    {[
-                        { id: "ausschreibungen", label: t.tabAusschreibungen },
-                        { id: "kunden", label: t.tabKunden },
-                        { id: "rechner", label: t.tabRechner },
-                        { id: "aboutme", label: t.tabAboutMe },
-
-                    ].map((tab) => (
-                        <button
-                            key={tab.id}
-                            type="button"
-                            onClick={() => setActiveTab(tab.id)}
-                            style={{
-                                padding: "10px 18px",
-                                borderRadius: "6px",
-                                border: "none",
-                                fontWeight: "bold",
-                                cursor: "pointer",
-                                backgroundColor: activeTab === tab.id ? "#e62b2b" : "#1f1f1f",
-                                color: "#fff"
-                            }}
-                        >
-                            {tab.label}
-                        </button>
-                    ))}
-                </div>
-
-                {activeTab === "ausschreibungen" && (
-                    <div style={{ display: "grid", gap: "20px" }}>
-                        {tenders.map((tender) => (
-                            <div
-                                key={tender.id}
-                                style={{
-                                    display: "grid",
-                                    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-                                    gap: "20px",
-                                    backgroundColor: "#1a1a1a",
-                                    border: "1px solid #2e2e2e",
-                                    borderRadius: "10px",
-                                    padding: "20px"
-                                }}
-                            >
-                                <img
-                                    src={tender.image}
-                                    alt={tender.title}
-                                    style={{ width: "100%", height: "190px", objectFit: "cover", borderRadius: "8px" }}
-                                />
-                                <div>
-                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
-                                        <span style={{ fontSize: "12px", color: "#e62b2b", fontWeight: "bold" }}>{tender.id} • {tender.bkp}</span>
-                                        <span style={{ fontSize: "12px", padding: "3px 8px", borderRadius: "4px", backgroundColor: tender.isOpen ? "#1e462e" : "#3a3520", color: tender.isOpen ? "#6ee79c" : "#facc15" }}>
-                                            {tender.status}
-                                        </span>
-                                    </div>
-                                    <h3 style={{ margin: "0 0 8px" }}>{tender.title}</h3>
-                                    <p style={{ margin: "0 0 10px", color: "#ccc", fontSize: "14px" }}>
-                                        {tender.location} – {tender.type} ({tender.volume})
-                                    </p>
-                                    <ul style={{ margin: "0 0 14px", paddingLeft: "18px", color: "#aaa", fontSize: "13px" }}>
-                                        {tender.specs.map((spec) => <li key={spec}>{spec}</li>)}
-                                    </ul>
-                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
-                                        <span style={{ fontSize: "12px", color: "#bbb" }}>{t.fristLabel}: {tender.deadline}</span>
-                                        <button
-                                            type="button"
-                                            onClick={() => handleRequestTenderOffer(tender)}
-                                            style={{
-                                                padding: "9px 14px",
-                                                borderRadius: "6px",
-                                                border: "none",
-                                                backgroundColor: "#e62b2b",
-                                                color: "#fff",
-                                                fontWeight: "bold",
-                                                fontSize: "13px",
-                                                cursor: "pointer"
-                                            }}
-                                        >
-                                            {t.offerteBtn}
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
-
-                {activeTab === "kunden" && (
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "20px" }}>
-                        {clientPackages.map((pkg) => (
-                            <div
-                                key={pkg.title}
-                                style={{
-                                    backgroundColor: "#1a1a1a",
-                                    border: "1px solid #2e2e2e",
-                                    borderRadius: "10px",
-                                    overflow: "hidden",
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    justifyContent: "space-between"
-                                }}
-                            >
-                                <img src={pkg.img} alt={pkg.title} style={{ width: "100%", height: "160px", objectFit: "cover" }} />
-                                <div style={{ padding: "18px" }}>
-                                    <h3 style={{ margin: "0 0 8px", fontSize: "1.1rem" }}>{pkg.title}</h3>
-                                    <p style={{ margin: "0 0 12px", color: "#bbb", fontSize: "13px", lineHeight: 1.5 }}>{pkg.desc}</p>
-                                    <div style={{ color: "#2ecc71", fontWeight: "bold", fontSize: "13px", marginBottom: "12px" }}>{pkg.priceHint}</div>
-                                    <a
-                                        href={pkg.link}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        style={{ color: "#e62b2b", fontSize: "13px", fontWeight: "bold", textDecoration: "none" }}
-                                    >
-                                        Details auf titocci.ch →
-                                    </a>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
-
-                {activeTab === "rechner" && (
-                    <div style={{ display: "grid", gap: "28px" }}>
-                        <div style={{ backgroundColor: "#1a1a1a", border: "1px solid #2e2e2e", borderRadius: "10px", padding: "24px" }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px", marginBottom: "18px" }}>
-                                <div>
-                                    <h3 style={{ margin: "0 0 4px" }}>Metallbau-Richtkalkulation ({activeGewerk.bkp})</h3>
-                                    <div style={{ fontSize: "13px", color: "#aaa" }}>{activeGewerk.normHint}</div>
-                                </div>
-                                <div style={{ display: "flex", gap: "10px" }}>
-                                    <button
-                                        type="button"
-                                        onClick={handleResetCalculation}
-                                        style={{ padding: "8px 12px", borderRadius: "6px", border: "1px solid #444", backgroundColor: "#252525", color: "#fff", cursor: "pointer", fontSize: "12px" }}
-                                    >
-                                        Zurücksetzen
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={handlePrintSummary}
-                                        style={{ padding: "8px 12px", borderRadius: "6px", border: "1px solid #444", backgroundColor: "#252525", color: "#fff", cursor: "pointer", fontSize: "12px" }}
-                                    >
-                                        Drucken
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: "16px", marginBottom: "20px" }}>
-                                <div>
-                                    <label style={{ display: "block", fontSize: "12px", color: "#bbb", marginBottom: "6px" }}>Laufmeter (lfm)</label>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        value={lfm}
-                                        onChange={(e) => setLfm(e.target.value)}
-                                        style={{ width: "100%", padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444", boxSizing: "border-box" }}
-                                    />
-                                </div>
-                                <div>
-                                    <label style={{ display: "block", fontSize: "12px", color: "#bbb", marginBottom: "6px" }}>Material / Oberfläche</label>
-                                    <select
-                                        value={materialType}
-                                        onChange={(e) => setMaterialType(e.target.value)}
-                                        style={{ width: "100%", padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
-                                    >
-                                        {Object.keys(MATERIAL_FACTORS).map((mat) => <option key={mat} value={mat}>{mat}</option>)}
-                                    </select>
-                                </div>
-                                <div>
-                                    <label style={{ display: "block", fontSize: "12px", color: "#bbb", marginBottom: "6px" }}>Montage / Ausführung</label>
-                                    <select
-                                        value={montageType}
-                                        onChange={(e) => setMontageType(e.target.value)}
-                                        style={{ width: "100%", padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
-                                    >
-                                        {Object.keys(MONTAGE_FACTORS).map((mon) => <option key={mon} value={mon}>{mon}</option>)}
-                                    </select>
-                                </div>
-                                <div>
-                                    <label style={{ display: "block", fontSize: "12px", color: "#bbb", marginBottom: "6px" }}>Eigenmittelquote (%)</label>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        max="100"
-                                        value={eigenmittelQuote}
-                                        onChange={(e) => setEigenmittelQuote(e.target.value)}
-                                        style={{ width: "100%", padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444", boxSizing: "border-box" }}
-                                    />
-                                </div>
-                            </div>
-
-                            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "14px", backgroundColor: "#141414", padding: "16px", borderRadius: "8px" }}>
-                                <div>
-                                    <div style={{ fontSize: "12px", color: "#aaa" }}>Richtpreis / lfm</div>
-                                    <div style={{ fontSize: "1.2rem", fontWeight: "bold" }}>CHF {effectiveRatePerLfm.toFixed(2)}</div>
-                                </div>
-                                <div>
-                                    <div style={{ fontSize: "12px", color: "#aaa" }}>Geschätzter Metallbau-Preis</div>
-                                    <div style={{ fontSize: "1.2rem", fontWeight: "bold", color: "#2ecc71" }}>CHF {estimatedMetalworkCost.toFixed(2)}</div>
-                                </div>
-                                <div>
-                                    <div style={{ fontSize: "12px", color: "#aaa" }}>Eigenmittel ({eigenmittelQuote}%)</div>
-                                    <div style={{ fontSize: "1.2rem", fontWeight: "bold" }}>CHF {estimatedEigenmittel.toFixed(2)}</div>
-                                </div>
-                                <div>
-                                    <div style={{ fontSize: "12px", color: "#aaa" }}>Fremdkapital / Zins ({zinssatz}%)</div>
-                                    <div style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
-                                        CHF {estimatedFremdkapital.toFixed(2)} <span style={{ fontSize: "12px", color: "#aaa" }}>(~CHF {estimatedYearlyInterest.toFixed(0)}/J)</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <Calculator
-                            qm={qm}
-                            setQm={setQm}
-                            canton={canton}
-                            setCanton={setCanton}
-                            zinssatz={zinssatz}
-                            setZinssatz={setZinssatz}
-                            onSendCalculation={sendEmailCalc}
-                        />
-
-                        <form
-                            onSubmit={handleDirectReservation}
-                            style={{ backgroundColor: "#1a1a1a", border: "1px solid #2e2e2e", borderRadius: "10px", padding: "24px", display: "grid", gap: "14px" }}
-                        >
-                            <h3 style={{ margin: 0 }}>{t.bookingTitle}</h3>
-                            <p style={{ margin: 0, color: "#bbb", fontSize: "14px" }}>{t.bookingSub}</p>
-
-                            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "12px" }}>
-                                <input
-                                    ref={companyInputRef}
-                                    type="text"
-                                    placeholder={t.namePlaceholder}
-                                    value={companyName}
-                                    onChange={(e) => setCompanyName(e.target.value)}
-                                    style={{ padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
-                                />
-                                <input
-                                    type="email"
-                                    placeholder={t.emailPlaceholder}
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    required
-                                    style={{ padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
-                                />
-                                <input
-                                    type="tel"
-                                    placeholder={t.phonePlaceholder}
-                                    value={phone}
-                                    onChange={(e) => setPhone(e.target.value)}
-                                    style={{ padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
-                                />
-                                <input
-                                    type="time"
-                                    value={visitTime}
-                                    onChange={(e) => setVisitTime(e.target.value)}
-                                    style={{ padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
-                                />
-                            </div>
-
-                            <textarea
-                                rows="4"
-                                placeholder={t.projektDetails}
-                                value={projectNotes}
-                                onChange={(e) => setProjectNotes(e.target.value)}
-                                style={{ padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444", resize: "vertical" }}
-                            />
-
-                            {bookingSubmitted && <div style={{ color: "#2ecc71", fontSize: "14px" }}>{t.bookingSuccess}</div>}
-                            {submitError && <div style={{ color: "#ff7b7b", fontSize: "14px" }}>{submitError}</div>}
-
-                            <div>
-                                <button
-                                    type="submit"
-                                    disabled={isSending}
-                                    style={{
-                                        padding: "12px 20px",
-                                        borderRadius: "6px",
-                                        border: "none",
-                                        backgroundColor: "#e62b2b",
-                                        color: "#fff",
-                                        fontWeight: "bold",
-                                        cursor: isSending ? "not-allowed" : "pointer"
-                                    }}
-                                >
-                                    {isSending ? "Wird gesendet..." : t.bookingSubmit}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                )}
-
-                {/* ABOUT ME & LOGIN-KONTO ANSICHT */}
-                {activeTab === "aboutme" && (
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "20px" }}>
-                        <div style={{ backgroundColor: "#1a1a1a", border: "1px solid #2e2e2e", borderRadius: "10px", padding: "24px" }}>
-                            <div style={{ fontSize: "12px", color: "#e62b2b", fontWeight: "bold", marginBottom: "6px" }}>ABOUT ME</div>
-                            <h3 style={{ margin: "0 0 6px", fontSize: "1.4rem" }}>{ABOUT_ME_PROFILE.name}</h3>
-                            <div style={{ color: "#aaa", fontSize: "13px", marginBottom: "14px" }}>
-                                {ABOUT_ME_PROFILE.role} • {ABOUT_ME_PROFILE.location}
-                            </div>
-                            <p style={{ color: "#ddd", fontSize: "14px", lineHeight: 1.6, margin: "0 0 16px" }}>
-                                {ABOUT_ME_PROFILE.summary}
-                            </p>
-
-                            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "18px" }}>
-                                {ABOUT_ME_PROFILE.skills.map((skill) => (
-                                    <span
-                                        key={skill}
-                                        style={{
-                                            fontSize: "12px",
-                                            padding: "5px 10px",
-                                            borderRadius: "999px",
-                                            backgroundColor: "#252525",
-                                            border: "1px solid #3a3a3a",
-                                            color: "#eee"
-                                        }}
-                                    >
-                                        {skill}
-                                    </span>
-                                ))}
-                            </div>
-
-                            <div style={{ display: "flex", gap: "14px", flexWrap: "wrap" }}>
-                                {ABOUT_ME_PROFILE.links.map((item) => (
-                                    <a
-                                        key={item.label}
-                                        href={item.url}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        style={{ color: "#e62b2b", fontWeight: "bold", fontSize: "13px", textDecoration: "none" }}
-                                    >
-                                        {item.label} →
-                                    </a>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div style={{ backgroundColor: "#1a1a1a", border: "1px solid #2e2e2e", borderRadius: "10px", padding: "24px" }}>
-                            <div style={{ fontSize: "12px", color: "#2ecc71", fontWeight: "bold", marginBottom: "6px" }}>LOGIN & KONTO-ANSICHT</div>
-                            <h3 style={{ margin: "0 0 12px", fontSize: "1.3rem" }}>
-                                {currentUser ? "Angemeldetes Kundenkonto" : "Kein Konto aktiv"}
-                            </h3>
-
-                            {currentUser ? (
-                                <div style={{ display: "grid", gap: "8px", fontSize: "14px", color: "#ddd" }}>
-                                    <div><strong>Firma / Name:</strong> {currentUser.firmaOderName}</div>
-                                    <div><strong>Kundentyp:</strong> {currentUser.kundenTyp}</div>
-                                    <div><strong>E-Mail:</strong> {currentUser.email}</div>
-                                    <div><strong>Objekt:</strong> {currentUser.immobilienObjekt || "Nicht hinterlegt"}</div>
-                                    <div style={{ display: "flex", gap: "10px", marginTop: "12px" }}>
-                                        <button
-                                            type="button"
-                                            onClick={() => setActiveTab("rechner")}
-                                            style={{ padding: "9px 14px", borderRadius: "6px", border: "none", backgroundColor: "#e62b2b", color: "#fff", fontWeight: "bold", cursor: "pointer", fontSize: "13px" }}
-                                        >
-                                            Zum Kalkulator
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={handleLogout}
-                                            style={{ padding: "9px 14px", borderRadius: "6px", border: "1px solid #444", backgroundColor: "#252525", color: "#fff", cursor: "pointer", fontSize: "13px" }}
-                                        >
-                                            {t.logoutBtn}
-                                        </button>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div style={{ display: "grid", gap: "12px", fontSize: "14px", color: "#bbb" }}>
-                                    <p style={{ margin: 0 }}>
-                                        Melden Sie sich mit Ihrem Konto an oder registrieren Sie ein neues Kunden- & Immobilienprofil.
-                                    </p>
-                                    <div style={{ display: "flex", gap: "10px" }}>
-                                        <button
-                                            type="button"
-                                            onClick={() => openAuthModal("login")}
-                                            style={{ padding: "10px 16px", borderRadius: "6px", border: "none", backgroundColor: "#e62b2b", color: "#fff", fontWeight: "bold", cursor: "pointer", fontSize: "13px" }}
-                                        >
-                                            Login öffnen
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => openAuthModal("register")}
-                                            style={{ padding: "10px 16px", borderRadius: "6px", border: "1px solid #444", backgroundColor: "#252525", color: "#fff", cursor: "pointer", fontSize: "13px" }}
-                                        >
-                                            Registrieren
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                )}
-            </div>
         </div>
     );
 };
