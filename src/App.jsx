@@ -36,10 +36,65 @@ import Kundenansicht from "./pages/Kundenansicht.jsx";
 
 export const ThemeContext = createContext();
 
+const COOKIE_TEXTS = {
+    it: {
+        title: "Impostazioni cookie e privacy",
+        bannerText:
+            "Questo sito utilizza cookie tecnici e, previo consenso, cookie statistici e di profilazione per migliorare l'esperienza di navigazione.",
+        privacyLink: "Informativa sulla privacy",
+        acceptAll: "Accetta tutti",
+        declineAll: "Solo necessari",
+        preferences: "Preferenze",
+        modalTitle: "Gestisci preferenze cookie",
+        modalSubtitle: "Seleziona le categorie di cookie che desideri attivare:",
+        necessaryTitle: "Cookie necessari",
+        necessaryDesc: "Sempre attivi per il funzionamento essenziale del sito.",
+        analyticsTitle: "Statistiche e analisi",
+        analyticsDesc: "Ci aiutano a capire come i visitatori interagiscono con il sito.",
+        marketingTitle: "Marketing e profilazione",
+        marketingDesc: "Utilizzati per mostrare contenuti e comunicazioni pertinenti.",
+        cancel: "Annulla",
+        save: "Salva preferenze",
+        acceptedAlert: "Tutti i cookie sono stati accettati.",
+        declinedAlert: "Sono stati salvati solo i cookie necessari.",
+        savedAlert: "Le preferenze dei cookie sono state salvate."
+    },
+    de: {
+        title: "Cookie- & Datenschutzeinstellungen",
+        bannerText:
+            "Diese Website verwendet technisch notwendige Cookies sowie nach Ihrer Zustimmung Statistik- und Marketing-Cookies.",
+        privacyLink: "Datenschutzerklärung",
+        acceptAll: "Alle akzeptieren",
+        declineAll: "Nur notwendige",
+        preferences: "Einstellungen",
+        modalTitle: "Cookie-Einstellungen anpassen",
+        modalSubtitle: "Wählen Sie aus, welche Cookie-Kategorien erlaubt sein sollen:",
+        necessaryTitle: "Notwendige Cookies",
+        necessaryDesc: "Für die Grundfunktionen der Website immer aktiv.",
+        analyticsTitle: "Statistik & Analyse",
+        analyticsDesc: "Hilft uns zu verstehen, wie die Website genutzt wird.",
+        marketingTitle: "Marketing & Profilierung",
+        marketingDesc: "Für relevante Inhalte und Angebote.",
+        cancel: "Abbrechen",
+        save: "Auswahl speichern",
+        acceptedAlert: "Die Cookies wurden erfolgreich akzeptiert.",
+        declinedAlert: "Es wurden nur notwendige Cookies aktiviert.",
+        savedAlert: "Ihre Cookie-Einstellungen wurden gespeichert."
+    }
+};
+
 function MainContent() {
     const [showBanner, setShowBanner] = useState(false);
+    const [showPreferencesModal, setShowPreferencesModal] = useState(false);
+    const [cookiePrefs, setCookiePrefs] = useState({
+        necessary: true,
+        analytics: false,
+        marketing: false
+    });
     const [language, setLanguage] = useState("de");
     const navigate = useNavigate();
+
+    const ct = COOKIE_TEXTS[language] || COOKIE_TEXTS.it;
 
     // Refs für Newsletter-Formular
     const nameInputRef = useRef(null);
@@ -80,26 +135,52 @@ function MainContent() {
 
     useEffect(() => {
         const cookieChoice = localStorage.getItem('cookieConsent');
+        const savedPrefs = localStorage.getItem('cookiePreferences');
+        if (savedPrefs) {
+            try {
+                const parsed = JSON.parse(savedPrefs);
+                setCookiePrefs({
+                    necessary: true,
+                    analytics: Boolean(parsed.analytics),
+                    marketing: Boolean(parsed.marketing)
+                });
+            } catch {
+                // ignore malformed stored prefs
+            }
+        }
         if (!cookieChoice) {
             setShowBanner(true);
         }
     }, []);
 
-    const handleAcceptCookies = () => {
-        localStorage.setItem('cookieConsent', 'accepted');
-        alert("Die Cookies wurden erfolgreich akzeptiert");
+    const saveCookieSettings = (choiceLabel, prefs) => {
+        localStorage.setItem('cookieConsent', choiceLabel);
+        localStorage.setItem('cookiePreferences', JSON.stringify(prefs));
+        setCookiePrefs(prefs);
+        setShowPreferencesModal(false);
         setShowBanner(false);
+    };
+
+    const handleAcceptCookies = () => {
+        const allAccepted = { necessary: true, analytics: true, marketing: true };
+        saveCookieSettings('accepted', allAccepted);
+        alert(ct.acceptedAlert);
     };
 
     const handleDeclineCookies = () => {
-        localStorage.setItem('cookieConsent', 'declined');
-        alert("Die Cookies wurden abgelehnt!");
-        setShowBanner(false);
+        const onlyNecessary = { necessary: true, analytics: false, marketing: false };
+        saveCookieSettings('declined', onlyNecessary);
+        alert(ct.declinedAlert);
     };
 
     const handlePreferredCookies = () => {
-        localStorage.setItem('cookieConsent', 'preferred');
-        setShowBanner(false);
+        setShowPreferencesModal(true);
+    };
+
+    const handleSavePreferences = (e) => {
+        e.preventDefault();
+        saveCookieSettings('preferred', { ...cookiePrefs, necessary: true });
+        alert(ct.savedAlert);
     };
 
     const sendEmail = async (e) => {
@@ -186,24 +267,284 @@ function MainContent() {
                         <Route path="/seo" element={<SEO lang={language} />} />
                         <Route path="/imobiliaportale" element={<ImobiliaPortale lang={language} />}/>
                         <Route path="/customers" element={<Customers lang={language} />}/>
-
-
-
+                        <Route path="*" element={<Navigate to="/" replace />} />
                     </Routes>
                 </div>
             </main>
 
-            {/* Cookie Banner */}
+            {/* Verbesserte Cookie Banner Ansicht */}
             {showBanner && (
-                <div className="cookie-banner" id="cookieBanner">
-                    <div className="cookie-banner-content">
-                        <p>Questo sito utilizza cookie di profilazione, propri o di altri siti. Se procedi nella navigazione acconsenti all'utilizzo dei cookie.</p>
-                        <div className="cookie-banner-buttons">
-                            <button onClick={handleAcceptCookies} id="cookieAccept">Accetta</button>
-                            <button onClick={handleDeclineCookies} id="cookieDecline">Nega</button>
-                            <button onClick={handlePreferredCookies} id="cookiePreference">Preferenze</button>
+                <div
+                    className="cookie-banner"
+                    id="cookieBanner"
+                    role="region"
+                    aria-label={ct.title}
+                    style={{
+                        position: 'fixed',
+                        left: '16px',
+                        right: '16px',
+                        bottom: '16px',
+                        zIndex: 9990,
+                        backgroundColor: 'rgba(20, 20, 22, 0.96)',
+                        color: '#ffffff',
+                        border: '1px solid #38383e',
+                        borderTop: '3px solid #e62b2b',
+                        borderRadius: '12px',
+                        boxShadow: '0 14px 36px rgba(0, 0, 0, 0.55)',
+                        backdropFilter: 'blur(8px)',
+                        padding: '18px 22px'
+                    }}
+                >
+                    <div
+                        className="cookie-banner-content"
+                        style={{
+                            maxWidth: '1240px',
+                            margin: '0 auto',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            gap: '20px',
+                            flexWrap: 'wrap'
+                        }}
+                    >
+                        <div style={{ flex: '1 1 420px' }}>
+                            <div style={{ fontWeight: 700, fontSize: '15px', marginBottom: '4px' }}>
+                                {ct.title}
+                            </div>
+                            <p style={{ margin: 0, fontSize: '13.5px', lineHeight: 1.5, color: '#d4d4d8' }}>
+                                {ct.bannerText}{' '}
+                                <Link
+                                    to="/privacy"
+                                    onClick={() => setShowBanner(false)}
+                                    style={{ color: '#ff6b6b', textDecoration: 'underline', fontWeight: 600 }}
+                                >
+                                    {ct.privacyLink}
+                                </Link>
+                            </p>
+                        </div>
+
+                        <div
+                            className="cookie-banner-buttons"
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                flexWrap: 'wrap'
+                            }}
+                        >
+                            <button
+                                type="button"
+                                onClick={handleDeclineCookies}
+                                id="cookieDecline"
+                                style={{
+                                    padding: '9px 14px',
+                                    borderRadius: '7px',
+                                    border: '1px solid #52525b',
+                                    backgroundColor: '#27272a',
+                                    color: '#f4f4f5',
+                                    fontSize: '13px',
+                                    fontWeight: 600,
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                {ct.declineAll}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handlePreferredCookies}
+                                id="cookiePreference"
+                                style={{
+                                    padding: '9px 14px',
+                                    borderRadius: '7px',
+                                    border: '1px solid #71717a',
+                                    backgroundColor: 'transparent',
+                                    color: '#ffffff',
+                                    fontSize: '13px',
+                                    fontWeight: 600,
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                {ct.preferences}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleAcceptCookies}
+                                id="cookieAccept"
+                                style={{
+                                    padding: '9px 16px',
+                                    borderRadius: '7px',
+                                    border: 'none',
+                                    backgroundColor: '#e62b2b',
+                                    color: '#ffffff',
+                                    fontSize: '13px',
+                                    fontWeight: 700,
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                {ct.acceptAll}
+                            </button>
                         </div>
                     </div>
+                </div>
+            )}
+
+            {/* Verbessertes Cookie Preferenze Modal */}
+            {showPreferencesModal && (
+                <div
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="cookiePrefsTitle"
+                    style={{
+                        position: 'fixed',
+                        inset: 0,
+                        backgroundColor: 'rgba(0, 0, 0, 0.78)',
+                        backdropFilter: 'blur(4px)',
+                        zIndex: 9999,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '16px'
+                    }}
+                >
+                    <form
+                        onSubmit={handleSavePreferences}
+                        style={{
+                            backgroundColor: '#18181b',
+                            color: '#ffffff',
+                            border: '1px solid #38383e',
+                            borderTop: '3px solid #e62b2b',
+                            borderRadius: '12px',
+                            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.65)',
+                            maxWidth: '500px',
+                            width: '100%',
+                            padding: '24px',
+                            display: 'grid',
+                            gap: '14px'
+                        }}
+                    >
+                        <div>
+                            <h3 id="cookiePrefsTitle" style={{ margin: '0 0 6px', fontSize: '18px' }}>
+                                {ct.modalTitle}
+                            </h3>
+                            <p style={{ margin: 0, fontSize: '13.5px', color: '#a1a1aa' }}>
+                                {ct.modalSubtitle}
+                            </p>
+                        </div>
+
+                        <div
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                gap: '14px',
+                                padding: '12px 14px',
+                                borderRadius: '8px',
+                                backgroundColor: '#222226',
+                                border: '1px solid #323238'
+                            }}
+                        >
+                            <div>
+                                <div style={{ fontWeight: 700, fontSize: '14px' }}>{ct.necessaryTitle}</div>
+                                <div style={{ fontSize: '12.5px', color: '#b4b4bc', marginTop: '2px' }}>
+                                    {ct.necessaryDesc}
+                                </div>
+                            </div>
+                            <input
+                                type="checkbox"
+                                checked
+                                disabled
+                                style={{ width: '18px', height: '18px', accentColor: '#e62b2b', cursor: 'not-allowed' }}
+                            />
+                        </div>
+
+                        <label
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                gap: '14px',
+                                padding: '12px 14px',
+                                borderRadius: '8px',
+                                backgroundColor: '#222226',
+                                border: '1px solid #323238',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            <div>
+                                <div style={{ fontWeight: 700, fontSize: '14px' }}>{ct.analyticsTitle}</div>
+                                <div style={{ fontSize: '12.5px', color: '#b4b4bc', marginTop: '2px' }}>
+                                    {ct.analyticsDesc}
+                                </div>
+                            </div>
+                            <input
+                                type="checkbox"
+                                checked={cookiePrefs.analytics}
+                                onChange={(e) => setCookiePrefs({ ...cookiePrefs, analytics: e.target.checked })}
+                                style={{ width: '18px', height: '18px', accentColor: '#e62b2b', cursor: 'pointer' }}
+                            />
+                        </label>
+
+                        <label
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                gap: '14px',
+                                padding: '12px 14px',
+                                borderRadius: '8px',
+                                backgroundColor: '#222226',
+                                border: '1px solid #323238',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            <div>
+                                <div style={{ fontWeight: 700, fontSize: '14px' }}>{ct.marketingTitle}</div>
+                                <div style={{ fontSize: '12.5px', color: '#b4b4bc', marginTop: '2px' }}>
+                                    {ct.marketingDesc}
+                                </div>
+                            </div>
+                            <input
+                                type="checkbox"
+                                checked={cookiePrefs.marketing}
+                                onChange={(e) => setCookiePrefs({ ...cookiePrefs, marketing: e.target.checked })}
+                                style={{ width: '18px', height: '18px', accentColor: '#e62b2b', cursor: 'pointer' }}
+                            />
+                        </label>
+
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '6px', flexWrap: 'wrap' }}>
+                            <button
+                                type="button"
+                                onClick={() => setShowPreferencesModal(false)}
+                                style={{
+                                    padding: '9px 15px',
+                                    borderRadius: '7px',
+                                    border: '1px solid #52525b',
+                                    backgroundColor: '#27272a',
+                                    color: '#f4f4f5',
+                                    fontSize: '13px',
+                                    fontWeight: 600,
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                {ct.cancel}
+                            </button>
+                            <button
+                                type="submit"
+                                style={{
+                                    padding: '9px 16px',
+                                    borderRadius: '7px',
+                                    border: 'none',
+                                    backgroundColor: '#e62b2b',
+                                    color: '#ffffff',
+                                    fontSize: '13px',
+                                    fontWeight: 700,
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                {ct.save}
+                            </button>
+                        </div>
+                    </form>
                 </div>
             )}
 
