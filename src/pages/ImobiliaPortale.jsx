@@ -12,6 +12,42 @@ const EMAILJS_SERVICE_ID = "service_n9toe59";
 const EMAILJS_TEMPLATE_ID = "template_mrshrnl";
 const EMAILJS_PUBLIC_KEY = "dFpVpt98rEIko4TLa";
 
+const GEWERK_CONFIG = {
+    "Parapetti & Balkongeländer": {
+        bkp: "BKP 272.1",
+        baseRatePerLfm: 320,
+        normHint: "SIA 358 Absturzsicherung"
+    },
+    "Treppen & Innengeländer": {
+        bkp: "BKP 272.2",
+        baseRatePerLfm: 290,
+        normHint: "SIA 358 & Brandschutz"
+    },
+    "Einfahrtstore & Sicherheitsgitter": {
+        bkp: "BKP 272.4",
+        baseRatePerLfm: 410,
+        normHint: "Antrieb & Zutrittskontrolle"
+    },
+    "Areal- & Gartenzäune": {
+        bkp: "BKP 421",
+        baseRatePerLfm: 240,
+        normHint: "Korrosionsschutz C3/C4"
+    }
+};
+
+const MATERIAL_FACTORS = {
+    "Stahl feuerverzinkt & pulverbeschichtet": { factor: 1.15, label: "Stahl verzinkt + Pulver (RAL/Anthrazit)" },
+    "Edelstahl V2A / V4A": { factor: 1.35, label: "Edelstahl (V2A / V4A)" },
+    "Schmiedeeisen / Kunstschmiedearbeit": { factor: 1.45, label: "Schmiedeeisen (Massanfertigung)" },
+    "Rohstahl geölt": { factor: 1.0, label: "Rohstahl (Innenbereich)" }
+};
+
+const MONTAGE_FACTORS = {
+    "Standard-Montage": { factor: 1.0, label: "Standard-Montage" },
+    "Sanierung inkl. Demontage & Entsorgung": { factor: 1.22, label: "Sanierung + Demontage/Entsorgung" },
+    "Kran- / Gerüstbedarf / erschwerter Zugang": { factor: 1.18, label: "Kran / Gerüst / Zugang erschwert" }
+};
+
 const ImmobilienPortal = ({ lang = "de" }) => {
     const translations = {
         de: {
@@ -49,114 +85,6 @@ const ImmobilienPortal = ({ lang = "de" }) => {
             bookingSubmit: "Termin verbindlich anfragen",
             bookingSuccess: "Vielen Dank! Ihre Anfrage wurde erfolgreich per E-Mail versendet.",
             bookingError: "Beim Senden ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
-        },
-        it: {
-            home: "Home",
-            chiSiamo: "Chi siamo",
-            servizi: "Servizi",
-            galeria: "Galleria",
-            kontakte: "Contatti",
-            immobilien: "Immobili & Appalti",
-            calculatori: "Calcolatore online",
-            loginBtn: "Login Clienti / Registrazione",
-            logoutBtn: "Esci",
-            heroTag: "PORTALE B2B & IMMOBILIARE • TICINO",
-            heroTitle: "Titocci Metalcostruzioni",
-            heroSubtitle: "Soluzioni di metalcostruzione per amministrazioni immobiliari, architetti e appalti.",
-            objektTyp: "Tipo di immobile",
-            gewerkTyp: "Opera in metallo",
-            standort: "Località / Comune (es. Avegno, Locarno)",
-            terminWunsch: "Data sopralluogo / Fase offerta",
-            suchenBtn: "Verifica disponibilità e stima",
-            tabAusschreibungen: "Appalti e Progetti Attuali",
-            tabKunden: "Vista Clienti & Catalogo Oggetti",
-            tabRechner: "Calcolatore & Richiesta Offerta",
-            statusOffen: "Aperto per offerte",
-            statusInArbeit: "In esecuzione",
-            bkpLabel: "Codice CCC (BKP)",
-            fristLabel: "Termine consegna",
-            offerteBtn: "Richiedi capitolato e offerta",
-            bookingTitle: "Prenotazione Diretta: Rilievo Misure e Consulenza",
-            bookingSub: "Seleziona la fascia oraria e invia la richiesta direttamente via e-mail.",
-            namePlaceholder: "Azienda / Amministrazione / Nome",
-            emailPlaceholder: "E-mail aziendale",
-            phonePlaceholder: "Telefono (opzionale)",
-            projektDetails: "Descrivi brevemente il progetto (es. 45 ml parapetti balcone, risanamento palazzina)...",
-            bookingSubmit: "Invia richiesta sopralluogo",
-            bookingSuccess: "Grazie! La tua richiesta è stata inviata con successo via e-mail.",
-            bookingError: "Si è verificato un errore durante l'invio. Riprova più tardi."
-        },
-        en: {
-            home: "Home",
-            chiSiamo: "About Us",
-            servizi: "Services",
-            galeria: "Gallery",
-            kontakte: "Contact",
-            immobilien: "Real Estate & Tenders",
-            calculatori: "Online Calculator",
-            loginBtn: "Client Login / Register",
-            logoutBtn: "Logout",
-            heroTag: "B2B & REAL ESTATE PORTAL • TICINO",
-            heroTitle: "Titocci Metalcostruzioni",
-            heroSubtitle: "Architectural metalwork solutions for property managers, developers & tenders.",
-            objektTyp: "Property Type",
-            gewerkTyp: "Metalwork Category",
-            standort: "Location / Municipality (e.g. Avegno)",
-            terminWunsch: "Preferred Site Visit Date",
-            suchenBtn: "Check Availability & Estimate",
-            tabAusschreibungen: "Active Tenders & Projects",
-            tabKunden: "Client View & Property Catalog",
-            tabRechner: "Calculator & Quote Request",
-            statusOffen: "Open for Tenders",
-            statusInArbeit: "In Progress",
-            bkpLabel: "BKP Code",
-            fristLabel: "Submission Deadline",
-            offerteBtn: "Request Specification & Quote",
-            bookingTitle: "Direct Booking: On-Site Measurement & Consultation",
-            bookingSub: "Select your preferred date and send your request directly via email.",
-            namePlaceholder: "Company / Property Management / Name",
-            emailPlaceholder: "Business Email",
-            phonePlaceholder: "Phone number (optional)",
-            projektDetails: "Briefly describe the project scope (e.g., 45m balcony railings, apartment renovation)...",
-            bookingSubmit: "Send Request",
-            bookingSuccess: "Thank you! Your request has been sent successfully via email.",
-            bookingError: "An error occurred while sending. Please try again later."
-        },
-        fr: {
-            home: "Accueil",
-            chiSiamo: "À propos",
-            servizi: "Services",
-            galeria: "Galerie",
-            kontakte: "Contact",
-            immobilien: "Immobilier & Appels d'offres",
-            calculatori: "Calculateur en ligne",
-            loginBtn: "Connexion Clients / Inscription",
-            logoutBtn: "Déconnexion",
-            heroTag: "PORTAIL B2B & IMMOBILIER • TESSIN",
-            heroTitle: "Titocci Metalcostruzioni",
-            heroSubtitle: "Solutions de construction métallique pour régies immobilières et appels d'offres.",
-            objektTyp: "Type de bien immobilier",
-            gewerkTyp: "Ouvrage métallique",
-            standort: "Lieu / Commune (ex. Avegno)",
-            terminWunsch: "Date souhaitée pour visite",
-            suchenBtn: "Vérifier disponibilité & estimation",
-            tabAusschreibungen: "Appels d'offres & Projets",
-            tabKunden: "Vue Clients & Catalogue",
-            tabRechner: "Calculateur & Demande d'offre",
-            statusOffen: "Ouvert aux offres",
-            statusInArbeit: "En cours",
-            bkpLabel: "Code CFC (BKP)",
-            fristLabel: "Délai de soumission",
-            offerteBtn: "Demander le cahier des charges",
-            bookingTitle: "Réservation Directe : Prise de mesures sur site",
-            bookingSub: "Réservez un créneau et envoyez votre demande directement par e-mail.",
-            namePlaceholder: "Entreprise / Régie / Nom",
-            emailPlaceholder: "E-mail professionnel",
-            phonePlaceholder: "Téléphone (optionnel)",
-            projektDetails: "Décrivez brièvement le projet...",
-            bookingSubmit: "Envoyer la demande",
-            bookingSuccess: "Merci ! Votre demande a bien été envoyée par e-mail.",
-            bookingError: "Une erreur est survenue lors de l'envoi. Veuillez réessayer."
         }
     };
 
@@ -172,7 +100,8 @@ const ImmobilienPortal = ({ lang = "de" }) => {
         }
     });
     const [showAuthModal, setShowAuthModal] = useState(false);
-    const [authMode, setAuthMode] = useState("login"); // "login" | "register"
+    const [authMode, setAuthMode] = useState("login");
+    const[privacyAccepted,setprivacyAccepted]=useState(false);
     const [kundenTyp, setKundenTyp] = useState("Immobilienverwaltung");
     const [firmaOderName, setFirmaOderName] = useState("");
     const [immobilienObjekt, setImmobilienObjekt] = useState("");
@@ -190,7 +119,12 @@ const ImmobilienPortal = ({ lang = "de" }) => {
     const [visitDate, setVisitDate] = useState("");
     const [selectedTender, setSelectedTender] = useState(null);
 
-    // Formular- & Kalkulations-States
+    // Metallbau-, Immobilien- & Kalkulations-States
+    const [lfm, setLfm] = useState(45);
+    const [materialType, setMaterialType] = useState("Stahl feuerverzinkt & pulverbeschichtet");
+    const [montageType, setMontageType] = useState("Standard-Montage");
+    const [eigenmittelQuote, setEigenmittelQuote] = useState(20); // in %
+
     const [companyName, setCompanyName] = useState(() => currentUser?.firmaOderName || "");
     const [email, setEmail] = useState(() => currentUser?.email || "");
     const [phone, setPhone] = useState("");
@@ -204,6 +138,17 @@ const ImmobilienPortal = ({ lang = "de" }) => {
 
     const workspaceRef = useRef(null);
     const companyInputRef = useRef(null);
+
+    const activeGewerk = GEWERK_CONFIG[selectedService] || GEWERK_CONFIG["Parapetti & Balkongeländer"];
+    const activeMaterial = MATERIAL_FACTORS[materialType] || MATERIAL_FACTORS["Stahl feuerverzinkt & pulverbeschichtet"];
+    const activeMontage = MONTAGE_FACTORS[montageType] || MONTAGE_FACTORS["Standard-Montage"];
+
+    const safeLfm = Math.max(0, Number(lfm) || 0);
+    const effectiveRatePerLfm = activeGewerk.baseRatePerLfm * activeMaterial.factor * activeMontage.factor;
+    const estimatedMetalworkCost = safeLfm * effectiveRatePerLfm;
+    const estimatedEigenmittel = estimatedMetalworkCost * ((Number(eigenmittelQuote) || 0) / 100);
+    const estimatedFremdkapital = Math.max(0, estimatedMetalworkCost - estimatedEigenmittel);
+    const estimatedYearlyInterest = estimatedFremdkapital * ((Number(zinssatz) || 0) / 100);
 
     const scrollToInput = (targetRef = companyInputRef) => {
         requestAnimationFrame(() => {
@@ -226,6 +171,21 @@ const ImmobilienPortal = ({ lang = "de" }) => {
         setAuthError("");
         setAuthSuccess("");
         setShowAuthModal(true);
+    };
+
+    const handleResetCalculation = () => {
+        setLfm(45);
+        setMaterialType("Stahl feuerverzinkt & pulverbeschichtet");
+        setMontageType("Standard-Montage");
+        setEigenmittelQuote(20);
+        setSelectedTender(null);
+        setProjectNotes("");
+        setBookingSubmitted(false);
+        setSubmitError("");
+    };
+
+    const handlePrintSummary = () => {
+        window.print();
     };
 
     const handleAuthSubmit = (e) => {
@@ -327,13 +287,14 @@ const ImmobilienPortal = ({ lang = "de" }) => {
         setSubmitError("");
         setBookingSubmitted(false);
 
+        const finalTotal = Number(calculatedTotalPrice) || estimatedMetalworkCost;
+        const finalPerQm = Number(calculatedPricePerQm) || 0;
+
         try {
-            const totalNum = Number(calculatedTotalPrice) || 0;
-            const perQmNum = Number(calculatedPricePerQm) || 0;
             const detailsBlock = customMessage ? `${customMessage}\n\n` : "";
 
             const templateParams = {
-                subject: "Neue Immobilien-Berechnung von Titocci Metalcostruzioni",
+                subject: "Neue Immobilien- & Metallbau-Anfrage von Titocci Metalcostruzioni",
                 from_name: companyName || "Nicht angegeben",
                 from_email: email.trim(),
                 reply_to: email.trim(),
@@ -347,15 +308,20 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                     `${detailsBlock}` +
                     `Kunde / Konto: ${currentUser ? `${currentUser.firmaOderName} (${currentUser.kundenTyp})` : "Gast"}\n` +
                     `Objekttyp: ${selectedPropertyType}\n` +
-                    `Gewerk: ${selectedService}\n` +
+                    `Gewerk: ${selectedService} (${activeGewerk.bkp})\n` +
+                    `Laufmeter (lfm): ${safeLfm} lfm (Richtpreis: ${effectiveRatePerLfm.toFixed(2)} CHF/lfm)\n` +
+                    `Material / Oberfläche: ${activeMaterial.label}\n` +
+                    `Montage / Ausführung: ${activeMontage.label}\n` +
+                    `Richtpreis Metallbau: ${estimatedMetalworkCost.toFixed(2)} CHF\n` +
+                    `Eigenmittel (${eigenmittelQuote}%): ${estimatedEigenmittel.toFixed(2)} CHF | Fremdkapital: ${estimatedFremdkapital.toFixed(2)} CHF\n` +
+                    `Kalk. Jahreszins (${zinssatz}%): ${estimatedYearlyInterest.toFixed(2)} CHF\n` +
                     `Standort: ${locationInput}\n` +
                     `Wunschtermin: ${visitDate || "Nicht angegeben"}\n` +
                     `Wohnfläche: ${qm} m²\n` +
                     `Kanton: ${canton}\n` +
                     `Telefon: ${phone.trim() || "Keine Telefonnummer angegeben"}\n` +
-                    `Zinssatz: ${zinssatz}%\n` +
-                    `Geschätzter Quadratmeterpreis: ${perQmNum.toFixed(2)} CHF\n` +
-                    `Geschätzter Gesamtpreis: ${totalNum.toFixed(2)} CHF\n` +
+                    `Geschätzter Quadratmeterpreis: ${finalPerQm.toFixed(2)} CHF\n` +
+                    `Geschätzter Gesamtpreis: ${finalTotal.toFixed(2)} CHF\n` +
                     `PDF-Dokument: ${attachedPdfName || "Kein PDF hochgeladen"}`,
                 to_email: "info@titocci.ch",
                 signup_date: new Date().toLocaleDateString("de-CH"),
@@ -1002,9 +968,161 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                     </div>
                 )}
 
-                {/* TAB 3: KALKULATOR & DIREKT-BUCHUNG */}
+                {/* TAB 3: KALKULATOR, METALLBAU-KENNZAHLEN & DIREKT-BUCHUNG */}
                 {activeTab === "rechner" && (
-                    <div style={{ display: "grid", gap: "32px" }}>
+                    <div style={{ display: "grid", gap: "28px" }}>
+                        {/* METALLBAU- & IMMOBILIEN-KENNZAHLEN */}
+                        <div
+                            style={{
+                                backgroundColor: "#191919",
+                                border: "1px solid #2c2c2c",
+                                borderRadius: "10px",
+                                padding: "24px",
+                                display: "grid",
+                                gap: "20px"
+                            }}
+                        >
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
+                                <div>
+                                    <h3 style={{ margin: "0 0 4px", fontSize: "1.25rem" }}>
+                                        Metallbau-Richtkalkulation & Immobilien-Kennzahlen
+                                    </h3>
+                                    <div style={{ fontSize: "12px", color: "#aaa" }}>
+                                        {activeGewerk.bkp} • {activeGewerk.normHint}
+                                    </div>
+                                </div>
+                                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                                    <button
+                                        type="button"
+                                        onClick={handlePrintSummary}
+                                        style={{
+                                            padding: "8px 14px",
+                                            borderRadius: "6px",
+                                            border: "1px solid #444",
+                                            backgroundColor: "#242424",
+                                            color: "#fff",
+                                            fontSize: "12px",
+                                            fontWeight: "bold",
+                                            cursor: "pointer"
+                                        }}
+                                    >
+                                        Drucken / PDF
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={handleResetCalculation}
+                                        style={{
+                                            padding: "8px 14px",
+                                            borderRadius: "6px",
+                                            border: "1px solid #444",
+                                            backgroundColor: "#242424",
+                                            color: "#ddd",
+                                            fontSize: "12px",
+                                            fontWeight: "bold",
+                                            cursor: "pointer"
+                                        }}
+                                    >
+                                        Zurücksetzen
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: "14px" }}>
+                                <div>
+                                    <label style={{ display: "block", fontSize: "12px", color: "#bbb", marginBottom: "6px" }}>
+                                        Laufmeter / Umfang (lfm)
+                                    </label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        step="1"
+                                        value={lfm}
+                                        onChange={(e) => setLfm(e.target.value)}
+                                        style={{ width: "100%", padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444", boxSizing: "border-box" }}
+                                    />
+                                </div>
+
+                                <div>
+                                    <label style={{ display: "block", fontSize: "12px", color: "#bbb", marginBottom: "6px" }}>
+                                        Material & Oberfläche
+                                    </label>
+                                    <select
+                                        value={materialType}
+                                        onChange={(e) => setMaterialType(e.target.value)}
+                                        style={{ width: "100%", padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
+                                    >
+                                        {Object.entries(MATERIAL_FACTORS).map(([key, item]) => (
+                                            <option key={key} value={key}>{item.label}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label style={{ display: "block", fontSize: "12px", color: "#bbb", marginBottom: "6px" }}>
+                                        Montage & Bauart
+                                    </label>
+                                    <select
+                                        value={montageType}
+                                        onChange={(e) => setMontageType(e.target.value)}
+                                        style={{ width: "100%", padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
+                                    >
+                                        {Object.entries(MONTAGE_FACTORS).map(([key, item]) => (
+                                            <option key={key} value={key}>{item.label}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label style={{ display: "block", fontSize: "12px", color: "#bbb", marginBottom: "6px" }}>
+                                        Eigenmittel-Anteil ({eigenmittelQuote}%)
+                                    </label>
+                                    <input
+                                        type="range"
+                                        min="0"
+                                        max="100"
+                                        step="5"
+                                        value={eigenmittelQuote}
+                                        onChange={(e) => setEigenmittelQuote(Number(e.target.value))}
+                                        style={{ width: "100%", accentColor: "#e62b2b" }}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* ERGEBNIS-KARTEN */}
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: "12px" }}>
+                                <div style={{ backgroundColor: "#222", padding: "14px", borderRadius: "8px", borderLeft: "3px solid #e62b2b" }}>
+                                    <div style={{ fontSize: "12px", color: "#aaa" }}>Richtpreis Metallbau ({safeLfm} lfm)</div>
+                                    <div style={{ fontSize: "1.25rem", fontWeight: "bold", marginTop: "4px" }}>
+                                        CHF {estimatedMetalworkCost.toLocaleString("de-CH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                    </div>
+                                    <div style={{ fontSize: "11px", color: "#bbb", marginTop: "2px" }}>
+                                        ca. CHF {effectiveRatePerLfm.toFixed(2)} / lfm
+                                    </div>
+                                </div>
+
+                                <div style={{ backgroundColor: "#222", padding: "14px", borderRadius: "8px", borderLeft: "3px solid #2ecc71" }}>
+                                    <div style={{ fontSize: "12px", color: "#aaa" }}>Eigenmittel ({eigenmittelQuote}%)</div>
+                                    <div style={{ fontSize: "1.25rem", fontWeight: "bold", marginTop: "4px" }}>
+                                        CHF {estimatedEigenmittel.toLocaleString("de-CH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                    </div>
+                                    <div style={{ fontSize: "11px", color: "#bbb", marginTop: "2px" }}>
+                                        Fremdkapital: CHF {estimatedFremdkapital.toFixed(0)}
+                                    </div>
+                                </div>
+
+                                <div style={{ backgroundColor: "#222", padding: "14px", borderRadius: "8px", borderLeft: "3px solid #f39c12" }}>
+                                    <div style={{ fontSize: "12px", color: "#aaa" }}>Kalk. Jahreszins ({zinssatz}%)</div>
+                                    <div style={{ fontSize: "1.25rem", fontWeight: "bold", marginTop: "4px" }}>
+                                        CHF {estimatedYearlyInterest.toLocaleString("de-CH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                    </div>
+                                    <div style={{ fontSize: "11px", color: "#bbb", marginTop: "2px" }}>
+                                        Kanton {canton} • {qm} m²
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* BESTEHENDER IMMOBILIEN-KALKULATOR */}
                         <Calculator
                             qm={qm}
                             setQm={setQm}
@@ -1015,6 +1133,7 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                             onSendEmail={sendEmailCalc}
                         />
 
+                        {/* DIREKT-BUCHUNG & OFFERTANFRAGE */}
                         <form
                             onSubmit={handleDirectReservation}
                             style={{
@@ -1028,6 +1147,11 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                         >
                             <h3 style={{ margin: 0, fontSize: "1.3rem" }}>{t.bookingTitle}</h3>
                             <p style={{ margin: 0, color: "#bbb", fontSize: "14px" }}>{t.bookingSub}</p>
+
+                            <div style={{ fontSize: "12px", color: "#ccc", backgroundColor: "#222", padding: "10px 14px", borderRadius: "6px" }}>
+                                <strong>Auswahl:</strong> {selectedPropertyType} • {selectedService} ({activeGewerk.bkp}) • {locationInput}
+                                {selectedTender ? ` • Ausschreibung ${selectedTender}` : ""}
+                            </div>
 
                             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "12px" }}>
                                 <input
@@ -1047,6 +1171,26 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                                     required
                                     style={{ padding: "11px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
                                 />
+
+                                <input
+                                    type="text"
+                                    placeholder={t.standort}
+                                    value={locationInput}
+                                    onChange={(e) => setLocationInput(e.target.value)}
+                                    required
+                                    style={{ padding: "11px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
+                                />
+
+
+
+
+                                <input
+                                    type="date"
+                                    aria-label={t.terminWunsch}
+                                    value={visitDate}
+                                    onChange={(e) => setVisitDate(e.target.value)}
+                                    style={{ padding: "11px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
+                                />
                                 <input
                                     type="tel"
                                     placeholder={t.phonePlaceholder}
@@ -1063,6 +1207,33 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                                 onChange={(e) => setProjectNotes(e.target.value)}
                                 style={{ padding: "11px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444", resize: "vertical" }}
                             />
+
+
+                            <label
+                                style={{
+                                    display: "flex",
+                                    alignItems: "flex-start",
+                                    gap: "10px",
+                                    fontSize: "13px",
+                                    color: "#ccc",
+                                    cursor: "pointer"
+                                }}
+                            >
+                                <input
+                                    type="checkbox"
+                                    checked={privacyAccepted}
+                                    onChange={(e) => setPrivacyAccepted(e.target.checked)}
+                                    required
+                                    style={{ marginTop: "3px", accentColor: "#e62b2b", cursor: "pointer" }}
+                                />
+                                <span>
+                                    Ich stimme der Verarbeitung meiner Angaben gemäss der{" "}
+                                    <Link to="/privacy" style={{ color: "#e62b2b", textDecoration: "underline" }}>
+                                        Datenschutzerklärung
+                                    </Link>{" "}
+                                    zur Bearbeitung meiner Anfrage zu. *
+                                </span>
+                            </label>
 
                             {submitError && <div style={{ color: "#ff7b7b", fontSize: "13px" }}>{submitError}</div>}
                             {bookingSubmitted && <div style={{ color: "#2ecc71", fontSize: "13px" }}>{t.bookingSuccess}</div>}
