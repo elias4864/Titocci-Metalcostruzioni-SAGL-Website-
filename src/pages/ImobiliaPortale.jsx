@@ -48,6 +48,20 @@ const MONTAGE_FACTORS = {
     "Kran- / Gerüstbedarf / erschwerter Zugang": { factor: 1.18, label: "Kran / Gerüst / Zugang erschwert" }
 };
 
+const ABOUT_ME_PROFILE = {
+    name: "Elias Kaiser",
+    role: "Full-Stack & Web Developer • Immobilien- & Metallbau-Portal",
+    location: "Zürich / Tessin (CH)",
+    summary:
+        "Entwicklung moderner Web- und Kalkulationslösungen mit Fokus auf klare Nutzerführung, B2B-Ausschreibungen, interaktive Preisrechner und saubere Frontend-/Backend-Architektur.",
+    skills: ["React & Vite", "TypeScript / JavaScript", "Kalkulations- & Offert-Workflows", "SEO & Responsive UI"],
+    links: [
+        { label: "Portfolio", url: "https://elias-portfolio.eljourka.workers.dev" },
+        { label: "GitHub", url: "https://github.com/elias4864" },
+        { label: "LinkedIn", url: "https://www.linkedin.com/in/elias-kaiser-646638371" }
+    ]
+};
+
 const ImmobilienPortal = ({ lang = "de" }) => {
     const translations = {
         de: {
@@ -57,8 +71,7 @@ const ImmobilienPortal = ({ lang = "de" }) => {
             galeria: "Galerie",
             kontakte: "Kontakt",
             immobilien: "Immobilien & Ausschreibungen",
-            calculatori: "Online Preisrechner",
-            loginBtn: "Kunden-Login / Registrieren",
+            loginBtn: "Login / Konto",
             logoutBtn: "Logout",
             heroTag: "B2B & IMMOBILIENPORTAL • TESSIN & SCHWEIZ",
             heroTitle: "Titocci Metalcostruzioni",
@@ -71,9 +84,9 @@ const ImmobilienPortal = ({ lang = "de" }) => {
             tabAusschreibungen: "Aktuelle Ausschreibungen & Projekte",
             tabKunden: "Kundenansicht & Objekt-Katalog",
             tabRechner: "Kalkulator & Offertanfrage",
+            tabAboutMe: "About Me & Profil",
             statusOffen: "Offen für Offerten",
             statusInArbeit: "In Ausführung",
-            bkpLabel: "BKP-Code",
             fristLabel: "Eingabefrist",
             offerteBtn: "Leistungsverzeichnis & Offerte anfordern",
             bookingTitle: "Direkt-Buchung: Aufmass & Technische Beratung vor Ort",
@@ -90,7 +103,6 @@ const ImmobilienPortal = ({ lang = "de" }) => {
 
     const t = translations[lang] || translations.de;
 
-    // Login & Kunden-Registrierungs-States
     const [currentUser, setCurrentUser] = useState(() => {
         try {
             const saved = localStorage.getItem("titocci_current_user");
@@ -101,7 +113,7 @@ const ImmobilienPortal = ({ lang = "de" }) => {
     });
     const [showAuthModal, setShowAuthModal] = useState(false);
     const [authMode, setAuthMode] = useState("login");
-    const[privacyAccepted, setprivacyAccepted]=useState(false);
+    const [privacyAccepted, setPrivacyAccepted] = useState(false);
     const [kundenTyp, setKundenTyp] = useState("Immobilienverwaltung");
     const [firmaOderName, setFirmaOderName] = useState("");
     const [immobilienObjekt, setImmobilienObjekt] = useState("");
@@ -110,22 +122,19 @@ const ImmobilienPortal = ({ lang = "de" }) => {
     const [authPasswordConfirm, setAuthPasswordConfirm] = useState("");
     const [authError, setAuthError] = useState("");
     const [authSuccess, setAuthSuccess] = useState("");
-    const[visitSlot, setVisitSlot]=useState(false);
 
-    // Navigation & Filter States
     const [activeTab, setActiveTab] = useState("ausschreibungen");
     const [selectedPropertyType, setSelectedPropertyType] = useState("Mehrfamilienhaus / Wohnbau");
     const [selectedService, setSelectedService] = useState("Parapetti & Balkongeländer");
     const [locationInput, setLocationInput] = useState("Avegno / Vallemaggia");
     const [visitDate, setVisitDate] = useState("");
-    const [selectedTender, setSelectedTender] = useState(null);
     const [visitTime, setVisitTime] = useState("");
+    const [selectedTender, setSelectedTender] = useState(null);
 
-    // Metallbau-, Immobilien- & Kalkulations-States
     const [lfm, setLfm] = useState(45);
     const [materialType, setMaterialType] = useState("Stahl feuerverzinkt & pulverbeschichtet");
     const [montageType, setMontageType] = useState("Standard-Montage");
-    const [eigenmittelQuote, setEigenmittelQuote] = useState(20); // in %
+    const [eigenmittelQuote, setEigenmittelQuote] = useState(20);
 
     const [companyName, setCompanyName] = useState(() => currentUser?.firmaOderName || "");
     const [email, setEmail] = useState(() => currentUser?.email || "");
@@ -172,7 +181,7 @@ const ImmobilienPortal = ({ lang = "de" }) => {
         setAuthMode(mode);
         setAuthError("");
         setAuthSuccess("");
-        setprivacyAccepted(false);
+        setPrivacyAccepted(false);
         setShowAuthModal(true);
     };
 
@@ -222,14 +231,12 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                 setAuthError("Die Passwörter stimmen nicht überein.");
                 return;
             }
-            if (storedUsers.some((u) => u.email === cleanEmail)) {
-                setAuthError("Für diese E-Mail existiert bereits ein Konto.");
+            if (!privacyAccepted) {
+                setAuthError("Bitte akzeptiere die Datenschutzerklärung.");
                 return;
             }
-
-
-            if(!privacyAccepted){
-                setAuthError("Bitte akzeptiere die Datenschutzerklärung!");
+            if (storedUsers.some((u) => u.email === cleanEmail)) {
+                setAuthError("Für diese E-Mail existiert bereits ein Konto.");
                 return;
             }
 
@@ -312,7 +319,7 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                 property_type: selectedPropertyType,
                 service_type: selectedService,
                 location: locationInput || "Nicht angegeben",
-                visit_date: visitDate || "Kein Wunschdatum angegeben",
+                visit_date: visitDate ? `${visitDate}${visitTime ? ` (${visitTime})` : ""}` : "Kein Wunschdatum angegeben",
                 message:
                     `${detailsBlock}` +
                     `Kunde / Konto: ${currentUser ? `${currentUser.firmaOderName} (${currentUser.kundenTyp})` : "Gast"}\n` +
@@ -325,7 +332,7 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                     `Eigenmittel (${eigenmittelQuote}%): ${estimatedEigenmittel.toFixed(2)} CHF | Fremdkapital: ${estimatedFremdkapital.toFixed(2)} CHF\n` +
                     `Kalk. Jahreszins (${zinssatz}%): ${estimatedYearlyInterest.toFixed(2)} CHF\n` +
                     `Standort: ${locationInput}\n` +
-                    `Wunschtermin: ${visitDate || "Nicht angegeben"}\n` +
+                    `Wunschtermin: ${visitDate || "Nicht angegeben"}${visitTime ? ` (${visitTime})` : ""}\n` +
                     `Wohnfläche: ${qm} m²\n` +
                     `Kanton: ${canton}\n` +
                     `Telefon: ${phone.trim() || "Keine Telefonnummer angegeben"}\n` +
@@ -458,13 +465,13 @@ const ImmobilienPortal = ({ lang = "de" }) => {
 
     return (
         <div style={{ backgroundColor: "#111111", color: "#ffffff", minHeight: "100vh", fontFamily: "sans-serif" }}>
-            {/* LOGIN & KUNDEN-REGISTRIERUNGS-MODAL */}
+            {/* LOGIN & REGISTRIERUNGS-MODAL */}
             {showAuthModal && (
                 <div
                     style={{
                         position: "fixed",
                         inset: 0,
-                        backgroundColor: "rgba(0,0,0,0.78)",
+                        backgroundColor: "rgba(0,0,0,0.8)",
                         zIndex: 100,
                         display: "flex",
                         alignItems: "center",
@@ -503,7 +510,7 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                         </button>
 
                         <h3 style={{ margin: "0 0 14px", fontSize: "1.4rem" }}>
-                            {authMode === "login" ? "Kunden-Login" : "Kunde & Immobilie registrieren"}
+                            {authMode === "login" ? "Login-Ansicht" : "Kunde & Immobilie registrieren"}
                         </h3>
 
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginBottom: "18px" }}>
@@ -538,6 +545,43 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                                 Registrieren
                             </button>
                         </div>
+
+                        {currentUser && authMode === "login" && (
+                            <div
+                                style={{
+                                    backgroundColor: "#141414",
+                                    border: "1px solid #2e2e2e",
+                                    borderRadius: "8px",
+                                    padding: "12px",
+                                    marginBottom: "14px",
+                                    fontSize: "13px"
+                                }}
+                            >
+                                <div style={{ color: "#2ecc71", fontWeight: "bold", marginBottom: "4px" }}>
+                                    Aktive Session: {currentUser.firmaOderName}
+                                </div>
+                                <div style={{ color: "#bbb" }}>{currentUser.kundenTyp} • {currentUser.email}</div>
+                                {currentUser.immobilienObjekt && (
+                                    <div style={{ color: "#aaa", marginTop: "2px" }}>Objekt: {currentUser.immobilienObjekt}</div>
+                                )}
+                                <button
+                                    type="button"
+                                    onClick={() => { setShowAuthModal(false); setActiveTab("aboutme"); }}
+                                    style={{
+                                        marginTop: "8px",
+                                        padding: "6px 10px",
+                                        borderRadius: "5px",
+                                        border: "1px solid #444",
+                                        backgroundColor: "#222",
+                                        color: "#fff",
+                                        fontSize: "12px",
+                                        cursor: "pointer"
+                                    }}
+                                >
+                                    Profil & Konto-Ansicht öffnen
+                                </button>
+                            </div>
+                        )}
 
                         <form onSubmit={handleAuthSubmit} style={{ display: "grid", gap: "12px" }}>
                             {authMode === "register" && (
@@ -587,14 +631,25 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                                 style={{ padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
                             />
                             {authMode === "register" && (
-                                <input
-                                    type="password"
-                                    placeholder="Passwort bestätigen *"
-                                    value={authPasswordConfirm}
-                                    onChange={(e) => setAuthPasswordConfirm(e.target.value)}
-                                    required
-                                    style={{ padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
-                                />
+                                <>
+                                    <input
+                                        type="password"
+                                        placeholder="Passwort bestätigen *"
+                                        value={authPasswordConfirm}
+                                        onChange={(e) => setAuthPasswordConfirm(e.target.value)}
+                                        required
+                                        style={{ padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
+                                    />
+                                    <label style={{ display: "flex", alignItems: "flex-start", gap: "8px", fontSize: "12px", color: "#ccc", cursor: "pointer" }}>
+                                        <input
+                                            type="checkbox"
+                                            checked={privacyAccepted}
+                                            onChange={(e) => setPrivacyAccepted(e.target.checked)}
+                                            style={{ marginTop: "2px" }}
+                                        />
+                                        <span>Ich akzeptiere die Datenschutzerklärung zur Bearbeitung meiner Anfrage.</span>
+                                    </label>
+                                </>
                             )}
 
                             {authError && <div style={{ color: "#ff7b7b", fontSize: "13px" }}>{authError}</div>}
@@ -619,12 +674,12 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                 </div>
             )}
 
-            {/* HERO SECTION */}
+            {/* HERO & NAVIGATION */}
             <div
                 style={{
                     position: "relative",
                     width: "100%",
-                    minHeight: "720px",
+                    minHeight: "680px",
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "space-between",
@@ -658,28 +713,40 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                         <li><Link to="/servizi" style={{ color: "white", textDecoration: "none", fontWeight: "bold", fontSize: "14px" }}>{t.servizi}</Link></li>
                         <li><Link to="/galeria" style={{ color: "white", textDecoration: "none", fontWeight: "bold", fontSize: "14px" }}>{t.galeria}</Link></li>
                         <li>
-                            <span style={{ color: "white", fontWeight: "bold", borderBottom: "3px solid #e62b2b", paddingBottom: "4px", fontSize: "14px", cursor: "pointer" }}>
+                            <span style={{ color: "white", fontWeight: "bold", borderBottom: "3px solid #e62b2b", paddingBottom: "4px", fontSize: "14px" }}>
                                 {t.immobilien}
                             </span>
                         </li>
                         <li><Link to="/kontakte" style={{ color: "white", textDecoration: "none", fontWeight: "bold", fontSize: "14px" }}>{t.kontakte}</Link></li>
                         <li>
+                            <img src="src/assets/About.jpg"></img>
                             {currentUser ? (
                                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                                    <span style={{ fontSize: "12px", color: "#2ecc71", fontWeight: "bold" }}>
+                                    <button
+                                        type="button"
+                                        onClick={() => { setActiveTab("aboutme"); scrollToInput(workspaceRef); }}
+                                        style={{
+                                            background: "none",
+                                            border: "none",
+                                            fontSize: "12px",
+                                            color: "#2ecc71",
+                                            fontWeight: "bold",
+                                            cursor: "pointer",
+                                            padding: 0
+                                        }}
+                                    >
                                         {currentUser.firmaOderName}
-                                    </span>
+                                    </button>
                                     <button
                                         type="button"
                                         onClick={handleLogout}
                                         style={{
-                                            padding: "7px 14px",
+                                            padding: "7px 12px",
                                             borderRadius: "6px",
                                             border: "1px solid #555",
                                             backgroundColor: "#222",
                                             color: "#fff",
                                             fontSize: "12px",
-                                            fontWeight: "bold",
                                             cursor: "pointer"
                                         }}
                                     >
@@ -691,13 +758,13 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                                     type="button"
                                     onClick={() => openAuthModal("login")}
                                     style={{
-                                        padding: "8px 16px",
+                                        padding: "8px 14px",
                                         borderRadius: "6px",
                                         border: "none",
                                         backgroundColor: "#e62b2b",
                                         color: "#fff",
-                                        fontSize: "12px",
                                         fontWeight: "bold",
+                                        fontSize: "12px",
                                         cursor: "pointer"
                                     }}
                                 >
@@ -708,13 +775,12 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                     </ul>
                 </nav>
 
-                {/* HERO CONTENT + SCHNELLSUCHE */}
-                <div style={{ maxWidth: "1100px", width: "100%", margin: "0 auto", padding: "40px 24px 70px", boxSizing: "border-box", zIndex: 10 }}>
-                    <div style={{ color: "#e62b2b", fontWeight: "bold", fontSize: "13px", letterSpacing: "2px", marginBottom: "10px" }}>
+                <div style={{ maxWidth: "1100px", margin: "40px auto", padding: "0 24px", width: "100%", boxSizing: "border-box" }}>
+                    <div style={{ color: "#e62b2b", fontWeight: "bold", fontSize: "12px", letterSpacing: "1.5px", marginBottom: "10px" }}>
                         {t.heroTag}
                     </div>
-                    <h1 style={{ fontSize: "2.8rem", margin: "0 0 12px", lineHeight: 1.15 }}>{t.heroTitle}</h1>
-                    <p style={{ color: "#ddd", fontSize: "1.1rem", maxWidth: "740px", margin: "0 0 28px" }}>
+                    <h1 style={{ fontSize: "2.8rem", margin: "0 0 12px" }}>{t.heroTitle}</h1>
+                    <p style={{ color: "#ddd", fontSize: "1.1rem", maxWidth: "760px", marginBottom: "28px" }}>
                         {t.heroSubtitle}
                     </p>
 
@@ -724,10 +790,10 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                             display: "grid",
                             gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
                             gap: "12px",
-                            backgroundColor: "rgba(24, 24, 24, 0.92)",
-                            border: "1px solid #333",
+                            backgroundColor: "rgba(24,24,24,0.95)",
                             padding: "20px",
-                            borderRadius: "10px"
+                            borderRadius: "10px",
+                            border: "1px solid #333"
                         }}
                     >
                         <div>
@@ -738,8 +804,8 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                                 style={{ width: "100%", padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
                             >
                                 <option value="Mehrfamilienhaus / Wohnbau">Mehrfamilienhaus / Wohnbau</option>
-                                <option value="Einfamilienhaus / Villa">Einfamilienhaus / Villa</option>
-                                <option value="Gewerbe- & Industrieobjekt">Gewerbe- & Industrieobjekt</option>
+                                <option value="Gewerbe & Industrie">Gewerbe & Industrie</option>
+                                <option value="Privatimmobilie / Villa">Privatimmobilie / Villa</option>
                                 <option value="Öffentliche Ausschreibung">Öffentliche Ausschreibung</option>
                             </select>
                         </div>
@@ -751,10 +817,9 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                                 onChange={(e) => setSelectedService(e.target.value)}
                                 style={{ width: "100%", padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
                             >
-                                <option value="Parapetti & Balkongeländer">Parapetti & Balkongeländer</option>
-                                <option value="Treppen & Innengeländer">Treppen & Innengeländer</option>
-                                <option value="Einfahrtstore & Sicherheitsgitter">Einfahrtstore & Sicherheitsgitter</option>
-                                <option value="Areal- & Gartenzäune">Areal- & Gartenzäune</option>
+                                {Object.keys(GEWERK_CONFIG).map((gewerk) => (
+                                    <option key={gewerk} value={gewerk}>{gewerk}</option>
+                                ))}
                             </select>
                         </div>
 
@@ -778,11 +843,12 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                             />
                         </div>
 
-                        <div style={{ gridColumn: "1 / -1", display: "flex", justifyContent: "flex-end", marginTop: "6px" }}>
+                        <div style={{ display: "flex", alignItems: "flex-end" }}>
                             <button
                                 type="submit"
                                 style={{
-                                    padding: "12px 24px",
+                                    width: "100%",
+                                    padding: "11px 16px",
                                     borderRadius: "6px",
                                     border: "none",
                                     backgroundColor: "#e62b2b",
@@ -798,66 +864,133 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                 </div>
             </div>
 
-            {/* WORKSPACE: TABS & INHALTE */}
-            <div
-                ref={workspaceRef}
-                id="portal-workspace"
-                style={{
-                    maxWidth: "1150px",
-                    margin: "0 auto",
-                    padding: "40px 24px 80px",
-                    scrollMarginTop: "24px"
-                }}
-            >
-                <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginBottom: "30px", borderBottom: "1px solid #2b2b2b", paddingBottom: "14px" }}>
-                    <button
-                        type="button"
-                        onClick={() => setActiveTab("ausschreibungen")}
-                        style={{
-                            padding: "10px 18px",
-                            borderRadius: "6px",
-                            border: "none",
-                            fontWeight: "bold",
-                            cursor: "pointer",
-                            backgroundColor: activeTab === "ausschreibungen" ? "#e62b2b" : "#1f1f1f",
-                            color: "#fff"
-                        }}
-                    >
-                        {t.tabAusschreibungen}
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => setActiveTab("kunden")}
-                        style={{
-                            padding: "10px 18px",
-                            borderRadius: "6px",
-                            border: "none",
-                            fontWeight: "bold",
-                            cursor: "pointer",
-                            backgroundColor: activeTab === "kunden" ? "#e62b2b" : "#1f1f1f",
-                            color: "#fff"
-                        }}
-                    >
-                        {t.tabKunden}
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => setActiveTab("rechner")}
-                        style={{
-                            padding: "10px 18px",
-                            borderRadius: "6px",
-                            border: "none",
-                            fontWeight: "bold",
-                            cursor: "pointer",
-                            backgroundColor: activeTab === "rechner" ? "#e62b2b" : "#1f1f1f",
-                            color: "#fff"
-                        }}
-                    >
-                        {t.tabRechner}
-                    </button>
+            {/* WORKSPACE BEREICH */}
+            <div ref={workspaceRef} style={{ maxWidth: "1100px", margin: "40px auto", padding: "0 24px 60px" }}>
+                {/* VERBESSERTE LOGIN- & KONTEN-LEISTE */}
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        flexWrap: "wrap",
+                        gap: "12px",
+                        backgroundColor: "#171717",
+                        border: "1px solid #2b2b2b",
+                        borderRadius: "10px",
+                        padding: "14px 18px",
+                        marginBottom: "20px"
+                    }}
+                >
+                    {currentUser ? (
+                        <>
+                            <div style={{ fontSize: "13px" }}>
+                                <span style={{ color: "#2ecc71", fontWeight: "bold" }}>Eingeloggt:</span>{" "}
+                                <strong>{currentUser.firmaOderName}</strong> ({currentUser.kundenTyp} • {currentUser.email})
+                            </div>
+                            <div style={{ display: "flex", gap: "10px" }}>
+                                <button
+                                    type="button"
+                                    onClick={() => setActiveTab("aboutme")}
+                                    style={{
+                                        padding: "7px 12px",
+                                        borderRadius: "6px",
+                                        border: "1px solid #444",
+                                        backgroundColor: "#232323",
+                                        color: "#fff",
+                                        fontSize: "12px",
+                                        cursor: "pointer"
+                                    }}
+                                >
+                                    Profil ansehen
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleLogout}
+                                    style={{
+                                        padding: "7px 12px",
+                                        borderRadius: "6px",
+                                        border: "none",
+                                        backgroundColor: "#e62b2b",
+                                        color: "#fff",
+                                        fontSize: "12px",
+                                        fontWeight: "bold",
+                                        cursor: "pointer"
+                                    }}
+                                >
+                                    {t.logoutBtn}
+                                </button>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <div style={{ fontSize: "13px", color: "#ccc" }}>
+                                <strong>Gast-Modus:</strong> Melden Sie sich an, um Unternehmensdaten automatisch in Kalkulation und Offerten zu übernehmen.
+                            </div>
+                            <div style={{ display: "flex", gap: "10px" }}>
+                                <button
+                                    type="button"
+                                    onClick={() => openAuthModal("login")}
+                                    style={{
+                                        padding: "8px 14px",
+                                        borderRadius: "6px",
+                                        border: "none",
+                                        backgroundColor: "#e62b2b",
+                                        color: "#fff",
+                                        fontSize: "12px",
+                                        fontWeight: "bold",
+                                        cursor: "pointer"
+                                    }}
+                                >
+                                    Login
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => openAuthModal("register")}
+                                    style={{
+                                        padding: "8px 14px",
+                                        borderRadius: "6px",
+                                        border: "1px solid #444",
+                                        backgroundColor: "#232323",
+                                        color: "#fff",
+                                        fontSize: "12px",
+                                        cursor: "pointer"
+                                    }}
+                                >
+                                    Konto erstellen
+                                </button>
+                            </div>
+                        </>
+                    )}
                 </div>
 
-                {/* TAB 1: AUSSCHREIBUNGEN */}
+                {/* TABS */}
+                <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginBottom: "28px", borderBottom: "1px solid #2c2c2c", paddingBottom: "14px" }}>
+                    {[
+                        { id: "ausschreibungen", label: t.tabAusschreibungen },
+                        { id: "kunden", label: t.tabKunden },
+                        { id: "rechner", label: t.tabRechner },
+                        { id: "aboutme", label: t.tabAboutMe },
+
+                    ].map((tab) => (
+                        <button
+                            key={tab.id}
+                            type="button"
+                            onClick={() => setActiveTab(tab.id)}
+                            style={{
+                                padding: "10px 18px",
+                                borderRadius: "6px",
+                                border: "none",
+                                fontWeight: "bold",
+                                cursor: "pointer",
+                                backgroundColor: activeTab === tab.id ? "#e62b2b" : "#1f1f1f",
+                                color: "#fff"
+                            }}
+                        >
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
+
                 {activeTab === "ausschreibungen" && (
                     <div style={{ display: "grid", gap: "20px" }}>
                         {tenders.map((tender) => (
@@ -867,11 +1000,10 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                                     display: "grid",
                                     gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
                                     gap: "20px",
-                                    backgroundColor: "#191919",
-                                    border: "1px solid #2c2c2c",
+                                    backgroundColor: "#1a1a1a",
+                                    border: "1px solid #2e2e2e",
                                     borderRadius: "10px",
-                                    padding: "20px",
-                                    alignItems: "center"
+                                    padding: "20px"
                                 }}
                             >
                                 <img
@@ -879,61 +1011,53 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                                     alt={tender.title}
                                     style={{ width: "100%", height: "190px", objectFit: "cover", borderRadius: "8px" }}
                                 />
-                                <div style={{ gridColumn: "span 2" }}>
-                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px" }}>
-                                        <span style={{ fontSize: "12px", color: "#aaa" }}>{tender.id} • {tender.location}</span>
-                                        <span
-                                            style={{
-                                                fontSize: "12px",
-                                                fontWeight: "bold",
-                                                padding: "4px 10px",
-                                                borderRadius: "999px",
-                                                backgroundColor: tender.isOpen ? "rgba(46, 204, 113, 0.16)" : "rgba(230, 43, 43, 0.16)",
-                                                color: tender.isOpen ? "#2ecc71" : "#ff6b6b"
-                                            }}
-                                        >
+                                <div>
+                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
+                                        <span style={{ fontSize: "12px", color: "#e62b2b", fontWeight: "bold" }}>{tender.id} • {tender.bkp}</span>
+                                        <span style={{ fontSize: "12px", padding: "3px 8px", borderRadius: "4px", backgroundColor: tender.isOpen ? "#1e462e" : "#3a3520", color: tender.isOpen ? "#6ee79c" : "#facc15" }}>
                                             {tender.status}
                                         </span>
                                     </div>
-                                    <h3 style={{ margin: "8px 0", fontSize: "1.25rem" }}>{tender.title}</h3>
+                                    <h3 style={{ margin: "0 0 8px" }}>{tender.title}</h3>
                                     <p style={{ margin: "0 0 10px", color: "#ccc", fontSize: "14px" }}>
-                                        <strong>{t.bkpLabel}:</strong> {tender.bkp} | <strong>Volumen:</strong> {tender.volume} | <strong>{t.fristLabel}:</strong> {tender.deadline}
+                                        {tender.location} – {tender.type} ({tender.volume})
                                     </p>
-                                    <ul style={{ margin: "0 0 14px", paddingLeft: "18px", color: "#bbb", fontSize: "13px" }}>
-                                        {tender.specs.map((spec) => (
-                                            <li key={spec}>{spec}</li>
-                                        ))}
+                                    <ul style={{ margin: "0 0 14px", paddingLeft: "18px", color: "#aaa", fontSize: "13px" }}>
+                                        {tender.specs.map((spec) => <li key={spec}>{spec}</li>)}
                                     </ul>
-                                    <button
-                                        type="button"
-                                        onClick={() => handleRequestTenderOffer(tender)}
-                                        style={{
-                                            padding: "10px 18px",
-                                            borderRadius: "6px",
-                                            border: "none",
-                                            backgroundColor: "#e62b2b",
-                                            color: "#fff",
-                                            fontWeight: "bold",
-                                            cursor: "pointer"
-                                        }}
-                                    >
-                                        {t.offerteBtn}
-                                    </button>
+                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
+                                        <span style={{ fontSize: "12px", color: "#bbb" }}>{t.fristLabel}: {tender.deadline}</span>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleRequestTenderOffer(tender)}
+                                            style={{
+                                                padding: "9px 14px",
+                                                borderRadius: "6px",
+                                                border: "none",
+                                                backgroundColor: "#e62b2b",
+                                                color: "#fff",
+                                                fontWeight: "bold",
+                                                fontSize: "13px",
+                                                cursor: "pointer"
+                                            }}
+                                        >
+                                            {t.offerteBtn}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         ))}
                     </div>
                 )}
 
-                {/* TAB 2: KUNDENANSICHT & KATALOG */}
                 {activeTab === "kunden" && (
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "20px" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "20px" }}>
                         {clientPackages.map((pkg) => (
                             <div
                                 key={pkg.title}
                                 style={{
-                                    backgroundColor: "#191919",
-                                    border: "1px solid #2c2c2c",
+                                    backgroundColor: "#1a1a1a",
+                                    border: "1px solid #2e2e2e",
                                     borderRadius: "10px",
                                     overflow: "hidden",
                                     display: "flex",
@@ -941,35 +1065,18 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                                     justifyContent: "space-between"
                                 }}
                             >
-                                <div>
-                                    <img
-                                        src={pkg.img}
-                                        alt={pkg.title}
-                                        style={{ width: "100%", height: "170px", objectFit: "cover" }}
-                                    />
-                                    <div style={{ padding: "18px" }}>
-                                        <h3 style={{ margin: "0 0 8px", fontSize: "1.1rem" }}>{pkg.title}</h3>
-                                        <p style={{ margin: "0 0 12px", color: "#ccc", fontSize: "14px", lineHeight: 1.5 }}>{pkg.desc}</p>
-                                        <div style={{ fontWeight: "bold", color: "#e62b2b", fontSize: "13px" }}>{pkg.priceHint}</div>
-                                    </div>
-                                </div>
-                                <div style={{ padding: "0 18px 18px" }}>
+                                <img src={pkg.img} alt={pkg.title} style={{ width: "100%", height: "160px", objectFit: "cover" }} />
+                                <div style={{ padding: "18px" }}>
+                                    <h3 style={{ margin: "0 0 8px", fontSize: "1.1rem" }}>{pkg.title}</h3>
+                                    <p style={{ margin: "0 0 12px", color: "#bbb", fontSize: "13px", lineHeight: 1.5 }}>{pkg.desc}</p>
+                                    <div style={{ color: "#2ecc71", fontWeight: "bold", fontSize: "13px", marginBottom: "12px" }}>{pkg.priceHint}</div>
                                     <a
                                         href={pkg.link}
                                         target="_blank"
-                                        rel="noopener noreferrer"
-                                        style={{
-                                            display: "inline-block",
-                                            padding: "8px 14px",
-                                            borderRadius: "6px",
-                                            backgroundColor: "#282828",
-                                            color: "#fff",
-                                            textDecoration: "none",
-                                            fontSize: "13px",
-                                            fontWeight: "bold"
-                                        }}
+                                        rel="noreferrer"
+                                        style={{ color: "#e62b2b", fontSize: "13px", fontWeight: "bold", textDecoration: "none" }}
                                     >
-                                        Details ansehen →
+                                        Details auf titocci.ch →
                                     </a>
                                 </div>
                             </div>
@@ -977,161 +1084,98 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                     </div>
                 )}
 
-                {/* TAB 3: KALKULATOR, METALLBAU-KENNZAHLEN & DIREKT-BUCHUNG */}
                 {activeTab === "rechner" && (
                     <div style={{ display: "grid", gap: "28px" }}>
-                        {/* METALLBAU- & IMMOBILIEN-KENNZAHLEN */}
-                        <div
-                            style={{
-                                backgroundColor: "#191919",
-                                border: "1px solid #2c2c2c",
-                                borderRadius: "10px",
-                                padding: "24px",
-                                display: "grid",
-                                gap: "20px"
-                            }}
-                        >
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
+                        <div style={{ backgroundColor: "#1a1a1a", border: "1px solid #2e2e2e", borderRadius: "10px", padding: "24px" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px", marginBottom: "18px" }}>
                                 <div>
-                                    <h3 style={{ margin: "0 0 4px", fontSize: "1.25rem" }}>
-                                        Metallbau-Richtkalkulation & Immobilien-Kennzahlen
-                                    </h3>
-                                    <div style={{ fontSize: "12px", color: "#aaa" }}>
-                                        {activeGewerk.bkp} • {activeGewerk.normHint}
-                                    </div>
+                                    <h3 style={{ margin: "0 0 4px" }}>Metallbau-Richtkalkulation ({activeGewerk.bkp})</h3>
+                                    <div style={{ fontSize: "13px", color: "#aaa" }}>{activeGewerk.normHint}</div>
                                 </div>
-                                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-                                    <button
-                                        type="button"
-                                        onClick={handlePrintSummary}
-                                        style={{
-                                            padding: "8px 14px",
-                                            borderRadius: "6px",
-                                            border: "1px solid #444",
-                                            backgroundColor: "#242424",
-                                            color: "#fff",
-                                            fontSize: "12px",
-                                            fontWeight: "bold",
-                                            cursor: "pointer"
-                                        }}
-                                    >
-                                        Drucken / PDF
-                                    </button>
+                                <div style={{ display: "flex", gap: "10px" }}>
                                     <button
                                         type="button"
                                         onClick={handleResetCalculation}
-                                        style={{
-                                            padding: "8px 14px",
-                                            borderRadius: "6px",
-                                            border: "1px solid #444",
-                                            backgroundColor: "#242424",
-                                            color: "#ddd",
-                                            fontSize: "12px",
-                                            fontWeight: "bold",
-                                            cursor: "pointer"
-                                        }}
+                                        style={{ padding: "8px 12px", borderRadius: "6px", border: "1px solid #444", backgroundColor: "#252525", color: "#fff", cursor: "pointer", fontSize: "12px" }}
                                     >
                                         Zurücksetzen
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={handlePrintSummary}
+                                        style={{ padding: "8px 12px", borderRadius: "6px", border: "1px solid #444", backgroundColor: "#252525", color: "#fff", cursor: "pointer", fontSize: "12px" }}
+                                    >
+                                        Drucken
                                     </button>
                                 </div>
                             </div>
 
-                            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: "14px" }}>
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: "16px", marginBottom: "20px" }}>
                                 <div>
-                                    <label style={{ display: "block", fontSize: "12px", color: "#bbb", marginBottom: "6px" }}>
-                                        Laufmeter / Umfang (lfm)
-                                    </label>
+                                    <label style={{ display: "block", fontSize: "12px", color: "#bbb", marginBottom: "6px" }}>Laufmeter (lfm)</label>
                                     <input
                                         type="number"
                                         min="0"
-                                        step="1"
                                         value={lfm}
                                         onChange={(e) => setLfm(e.target.value)}
                                         style={{ width: "100%", padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444", boxSizing: "border-box" }}
                                     />
                                 </div>
-
                                 <div>
-                                    <label style={{ display: "block", fontSize: "12px", color: "#bbb", marginBottom: "6px" }}>
-                                        Material & Oberfläche
-                                    </label>
+                                    <label style={{ display: "block", fontSize: "12px", color: "#bbb", marginBottom: "6px" }}>Material / Oberfläche</label>
                                     <select
                                         value={materialType}
                                         onChange={(e) => setMaterialType(e.target.value)}
                                         style={{ width: "100%", padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
                                     >
-                                        {Object.entries(MATERIAL_FACTORS).map(([key, item]) => (
-                                            <option key={key} value={key}>{item.label}</option>
-                                        ))}
+                                        {Object.keys(MATERIAL_FACTORS).map((mat) => <option key={mat} value={mat}>{mat}</option>)}
                                     </select>
                                 </div>
-
                                 <div>
-                                    <label style={{ display: "block", fontSize: "12px", color: "#bbb", marginBottom: "6px" }}>
-                                        Montage & Bauart
-                                    </label>
+                                    <label style={{ display: "block", fontSize: "12px", color: "#bbb", marginBottom: "6px" }}>Montage / Ausführung</label>
                                     <select
                                         value={montageType}
                                         onChange={(e) => setMontageType(e.target.value)}
                                         style={{ width: "100%", padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
                                     >
-                                        {Object.entries(MONTAGE_FACTORS).map(([key, item]) => (
-                                            <option key={key} value={key}>{item.label}</option>
-                                        ))}
+                                        {Object.keys(MONTAGE_FACTORS).map((mon) => <option key={mon} value={mon}>{mon}</option>)}
                                     </select>
                                 </div>
-
                                 <div>
-                                    <label style={{ display: "block", fontSize: "12px", color: "#bbb", marginBottom: "6px" }}>
-                                        Eigenmittel-Anteil ({eigenmittelQuote}%)
-                                    </label>
+                                    <label style={{ display: "block", fontSize: "12px", color: "#bbb", marginBottom: "6px" }}>Eigenmittelquote (%)</label>
                                     <input
-                                        type="range"
+                                        type="number"
                                         min="0"
                                         max="100"
-                                        step="5"
                                         value={eigenmittelQuote}
-                                        onChange={(e) => setEigenmittelQuote(Number(e.target.value))}
-                                        style={{ width: "100%", accentColor: "#e62b2b" }}
+                                        onChange={(e) => setEigenmittelQuote(e.target.value)}
+                                        style={{ width: "100%", padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444", boxSizing: "border-box" }}
                                     />
                                 </div>
                             </div>
 
-                            {/* ERGEBNIS-KARTEN */}
-                            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: "12px" }}>
-                                <div style={{ backgroundColor: "#222", padding: "14px", borderRadius: "8px", borderLeft: "3px solid #e62b2b" }}>
-                                    <div style={{ fontSize: "12px", color: "#aaa" }}>Richtpreis Metallbau ({safeLfm} lfm)</div>
-                                    <div style={{ fontSize: "1.25rem", fontWeight: "bold", marginTop: "4px" }}>
-                                        CHF {estimatedMetalworkCost.toLocaleString("de-CH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                                    </div>
-                                    <div style={{ fontSize: "11px", color: "#bbb", marginTop: "2px" }}>
-                                        ca. CHF {effectiveRatePerLfm.toFixed(2)} / lfm
-                                    </div>
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "14px", backgroundColor: "#141414", padding: "16px", borderRadius: "8px" }}>
+                                <div>
+                                    <div style={{ fontSize: "12px", color: "#aaa" }}>Richtpreis / lfm</div>
+                                    <div style={{ fontSize: "1.2rem", fontWeight: "bold" }}>CHF {effectiveRatePerLfm.toFixed(2)}</div>
                                 </div>
-
-                                <div style={{ backgroundColor: "#222", padding: "14px", borderRadius: "8px", borderLeft: "3px solid #2ecc71" }}>
+                                <div>
+                                    <div style={{ fontSize: "12px", color: "#aaa" }}>Geschätzter Metallbau-Preis</div>
+                                    <div style={{ fontSize: "1.2rem", fontWeight: "bold", color: "#2ecc71" }}>CHF {estimatedMetalworkCost.toFixed(2)}</div>
+                                </div>
+                                <div>
                                     <div style={{ fontSize: "12px", color: "#aaa" }}>Eigenmittel ({eigenmittelQuote}%)</div>
-                                    <div style={{ fontSize: "1.25rem", fontWeight: "bold", marginTop: "4px" }}>
-                                        CHF {estimatedEigenmittel.toLocaleString("de-CH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                                    </div>
-                                    <div style={{ fontSize: "11px", color: "#bbb", marginTop: "2px" }}>
-                                        Fremdkapital: CHF {estimatedFremdkapital.toFixed(0)}
-                                    </div>
+                                    <div style={{ fontSize: "1.2rem", fontWeight: "bold" }}>CHF {estimatedEigenmittel.toFixed(2)}</div>
                                 </div>
-
-                                <div style={{ backgroundColor: "#222", padding: "14px", borderRadius: "8px", borderLeft: "3px solid #f39c12" }}>
-                                    <div style={{ fontSize: "12px", color: "#aaa" }}>Kalk. Jahreszins ({zinssatz}%)</div>
-                                    <div style={{ fontSize: "1.25rem", fontWeight: "bold", marginTop: "4px" }}>
-                                        CHF {estimatedYearlyInterest.toLocaleString("de-CH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                                    </div>
-                                    <div style={{ fontSize: "11px", color: "#bbb", marginTop: "2px" }}>
-                                        Kanton {canton} • {qm} m²
+                                <div>
+                                    <div style={{ fontSize: "12px", color: "#aaa" }}>Fremdkapital / Zins ({zinssatz}%)</div>
+                                    <div style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
+                                        CHF {estimatedFremdkapital.toFixed(2)} <span style={{ fontSize: "12px", color: "#aaa" }}>(~CHF {estimatedYearlyInterest.toFixed(0)}/J)</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* BESTEHENDER IMMOBILIEN-KALKULATOR */}
                         <Calculator
                             qm={qm}
                             setQm={setQm}
@@ -1139,28 +1183,15 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                             setCanton={setCanton}
                             zinssatz={zinssatz}
                             setZinssatz={setZinssatz}
-                            onSendEmail={sendEmailCalc}
+                            onSendCalculation={sendEmailCalc}
                         />
 
-                        {/* DIREKT-BUCHUNG & OFFERTANFRAGE */}
                         <form
                             onSubmit={handleDirectReservation}
-                            style={{
-                                backgroundColor: "#191919",
-                                border: "1px solid #2c2c2c",
-                                borderRadius: "10px",
-                                padding: "24px",
-                                display: "grid",
-                                gap: "14px"
-                            }}
+                            style={{ backgroundColor: "#1a1a1a", border: "1px solid #2e2e2e", borderRadius: "10px", padding: "24px", display: "grid", gap: "14px" }}
                         >
-                            <h3 style={{ margin: 0, fontSize: "1.3rem" }}>{t.bookingTitle}</h3>
+                            <h3 style={{ margin: 0 }}>{t.bookingTitle}</h3>
                             <p style={{ margin: 0, color: "#bbb", fontSize: "14px" }}>{t.bookingSub}</p>
-
-                            <div style={{ fontSize: "12px", color: "#ccc", backgroundColor: "#222", padding: "10px 14px", borderRadius: "6px" }}>
-                                <strong>Auswahl:</strong> {selectedPropertyType} • {selectedService} ({activeGewerk.bkp}) • {locationInput}
-                                {selectedTender ? ` • Ausschreibung ${selectedTender}` : ""}
-                            </div>
 
                             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "12px" }}>
                                 <input
@@ -1169,8 +1200,7 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                                     placeholder={t.namePlaceholder}
                                     value={companyName}
                                     onChange={(e) => setCompanyName(e.target.value)}
-                                    required
-                                    style={{ padding: "11px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444", scrollMarginTop: "120px" }}
+                                    style={{ padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
                                 />
                                 <input
                                     type="email"
@@ -1178,55 +1208,20 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
-                                    style={{ padding: "11px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
+                                    style={{ padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
                                 />
-
-                                <input
-                                    type="text"
-                                    placeholder={t.standort}
-                                    value={locationInput}
-                                    onChange={(e) => setLocationInput(e.target.value)}
-                                    required
-                                    style={{ padding: "11px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
-                                />
-
-
-                                <input
-                                    type="date"
-                                    aria-label={t.terminWunsch}
-                                    value={visitDate}
-                                    onChange={(e) => setVisitDate(e.target.value)}
-                                    style={{ padding: "11px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
-                                />
-                                <input
-                                    type="time"
-                                    aria-label="Wunschzeit"
-                                    value={visitTime}
-                                    onChange={(e) => setVisitTime(e.target.value)}
-                                    style={{ padding: "11px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
-                                />
-                                <select
-                                    aria-label="Zeitfenster"
-                                    value={visitSlot}
-                                    onChange={(e) => setVisitSlot(e.target.value)}
-                                    style={{ padding: "11px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
-                                >
-                                    <option value="">Zeitfenster (optional)</option>
-                                    <option value="Vormittag (08:00–12:00)">Vormittag (08:00–12:00)</option>
-                                    <option value="Nachmittag (13:00–17:00)">Nachmittag (13:00–17:00)</option>
-                                    <option value="Nach Vereinbarung">Nach Vereinbarung</option>
-                                </select>
-
-
-
-
-
                                 <input
                                     type="tel"
                                     placeholder={t.phonePlaceholder}
                                     value={phone}
                                     onChange={(e) => setPhone(e.target.value)}
-                                    style={{ padding: "11px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
+                                    style={{ padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
+                                />
+                                <input
+                                    type="time"
+                                    value={visitTime}
+                                    onChange={(e) => setVisitTime(e.target.value)}
+                                    style={{ padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
                                 />
                             </div>
 
@@ -1235,58 +1230,132 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                                 placeholder={t.projektDetails}
                                 value={projectNotes}
                                 onChange={(e) => setProjectNotes(e.target.value)}
-                                style={{ padding: "11px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444", resize: "vertical" }}
+                                style={{ padding: "10px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444", resize: "vertical" }}
                             />
 
-                            {authMode === "register" && (
-                                <label
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: "8px",
-                                        fontSize: "13px",
-                                        color: "#ccc",
-                                        cursor: "pointer"
-                                    }}
-                                >
-                                    <input
-                                        type="checkbox"
-                                        checked={privacyAccepted}
-                                        onChange={(e) => setprivacyAccepted(e.target.checked)}
-                                        style={{ width: "16px", height: "16px", cursor: "pointer" }}
-                                    />
-                                    <span>Ich akzeptiere die Datenschutzerklärung.</span>
-                                </label>
-                            )}
-
-                            {authError && <div style={{ color: "#ff7b7b", fontSize: "13px" }}>{authError}</div>}
-                            {authSuccess && <div style={{ color: "#2ecc71", fontSize: "13px" }}>{authSuccess}</div>}
-
-
-
-
-                            {submitError && <div style={{ color: "#ff7b7b", fontSize: "13px" }}>{submitError}</div>}
-                            {bookingSubmitted && <div style={{ color: "#2ecc71", fontSize: "13px" }}>{t.bookingSuccess}</div>}
+                            {bookingSubmitted && <div style={{ color: "#2ecc71", fontSize: "14px" }}>{t.bookingSuccess}</div>}
+                            {submitError && <div style={{ color: "#ff7b7b", fontSize: "14px" }}>{submitError}</div>}
 
                             <div>
                                 <button
                                     type="submit"
                                     disabled={isSending}
                                     style={{
-                                        padding: "12px 24px",
+                                        padding: "12px 20px",
                                         borderRadius: "6px",
                                         border: "none",
                                         backgroundColor: "#e62b2b",
                                         color: "#fff",
                                         fontWeight: "bold",
-                                        cursor: isSending ? "not-allowed" : "pointer",
-                                        opacity: isSending ? 0.7 : 1
+                                        cursor: isSending ? "not-allowed" : "pointer"
                                     }}
                                 >
                                     {isSending ? "Wird gesendet..." : t.bookingSubmit}
                                 </button>
                             </div>
                         </form>
+                    </div>
+                )}
+
+                {/* ABOUT ME & LOGIN-KONTO ANSICHT */}
+                {activeTab === "aboutme" && (
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "20px" }}>
+                        <div style={{ backgroundColor: "#1a1a1a", border: "1px solid #2e2e2e", borderRadius: "10px", padding: "24px" }}>
+                            <div style={{ fontSize: "12px", color: "#e62b2b", fontWeight: "bold", marginBottom: "6px" }}>ABOUT ME</div>
+                            <h3 style={{ margin: "0 0 6px", fontSize: "1.4rem" }}>{ABOUT_ME_PROFILE.name}</h3>
+                            <div style={{ color: "#aaa", fontSize: "13px", marginBottom: "14px" }}>
+                                {ABOUT_ME_PROFILE.role} • {ABOUT_ME_PROFILE.location}
+                            </div>
+                            <p style={{ color: "#ddd", fontSize: "14px", lineHeight: 1.6, margin: "0 0 16px" }}>
+                                {ABOUT_ME_PROFILE.summary}
+                            </p>
+
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "18px" }}>
+                                {ABOUT_ME_PROFILE.skills.map((skill) => (
+                                    <span
+                                        key={skill}
+                                        style={{
+                                            fontSize: "12px",
+                                            padding: "5px 10px",
+                                            borderRadius: "999px",
+                                            backgroundColor: "#252525",
+                                            border: "1px solid #3a3a3a",
+                                            color: "#eee"
+                                        }}
+                                    >
+                                        {skill}
+                                    </span>
+                                ))}
+                            </div>
+
+                            <div style={{ display: "flex", gap: "14px", flexWrap: "wrap" }}>
+                                {ABOUT_ME_PROFILE.links.map((item) => (
+                                    <a
+                                        key={item.label}
+                                        href={item.url}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        style={{ color: "#e62b2b", fontWeight: "bold", fontSize: "13px", textDecoration: "none" }}
+                                    >
+                                        {item.label} →
+                                    </a>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div style={{ backgroundColor: "#1a1a1a", border: "1px solid #2e2e2e", borderRadius: "10px", padding: "24px" }}>
+                            <div style={{ fontSize: "12px", color: "#2ecc71", fontWeight: "bold", marginBottom: "6px" }}>LOGIN & KONTO-ANSICHT</div>
+                            <h3 style={{ margin: "0 0 12px", fontSize: "1.3rem" }}>
+                                {currentUser ? "Angemeldetes Kundenkonto" : "Kein Konto aktiv"}
+                            </h3>
+
+                            {currentUser ? (
+                                <div style={{ display: "grid", gap: "8px", fontSize: "14px", color: "#ddd" }}>
+                                    <div><strong>Firma / Name:</strong> {currentUser.firmaOderName}</div>
+                                    <div><strong>Kundentyp:</strong> {currentUser.kundenTyp}</div>
+                                    <div><strong>E-Mail:</strong> {currentUser.email}</div>
+                                    <div><strong>Objekt:</strong> {currentUser.immobilienObjekt || "Nicht hinterlegt"}</div>
+                                    <div style={{ display: "flex", gap: "10px", marginTop: "12px" }}>
+                                        <button
+                                            type="button"
+                                            onClick={() => setActiveTab("rechner")}
+                                            style={{ padding: "9px 14px", borderRadius: "6px", border: "none", backgroundColor: "#e62b2b", color: "#fff", fontWeight: "bold", cursor: "pointer", fontSize: "13px" }}
+                                        >
+                                            Zum Kalkulator
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={handleLogout}
+                                            style={{ padding: "9px 14px", borderRadius: "6px", border: "1px solid #444", backgroundColor: "#252525", color: "#fff", cursor: "pointer", fontSize: "13px" }}
+                                        >
+                                            {t.logoutBtn}
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div style={{ display: "grid", gap: "12px", fontSize: "14px", color: "#bbb" }}>
+                                    <p style={{ margin: 0 }}>
+                                        Melden Sie sich mit Ihrem Konto an oder registrieren Sie ein neues Kunden- & Immobilienprofil.
+                                    </p>
+                                    <div style={{ display: "flex", gap: "10px" }}>
+                                        <button
+                                            type="button"
+                                            onClick={() => openAuthModal("login")}
+                                            style={{ padding: "10px 16px", borderRadius: "6px", border: "none", backgroundColor: "#e62b2b", color: "#fff", fontWeight: "bold", cursor: "pointer", fontSize: "13px" }}
+                                        >
+                                            Login öffnen
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => openAuthModal("register")}
+                                            style={{ padding: "10px 16px", borderRadius: "6px", border: "1px solid #444", backgroundColor: "#252525", color: "#fff", cursor: "pointer", fontSize: "13px" }}
+                                        >
+                                            Registrieren
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 )}
             </div>
