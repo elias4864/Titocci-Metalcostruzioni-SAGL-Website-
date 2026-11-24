@@ -101,7 +101,7 @@ const ImmobilienPortal = ({ lang = "de" }) => {
     });
     const [showAuthModal, setShowAuthModal] = useState(false);
     const [authMode, setAuthMode] = useState("login");
-    const[privacyAccepted,setprivacyAccepted]=useState(false);
+    const[privacyAccepted, setprivacyAccepted]=useState(false);
     const [kundenTyp, setKundenTyp] = useState("Immobilienverwaltung");
     const [firmaOderName, setFirmaOderName] = useState("");
     const [immobilienObjekt, setImmobilienObjekt] = useState("");
@@ -110,6 +110,7 @@ const ImmobilienPortal = ({ lang = "de" }) => {
     const [authPasswordConfirm, setAuthPasswordConfirm] = useState("");
     const [authError, setAuthError] = useState("");
     const [authSuccess, setAuthSuccess] = useState("");
+    const[visitSlot, setVisitSlot]=useState(false);
 
     // Navigation & Filter States
     const [activeTab, setActiveTab] = useState("ausschreibungen");
@@ -118,6 +119,7 @@ const ImmobilienPortal = ({ lang = "de" }) => {
     const [locationInput, setLocationInput] = useState("Avegno / Vallemaggia");
     const [visitDate, setVisitDate] = useState("");
     const [selectedTender, setSelectedTender] = useState(null);
+    const [visitTime, setVisitTime] = useState("");
 
     // Metallbau-, Immobilien- & Kalkulations-States
     const [lfm, setLfm] = useState(45);
@@ -170,6 +172,7 @@ const ImmobilienPortal = ({ lang = "de" }) => {
         setAuthMode(mode);
         setAuthError("");
         setAuthSuccess("");
+        setprivacyAccepted(false);
         setShowAuthModal(true);
     };
 
@@ -221,6 +224,12 @@ const ImmobilienPortal = ({ lang = "de" }) => {
             }
             if (storedUsers.some((u) => u.email === cleanEmail)) {
                 setAuthError("Für diese E-Mail existiert bereits ein Konto.");
+                return;
+            }
+
+
+            if(!privacyAccepted){
+                setAuthError("Bitte akzeptiere die Datenschutzerklärung!");
                 return;
             }
 
@@ -1182,8 +1191,6 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                                 />
 
 
-
-
                                 <input
                                     type="date"
                                     aria-label={t.terminWunsch}
@@ -1191,6 +1198,29 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                                     onChange={(e) => setVisitDate(e.target.value)}
                                     style={{ padding: "11px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
                                 />
+                                <input
+                                    type="time"
+                                    aria-label="Wunschzeit"
+                                    value={visitTime}
+                                    onChange={(e) => setVisitTime(e.target.value)}
+                                    style={{ padding: "11px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
+                                />
+                                <select
+                                    aria-label="Zeitfenster"
+                                    value={visitSlot}
+                                    onChange={(e) => setVisitSlot(e.target.value)}
+                                    style={{ padding: "11px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444" }}
+                                >
+                                    <option value="">Zeitfenster (optional)</option>
+                                    <option value="Vormittag (08:00–12:00)">Vormittag (08:00–12:00)</option>
+                                    <option value="Nachmittag (13:00–17:00)">Nachmittag (13:00–17:00)</option>
+                                    <option value="Nach Vereinbarung">Nach Vereinbarung</option>
+                                </select>
+
+
+
+
+
                                 <input
                                     type="tel"
                                     placeholder={t.phonePlaceholder}
@@ -1208,32 +1238,32 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                                 style={{ padding: "11px", borderRadius: "6px", backgroundColor: "#262626", color: "#fff", border: "1px solid #444", resize: "vertical" }}
                             />
 
+                            {authMode === "register" && (
+                                <label
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "8px",
+                                        fontSize: "13px",
+                                        color: "#ccc",
+                                        cursor: "pointer"
+                                    }}
+                                >
+                                    <input
+                                        type="checkbox"
+                                        checked={privacyAccepted}
+                                        onChange={(e) => setprivacyAccepted(e.target.checked)}
+                                        style={{ width: "16px", height: "16px", cursor: "pointer" }}
+                                    />
+                                    <span>Ich akzeptiere die Datenschutzerklärung.</span>
+                                </label>
+                            )}
 
-                            <label
-                                style={{
-                                    display: "flex",
-                                    alignItems: "flex-start",
-                                    gap: "10px",
-                                    fontSize: "13px",
-                                    color: "#ccc",
-                                    cursor: "pointer"
-                                }}
-                            >
-                                <input
-                                    type="checkbox"
-                                    checked={privacyAccepted}
-                                    onChange={(e) => setPrivacyAccepted(e.target.checked)}
-                                    required
-                                    style={{ marginTop: "3px", accentColor: "#e62b2b", cursor: "pointer" }}
-                                />
-                                <span>
-                                    Ich stimme der Verarbeitung meiner Angaben gemäss der{" "}
-                                    <Link to="/privacy" style={{ color: "#e62b2b", textDecoration: "underline" }}>
-                                        Datenschutzerklärung
-                                    </Link>{" "}
-                                    zur Bearbeitung meiner Anfrage zu. *
-                                </span>
-                            </label>
+                            {authError && <div style={{ color: "#ff7b7b", fontSize: "13px" }}>{authError}</div>}
+                            {authSuccess && <div style={{ color: "#2ecc71", fontSize: "13px" }}>{authSuccess}</div>}
+
+
+
 
                             {submitError && <div style={{ color: "#ff7b7b", fontSize: "13px" }}>{submitError}</div>}
                             {bookingSubmitted && <div style={{ color: "#2ecc71", fontSize: "13px" }}>{t.bookingSuccess}</div>}

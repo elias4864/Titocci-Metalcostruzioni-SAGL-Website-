@@ -347,10 +347,7 @@ export default function HousePriceCalculator() {
             return;
         }
 
-        if(!phone.length<8 || phone.length===0){
-            alert("Die Telefonnummer ist zu kurz oder ungültig bitte eine gültige eingeben!");
-            return;
-        }
+      
 
 
 
