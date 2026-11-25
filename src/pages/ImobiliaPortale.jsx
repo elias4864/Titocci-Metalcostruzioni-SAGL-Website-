@@ -9,7 +9,9 @@ import {
     CheckCircle2,
     AlertCircle,
     Eye,
-    EyeOff
+    EyeOff,
+    Lock,
+    ShieldCheck
 } from "lucide-react";
 import emailjs from "@emailjs/browser";
 
@@ -68,6 +70,82 @@ const ABOUT_ME_PROFILE = {
     ]
 };
 
+/**
+ * Reine Frontend-Protected-Route (kein Backend):
+ * Prüft `user` und optional `allowedTypes` im Client-State.
+ */
+const ProtectedRoute = ({ user, allowedTypes = [], onRequireAuth, children }) => {
+    const isAuthenticated = Boolean(user && user.email);
+    const isAuthorized =
+        isAuthenticated &&
+        (allowedTypes.length === 0 || allowedTypes.includes(user.kundenTyp));
+
+    if (isAuthorized) {
+        return <>{children}</>;
+    }
+
+    return (
+        <section
+            aria-label="Geschützter Bereich"
+            style={{
+                maxWidth: "960px",
+                margin: "24px auto",
+                padding: "28px 20px",
+                borderRadius: "10px",
+                backgroundColor: "#1a1a1a",
+                border: "1px solid #2e2e2e",
+                textAlign: "center"
+            }}
+        >
+            <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "44px", height: "44px", borderRadius: "50%", backgroundColor: "rgba(230, 43, 43, 0.15)", marginBottom: "12px" }}>
+                <Lock size={20} color="#ff6b6b" />
+            </div>
+            <h2 style={{ margin: "0 0 8px", fontSize: "1.2rem" }}>
+                {isAuthenticated ? "Fehlende Berechtigung für diesen Bereich" : "Geschützter Kunden- & Kalkulationsbereich"}
+            </h2>
+            <p style={{ margin: "0 auto 18px", maxWidth: "540px", color: "#bbb", fontSize: "14px", lineHeight: 1.5 }}>
+                {isAuthenticated
+                    ? `Ihr Konto (${user.kundenTyp}) ist für diese Ansicht nicht freigeschaltet.`
+                    : "Bitte melden Sie sich mit Ihrem Kundenkonto an oder registrieren Sie ein Konto, um Kalkulator, Richtpreise und Direkt-Buchung zu nutzen. (Hinweis: Ohne Backend erfolgt die Prüfung rein clientseitig.)"}
+            </p>
+            <div style={{ display: "flex", justifyContent: "center", gap: "10px", flexWrap: "wrap" }}>
+                <button
+                    type="button"
+                    onClick={() => onRequireAuth("login")}
+                    style={{
+                        padding: "10px 16px",
+                        borderRadius: "6px",
+                        border: "none",
+                        backgroundColor: "#e62b2b",
+                        color: "#fff",
+                        fontWeight: "bold",
+                        fontSize: "13px",
+                        cursor: "pointer"
+                    }}
+                >
+                    Jetzt einloggen
+                </button>
+                <button
+                    type="button"
+                    onClick={() => onRequireAuth("register")}
+                    style={{
+                        padding: "10px 16px",
+                        borderRadius: "6px",
+                        border: "1px solid #444",
+                        backgroundColor: "#242424",
+                        color: "#fff",
+                        fontWeight: "bold",
+                        fontSize: "13px",
+                        cursor: "pointer"
+                    }}
+                >
+                    Konto registrieren
+                </button>
+            </div>
+        </section>
+    );
+};
+
 const ImmobilienPortal = ({ lang = "de" }) => {
     const translations = {
         de: {
@@ -102,6 +180,9 @@ const ImmobilienPortal = ({ lang = "de" }) => {
         }
     });
 
+    // Optional: Schalter für Frontend-Route-Schutz (standardmäßig aktiv)
+    const [protectPrivateSections, setProtectPrivateSections] = useState(true);
+
     const [showAuthModal, setShowAuthModal] = useState(false);
     const [authMode, setAuthMode] = useState("login"); // "login" | "register" | "reset"
     const [privacyAccepted, setPrivacyAccepted] = useState(false);
@@ -116,7 +197,6 @@ const ImmobilienPortal = ({ lang = "de" }) => {
     const [resetNewPassword, setResetNewPassword] = useState("");
     const [resetConfirmPassword, setResetConfirmPassword] = useState("");
 
-    // Sichtbarkeit (Auge-Toggle) für alle Passwortfelder
     const [showPasswordMap, setShowPasswordMap] = useState({
         auth: false,
         confirm: false,
@@ -544,112 +624,8 @@ const ImmobilienPortal = ({ lang = "de" }) => {
         );
     };
 
-    return (
-        <div style={{ backgroundColor: "#111111", color: "#ffffff", minHeight: "100vh", fontFamily: "sans-serif", paddingBottom: "48px" }}>
-            <header
-                style={{
-                    maxWidth: "960px",
-                    margin: "0 auto",
-                    padding: "16px 20px",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    borderBottom: "1px solid #262626"
-                }}
-            >
-                <div>
-                    <div style={{ fontSize: "11px", letterSpacing: "0.08em", color: "#ff6b6b" }}>{t.heroTag}</div>
-                    <h1 style={{ margin: "2px 0 0", fontSize: "1.35rem" }}>{t.heroTitle}</h1>
-                </div>
-
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    {currentUser ? (
-                        <>
-                            <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "#ddd" }}>
-                                <User size={15} color="#2ecc71" />
-                                {currentUser.firmaOderName}
-                            </span>
-                            <button
-                                type="button"
-                                onClick={handleLogout}
-                                style={{
-                                    padding: "7px 12px",
-                                    borderRadius: "6px",
-                                    border: "1px solid #444",
-                                    backgroundColor: "#222",
-                                    color: "#fff",
-                                    fontSize: "12px",
-                                    cursor: "pointer"
-                                }}
-                            >
-                                {t.logoutBtn}
-                            </button>
-                        </>
-                    ) : (
-                        <button
-                            type="button"
-                            onClick={() => openAuthModal("login")}
-                            style={{
-                                display: "inline-flex",
-                                alignItems: "center",
-                                gap: "6px",
-                                padding: "8px 14px",
-                                borderRadius: "6px",
-                                border: "none",
-                                backgroundColor: "#e62b2b",
-                                color: "#fff",
-                                fontSize: "13px",
-                                fontWeight: "bold",
-                                cursor: "pointer"
-                            }}
-                        >
-                            <User size={15} />
-                            <span>{t.loginBtn}</span>
-                        </button>
-                    )}
-                </div>
-            </header>
-
-            <section
-                aria-label="Profil Person"
-                style={{
-                    maxWidth: "960px",
-                    margin: "24px auto",
-                    padding: "20px",
-                    borderRadius: "10px",
-                    backgroundColor: "#1a1a1a",
-                    border: "1px solid #2e2e2e"
-                }}
-            >
-                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
-                    <User size={20} color="#e62b2b" />
-                    <strong>{ABOUT_ME_PROFILE.name}</strong>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#ccc", fontSize: "14px", marginBottom: "6px" }}>
-                    <Briefcase size={16} />
-                    <span>{ABOUT_ME_PROFILE.role}</span>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#aaa", fontSize: "14px", marginBottom: "12px" }}>
-                    <MapPin size={16} />
-                    <span>{ABOUT_ME_PROFILE.location}</span>
-                </div>
-                <p style={{ margin: "0 0 12px", color: "#ddd", fontSize: "14px" }}>{ABOUT_ME_PROFILE.summary}</p>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
-                    {ABOUT_ME_PROFILE.links.map((item) => (
-                        <a
-                            key={item.url}
-                            href={item.url}
-                            target="_blank"
-                            rel="noreferrer"
-                            style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "#ff6b6b", fontSize: "13px" }}
-                        >
-                            <span>{item.label}</span>
-                            <ExternalLink size={14} />
-                        </a>
-                    ))}
-                </div>
-            </section>
-
+    const privateContent = (
+        <>
             {/* Kalkulator */}
             <section
                 aria-label="Metallbau Kalkulator"
@@ -929,6 +905,147 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                     </div>
                 </form>
             </section>
+        </>
+    );
+
+    return (
+        <div style={{ backgroundColor: "#111111", color: "#ffffff", minHeight: "100vh", fontFamily: "sans-serif", paddingBottom: "48px" }}>
+            <header
+                style={{
+                    maxWidth: "960px",
+                    margin: "0 auto",
+                    padding: "16px 20px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    flexWrap: "wrap",
+                    gap: "12px",
+                    borderBottom: "1px solid #262626"
+                }}
+            >
+                <div>
+                    <div style={{ fontSize: "11px", letterSpacing: "0.08em", color: "#ff6b6b" }}>{t.heroTag}</div>
+                    <h1 style={{ margin: "2px 0 0", fontSize: "1.35rem" }}>{t.heroTitle}</h1>
+                </div>
+
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+                    <button
+                        type="button"
+                        onClick={() => setProtectPrivateSections((prev) => !prev)}
+                        style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "6px",
+                            padding: "7px 11px",
+                            borderRadius: "6px",
+                            border: "1px solid #3a3a3a",
+                            backgroundColor: protectPrivateSections ? "#232a25" : "#222",
+                            color: protectPrivateSections ? "#7be09c" : "#bbb",
+                            fontSize: "12px",
+                            cursor: "pointer"
+                        }}
+                        title="Clientseitigen Route-Schutz für Kalkulator & Buchung umschalten"
+                    >
+                        <ShieldCheck size={14} />
+                        <span>Route-Guard: {protectPrivateSections ? "AN" : "AUS"}</span>
+                    </button>
+
+                    {currentUser ? (
+                        <>
+                            <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "#ddd" }}>
+                                <User size={15} color="#2ecc71" />
+                                {currentUser.firmaOderName}
+                            </span>
+                            <button
+                                type="button"
+                                onClick={handleLogout}
+                                style={{
+                                    padding: "7px 12px",
+                                    borderRadius: "6px",
+                                    border: "1px solid #444",
+                                    backgroundColor: "#222",
+                                    color: "#fff",
+                                    fontSize: "12px",
+                                    cursor: "pointer"
+                                }}
+                            >
+                                {t.logoutBtn}
+                            </button>
+                        </>
+                    ) : (
+                        <button
+                            type="button"
+                            onClick={() => openAuthModal("login")}
+                            style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "6px",
+                                padding: "8px 14px",
+                                borderRadius: "6px",
+                                border: "none",
+                                backgroundColor: "#e62b2b",
+                                color: "#fff",
+                                fontSize: "13px",
+                                fontWeight: "bold",
+                                cursor: "pointer"
+                            }}
+                        >
+                            <User size={15} />
+                            <span>{t.loginBtn}</span>
+                        </button>
+                    )}
+                </div>
+            </header>
+
+            {/* Öffentlicher Profilbereich */}
+            <section
+                aria-label="Profil Person"
+                style={{
+                    maxWidth: "960px",
+                    margin: "24px auto",
+                    padding: "20px",
+                    borderRadius: "10px",
+                    backgroundColor: "#1a1a1a",
+                    border: "1px solid #2e2e2e"
+                }}
+            >
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
+                    <User size={20} color="#e62b2b" />
+                    <strong>{ABOUT_ME_PROFILE.name}</strong>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#ccc", fontSize: "14px", marginBottom: "6px" }}>
+                    <Briefcase size={16} />
+                    <span>{ABOUT_ME_PROFILE.role}</span>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#aaa", fontSize: "14px", marginBottom: "12px" }}>
+                    <MapPin size={16} />
+                    <span>{ABOUT_ME_PROFILE.location}</span>
+                </div>
+                <p style={{ margin: "0 0 12px", color: "#ddd", fontSize: "14px" }}>{ABOUT_ME_PROFILE.summary}</p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
+                    {ABOUT_ME_PROFILE.links.map((item) => (
+                        <a
+                            key={item.url}
+                            href={item.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "#ff6b6b", fontSize: "13px" }}
+                        >
+                            <span>{item.label}</span>
+                            <ExternalLink size={14} />
+                        </a>
+                    ))}
+                </div>
+            </section>
+
+            {/* Geschützter Bereich ohne Backend */}
+            {protectPrivateSections ? (
+                <ProtectedRoute user={currentUser} onRequireAuth={openAuthModal}>
+                    {privateContent}
+                </ProtectedRoute>
+            ) : (
+                privateContent
+            )}
 
             {/* Auth Modal */}
             {showAuthModal && (
