@@ -154,7 +154,8 @@ const ProtectedRoute = ({ user, allowedTypes = [], onRequireAuth, children }) =>
                         color: "#fff",
                         fontWeight: "bold",
                         fontSize: "13px",
-                        cursor: "pointer"
+                        cursor: "pointer",
+                        textShadow:"#5207c3"
                     }}
                 >
                     Jetzt einloggen
