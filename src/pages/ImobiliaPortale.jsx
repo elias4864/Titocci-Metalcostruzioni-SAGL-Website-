@@ -1,5 +1,16 @@
 import React, { useState, useRef, useEffect } from "react";
-import { User, Briefcase, MapPin, ExternalLink, Calculator, Send, CheckCircle2, AlertCircle } from "lucide-react";
+import {
+    User,
+    Briefcase,
+    MapPin,
+    ExternalLink,
+    Calculator,
+    Send,
+    CheckCircle2,
+    AlertCircle,
+    Eye,
+    EyeOff
+} from "lucide-react";
 import emailjs from "@emailjs/browser";
 
 const GEWERK_CONFIG = {
@@ -98,11 +109,29 @@ const ImmobilienPortal = ({ lang = "de" }) => {
     const [firmaOderName, setFirmaOderName] = useState("");
     const [immobilienObjekt, setImmobilienObjekt] = useState("");
     const [authEmail, setAuthEmail] = useState("");
+
     const [authPassword, setAuthPassword] = useState("");
     const [authPasswordConfirm, setAuthPasswordConfirm] = useState("");
     const [currentPasswordInput, setCurrentPasswordInput] = useState("");
     const [resetNewPassword, setResetNewPassword] = useState("");
     const [resetConfirmPassword, setResetConfirmPassword] = useState("");
+
+    // Sichtbarkeit (Auge-Toggle) für alle Passwortfelder
+    const [showPasswordMap, setShowPasswordMap] = useState({
+        auth: false,
+        confirm: false,
+        current: false,
+        resetNew: false,
+        resetConfirm: false
+    });
+
+    const togglePasswordVisibility = (fieldKey) => {
+        setShowPasswordMap((prev) => ({
+            ...prev,
+            [fieldKey]: !prev[fieldKey]
+        }));
+    };
+
     const [isResetSending, setIsResetSending] = useState(false);
     const [authError, setAuthError] = useState("");
     const [authSuccess, setAuthSuccess] = useState("");
@@ -241,6 +270,7 @@ const ImmobilienPortal = ({ lang = "de" }) => {
 
         setIsResetSending(true);
         let mailSent = false;
+        let mailWarning = "";
         try {
             if (EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && EMAILJS_PUBLIC_KEY) {
                 const now = new Date().toLocaleString("de-CH");
@@ -262,9 +292,12 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                     EMAILJS_PUBLIC_KEY
                 );
                 mailSent = true;
+            } else {
+                mailWarning = " (Hinweis: EmailJS-Keys fehlen in den Umgebungsvariablen – Bestätigungs-E-Mail wurde nicht versendet.)";
             }
         } catch (error) {
             console.error("Fehler beim Senden der Passwort-Reset-E-Mail:", error);
+            mailWarning = " (Bestätigungs-E-Mail konnte nicht gesendet werden.)";
         } finally {
             setIsResetSending(false);
         }
@@ -277,7 +310,7 @@ const ImmobilienPortal = ({ lang = "de" }) => {
         setAuthSuccess(
             mailSent
                 ? `Passwort geändert! Eine Bestätigung wurde an ${cleanEmail} gesendet.`
-                : "Passwort erfolgreich geändert. Du kannst dich jetzt einloggen."
+                : `Passwort erfolgreich geändert. Du kannst dich jetzt einloggen.${mailWarning}`
         );
         setAuthMode("login");
     };
@@ -457,11 +490,58 @@ const ImmobilienPortal = ({ lang = "de" }) => {
         boxSizing: "border-box"
     };
 
+    const passwordInputStyle = {
+        ...inputStyle,
+        paddingRight: "40px"
+    };
+
+    const eyeBtnStyle = {
+        position: "absolute",
+        right: "8px",
+        top: "50%",
+        transform: "translateY(-50%)",
+        background: "none",
+        border: "none",
+        color: "#bbb",
+        cursor: "pointer",
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "4px"
+    };
+
     const labelStyle = {
         display: "block",
         fontSize: "12px",
         color: "#bbb",
         marginBottom: "6px"
+    };
+
+    const renderPasswordInput = ({ id, value, onChange, fieldKey, placeholder = "", required = false }) => {
+        const isVisible = Boolean(showPasswordMap[fieldKey]);
+        return (
+            <div style={{ position: "relative" }}>
+                <input
+                    id={id}
+                    type={isVisible ? "text" : "password"}
+                    required={required}
+                    value={value}
+                    onChange={onChange}
+                    placeholder={placeholder}
+                    style={passwordInputStyle}
+                />
+                <button
+                    type="button"
+                    onClick={() => togglePasswordVisibility(fieldKey)}
+                    onMouseDown={(e) => e.preventDefault()}
+                    aria-label={isVisible ? "Passwort verbergen" : "Passwort anzeigen"}
+                    title={isVisible ? "Passwort verbergen" : "Passwort anzeigen"}
+                    style={eyeBtnStyle}
+                >
+                    {isVisible ? <EyeOff size={17} /> : <Eye size={17} />}
+                </button>
+            </div>
+        );
     };
 
     return (
@@ -973,8 +1053,9 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                         {authMode === "reset" ? (
                             <form onSubmit={handlePasswordReset} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                                 <div>
-                                    <label style={labelStyle}>E-Mail-Adresse</label>
+                                    <label htmlFor="reset-email" style={labelStyle}>E-Mail-Adresse</label>
                                     <input
+                                        id="reset-email"
                                         type="email"
                                         required
                                         value={authEmail}
@@ -984,34 +1065,34 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                                     />
                                 </div>
                                 <div>
-                                    <label style={labelStyle}>Aktuelles Passwort</label>
-                                    <input
-                                        type="password"
-                                        required
-                                        value={currentPasswordInput}
-                                        onChange={(e) => setCurrentPasswordInput(e.target.value)}
-                                        style={inputStyle}
-                                    />
+                                    <label htmlFor="reset-current-pw" style={labelStyle}>Aktuelles Passwort</label>
+                                    {renderPasswordInput({
+                                        id: "reset-current-pw",
+                                        value: currentPasswordInput,
+                                        onChange: (e) => setCurrentPasswordInput(e.target.value),
+                                        fieldKey: "current",
+                                        required: true
+                                    })}
                                 </div>
                                 <div>
-                                    <label style={labelStyle}>Neues Passwort (min. 8 Zeichen)</label>
-                                    <input
-                                        type="password"
-                                        required
-                                        value={resetNewPassword}
-                                        onChange={(e) => setResetNewPassword(e.target.value)}
-                                        style={inputStyle}
-                                    />
+                                    <label htmlFor="reset-new-pw" style={labelStyle}>Neues Passwort (min. 8 Zeichen)</label>
+                                    {renderPasswordInput({
+                                        id: "reset-new-pw",
+                                        value: resetNewPassword,
+                                        onChange: (e) => setResetNewPassword(e.target.value),
+                                        fieldKey: "resetNew",
+                                        required: true
+                                    })}
                                 </div>
                                 <div>
-                                    <label style={labelStyle}>Neues Passwort bestätigen</label>
-                                    <input
-                                        type="password"
-                                        required
-                                        value={resetConfirmPassword}
-                                        onChange={(e) => setResetConfirmPassword(e.target.value)}
-                                        style={inputStyle}
-                                    />
+                                    <label htmlFor="reset-confirm-pw" style={labelStyle}>Neues Passwort bestätigen</label>
+                                    {renderPasswordInput({
+                                        id: "reset-confirm-pw",
+                                        value: resetConfirmPassword,
+                                        onChange: (e) => setResetConfirmPassword(e.target.value),
+                                        fieldKey: "resetConfirm",
+                                        required: true
+                                    })}
                                 </div>
                                 <button
                                     type="submit"
@@ -1027,7 +1108,7 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                                         marginTop: "4px"
                                     }}
                                 >
-                                    {isResetSending ? "Wird gespeichert..." : "Passwort aktualisieren"}
+                                    {isResetSending ? "Wird gespeichert & gesendet..." : "Passwort aktualisieren & E-Mail senden"}
                                 </button>
                             </form>
                         ) : (
@@ -1079,26 +1160,26 @@ const ImmobilienPortal = ({ lang = "de" }) => {
 
                                 <div>
                                     <label style={labelStyle}>Passwort *</label>
-                                    <input
-                                        type="password"
-                                        required
-                                        value={authPassword}
-                                        onChange={(e) => setAuthPassword(e.target.value)}
-                                        style={inputStyle}
-                                    />
+                                    {renderPasswordInput({
+                                        id: "auth-pw",
+                                        value: authPassword,
+                                        onChange: (e) => setAuthPassword(e.target.value),
+                                        fieldKey: "auth",
+                                        required: true
+                                    })}
                                 </div>
 
                                 {authMode === "register" && (
                                     <>
                                         <div>
                                             <label style={labelStyle}>Passwort bestätigen *</label>
-                                            <input
-                                                type="password"
-                                                required
-                                                value={authPasswordConfirm}
-                                                onChange={(e) => setAuthPasswordConfirm(e.target.value)}
-                                                style={inputStyle}
-                                            />
+                                            {renderPasswordInput({
+                                                id: "auth-pw-confirm",
+                                                value: authPasswordConfirm,
+                                                onChange: (e) => setAuthPasswordConfirm(e.target.value),
+                                                fieldKey: "confirm",
+                                                required: true
+                                            })}
                                         </div>
 
                                         <label style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px", color: "#ccc", cursor: "pointer" }}>
