@@ -920,6 +920,9 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                 </div>
             </section>
 
+
+
+
             <section aria-label="Direkt-Buchung" style={cardStyle}>
                 <h2 style={{ margin: "0 0 6px", fontSize: "1.15rem" }}>{t.bookingTitle}</h2>
                 <p style={{ margin: "0 0 18px", color: "#bbb", fontSize: "14px" }}>{t.bookingSub}</p>
@@ -1196,7 +1199,7 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                                     : "Login"}
                         </h2>
 
-                        <div style={{ display: "flex", gap: "8px", marginBottom: "14px" }}>
+                        <div style={{ display: "flex", gap: "8px", marginBottom: "14px",color:'red' }}>
                             <button type="button" onClick={() => setAuthMode("login")}>Login</button>
                             <button type="button" onClick={() => setAuthMode("register")}>Registrieren</button>
                             <button type="button" onClick={() => setAuthMode("reset")}>Passwort</button>
@@ -1253,7 +1256,34 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                                             onChange={(e) => setFirmaOderName(e.target.value)}
                                             placeholder="Firma oder Name"
                                             style={inputStyle}
+                                            onFocus={companyInputRef}
+
                                         />
+
+                                        <div>
+                                            <label htmlFor="booking-type" style={labelStyle}>Art des Termins</label>
+                                            <select
+                                                id="booking-type"
+                                                value={bookingType}
+                                                onChange={(e) => setBookingType(e.target.value)}
+                                                style={inputStyle}
+                                            >
+                                                <option value="Aufmass vor Ort">Aufmass vor Ort</option>
+                                                <option value="Technische Beratung">Technische Beratung vor Ort</option>
+                                                <option value="Sanierungs-Check">Sanierungs- &amp; Machbarkeits-Check</option>
+                                            </select>
+                                        </div>
+
+                                        <label htmlFor="booking-ref" style={labelStyle}>Objekt- / Dossier-Nr. (optional)</label>
+                                        <input
+                                            id="booking-ref"
+                                            type="text"
+                                            value={dossierRef}
+                                            onChange={(e) => setDossierRef(e.target.value)}
+                                            placeholder="z.B. IM-2026-042"
+                                            style={inputStyle}
+                                        />
+
                                         <input
                                             type="text"
                                             value={immobilienObjekt}
