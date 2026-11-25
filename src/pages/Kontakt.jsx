@@ -395,6 +395,7 @@ function Contatti({ lang: externalLang }) {
                                                 type="time"
                                                 name="appointmentTime"
                                                 value={formData.appointmentTime}
+                                                placeholder="14:00"
                                                 onChange={handleChange}
                                                 required={formData.isAppointment}
                                                 style={{ width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }}

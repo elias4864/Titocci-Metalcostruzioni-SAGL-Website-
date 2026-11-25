@@ -38,9 +38,6 @@ const GROESSE = {
 };
 
 const MAX_PDF_BYTES = 10 * 1024 * 1024;
-const EMAILJS_SERVICE_ID = 'service_n9toe59';
-const EMAILJS_TEMPLATE_ID = 'template_mrshrnl';
-const EMAILJS_PUBLIC_KEY = 'dFpVpt98rEIko4TLa';
 
 const getGroesseCategory = (qmValue) => {
     if (qmValue <= 45) return GROESSE.small;
@@ -49,7 +46,40 @@ const getGroesseCategory = (qmValue) => {
     return GROESSE.extra_large;
 };
 
+const compressImageFile = (file, maxWidth = 400, quality = 0.5) =>
+    new Promise((resolve, reject) => {
+        const img = new Image();
+        const objectUrl = URL.createObjectURL(file);
+
+        img.onload = () => {
+            URL.revokeObjectURL(objectUrl);
+            const scale = Math.min(1, maxWidth / (img.width || maxWidth));
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.max(1, Math.round((img.width || maxWidth) * scale));
+            canvas.height = Math.max(1, Math.round((img.height || maxWidth) * scale));
+
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+                reject(new Error('Canvas-Kontext nicht verfügbar'));
+                return;
+            }
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+
+        img.onerror = (err) => {
+            URL.revokeObjectURL(objectUrl);
+            reject(err);
+        };
+
+        img.src = objectUrl;
+    });
+
 export default function HousePriceCalculator() {
+    const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || '';
+    const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || '';
+    const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || '';
+
     const [qm, setQm] = useState(75);
     const [canton, setCanton] = useState('ZH');
     const [location, setLocation] = useState('suburb');
@@ -59,9 +89,7 @@ export default function HousePriceCalculator() {
     const [zinssatz, setZinssatz] = useState(2.5);
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
-    const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || "";
-    const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || "";
-    const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || "";
+
     const [result, setResult] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
     const [isOpen, setIsOpen] = useState(true);
@@ -105,17 +133,22 @@ export default function HousePriceCalculator() {
         });
     };
 
-    const handleImageChange = (e) => {
+    const handleImageChange = async (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            if (typeof reader.result === 'string') {
-                setImagePreview(reader.result);
-            }
-        };
-        reader.readAsDataURL(file);
+        try {
+            const compressedDataUrl = await compressImageFile(file, 400, 0.5);
+            setImagePreview(compressedDataUrl);
+        } catch {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                if (typeof reader.result === 'string') {
+                    setImagePreview(reader.result);
+                }
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
     const handleRemoveImage = () => {
@@ -292,8 +325,20 @@ export default function HousePriceCalculator() {
         attachedImage,
         attachedPdfName
     ) => {
+        if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
+            alert('EmailJS ist nicht vollständig konfiguriert (VITE_EMAILJS_* Variablen prüfen).');
+            return;
+        }
+
         setIsSending(true);
         try {
+            const safeImageParam =
+                attachedImage && attachedImage.length <= 42000
+                    ? attachedImage
+                    : attachedImage
+                        ? 'Bild komprimiert (zu gross für E-Mail-Variable)'
+                        : 'Kein Bild angehängt';
+
             const templateParams = {
                 subject: 'Neue Immobilien-Berechnung von Titocci Metalcostruzioni',
                 from_email: email.trim(),
@@ -313,7 +358,7 @@ export default function HousePriceCalculator() {
                 ].join('\n'),
                 to_email: 'info@titocci.ch',
                 signup_date: new Date().toLocaleDateString('de-CH'),
-                image_url: attachedImage || 'Kein Bild angehängt',
+                image_url: safeImageParam,
                 pdf_filename: attachedPdfName || 'Kein PDF hochgeladen',
             };
 
@@ -328,7 +373,8 @@ export default function HousePriceCalculator() {
             );
         } catch (error) {
             console.error('Fehler beim E-Mail-Versand:', error);
-            alert('Beim Senden des Berichts ist ein Fehler aufgetreten.');
+            const detail = error?.text || error?.message || 'Unbekannter Fehler';
+            alert(`Beim Senden des Berichts ist ein Fehler aufgetreten: ${detail}`);
         } finally {
             setIsSending(false);
         }
@@ -338,7 +384,7 @@ export default function HousePriceCalculator() {
         e.preventDefault();
 
         const trimmedEmail = email.trim();
-        if (!qm || qm <= 0) {
+        if (!qm===10 || qm <= 0) {
             alert('Bitte gib eine gültige Wohnfläche ein.');
             return;
         }
@@ -347,6 +393,13 @@ export default function HousePriceCalculator() {
             focusEmailField();
             return;
         }
+
+        if(!personen===0){
+            alert("Gib bitte eine Person ein fü eine gültige Berechnung!");
+            return;
+        }
+
+
 
         const safeLocation = LOCATION_FACTORS[location] || LOCATION_FACTORS.suburb;
         const safeCanton = CANTON_FACTORS[canton] || CANTON_FACTORS.CH;
@@ -843,13 +896,13 @@ export default function HousePriceCalculator() {
 
                         <div>
                             <label
-                                htmlFor="zinsInput"
+                                htmlFor="zinssatzInput"
                                 style={{ display: 'block', marginBottom: '6px', fontWeight: 600, fontSize: '14px' }}
                             >
                                 Hypothekarzins (%):
                             </label>
                             <input
-                                id="zinsInput"
+                                id="zinssatzInput"
                                 type="number"
                                 step="0.05"
                                 min="0"
@@ -871,132 +924,85 @@ export default function HousePriceCalculator() {
                         type="submit"
                         disabled={isSending}
                         style={{
-                            backgroundColor: '#16a34a',
+                            backgroundColor: isSending ? '#94a3b8' : '#2563eb',
                             color: '#ffffff',
                             border: 'none',
-                            padding: '12px 16px',
-                            borderRadius: '8px',
+                            padding: '12px 18px',
+                            borderRadius: '10px',
                             fontWeight: 700,
                             fontSize: '15px',
                             cursor: isSending ? 'not-allowed' : 'pointer',
                         }}
                     >
-                        {isSending ? 'Wird berechnet & gesendet...' : 'Marktwert berechnen'}
+                        {isSending ? 'Wird berechnet & gesendet...' : 'Berechnen & Bericht senden'}
                     </button>
-
-                    {result && (
-                        <>
-                            <div
-                                ref={reportRef}
-                                style={{
-                                    padding: '16px',
-                                    borderRadius: '12px',
-                                    backgroundColor: '#ffffff',
-                                    border: '1px solid #cbd5e1',
-                                }}
-                            >
-                                <h3 style={{ margin: '0 0 8px', fontSize: '16px' }}>
-                                    Kurzgutachten ({result.date})
-                                </h3>
-                                <div style={{ fontSize: '20px', fontWeight: 700, color: '#15803d', marginBottom: '8px' }}>
-                                    {Math.round(result.totalPrice).toLocaleString('de-CH')} CHF
-                                    <span style={{ fontSize: '13px', fontWeight: 500, color: '#475569', marginLeft: '8px' }}>
-                                        ({Math.round(result.pricePerQm).toLocaleString('de-CH')} CHF / m²)
-                                    </span>
-                                </div>
-                                <div style={{ fontSize: '13px', color: '#334155', lineHeight: 1.5 }}>
-                                    <div>Objekt: {result.qm} m² ({result.groesseName}), Baujahr {result.year}</div>
-                                    <div>Region: {result.cantonName} – {result.locationName} ({result.conditionName})</div>
-                                    <div>Eigenkapital (20%): <strong>{Math.round(result.eigenkapital20).toLocaleString('de-CH')} CHF</strong></div>
-                                    <div>Monatlicher Zins ({result.zinssatz}%): <strong>~{Math.round(result.monatlicherZins).toLocaleString('de-CH')} CHF</strong></div>
-                                </div>
-                            </div>
-
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                                <button
-                                    type="button"
-                                    onClick={handleExportTxt}
-                                    style={{
-                                        backgroundColor: '#2563eb',
-                                        color: '#ffffff',
-                                        border: 'none',
-                                        padding: '8px 12px',
-                                        borderRadius: '6px',
-                                        cursor: 'pointer',
-                                        fontSize: '13px',
-                                        fontWeight: 600,
-                                    }}
-                                >
-                                    Als TXT speichern
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={handleExportCsv}
-                                    style={{
-                                        backgroundColor: '#0f766e',
-                                        color: '#ffffff',
-                                        border: 'none',
-                                        padding: '8px 12px',
-                                        borderRadius: '6px',
-                                        cursor: 'pointer',
-                                        fontSize: '13px',
-                                        fontWeight: 600,
-                                    }}
-                                >
-                                    Als CSV speichern
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={handleExportJson}
-                                    style={{
-                                        backgroundColor: '#475569',
-                                        color: '#ffffff',
-                                        border: 'none',
-                                        padding: '8px 12px',
-                                        borderRadius: '6px',
-                                        cursor: 'pointer',
-                                        fontSize: '13px',
-                                        fontWeight: 600,
-                                    }}
-                                >
-                                    Als JSON speichern
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={handleCopySummary}
-                                    style={{
-                                        backgroundColor: '#334155',
-                                        color: '#ffffff',
-                                        border: 'none',
-                                        padding: '8px 12px',
-                                        borderRadius: '6px',
-                                        cursor: 'pointer',
-                                        fontSize: '13px',
-                                        fontWeight: 600,
-                                    }}
-                                >
-                                    {copySuccess ? 'Kopiert!' : 'Kopieren'}
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={triggerPdfDownload}
-                                    style={{
-                                        backgroundColor: '#7c3aed',
-                                        color: '#ffffff',
-                                        border: 'none',
-                                        padding: '8px 12px',
-                                        borderRadius: '6px',
-                                        cursor: 'pointer',
-                                        fontSize: '13px',
-                                        fontWeight: 600,
-                                    }}
-                                >
-                                    PDF-Report
-                                </button>
-                            </div>
-                        </>
-                    )}
                 </form>
+            )}
+
+            {result && (
+                <div
+                    ref={reportRef}
+                    style={{
+                        marginTop: '24px',
+                        padding: '18px',
+                        borderRadius: '12px',
+                        backgroundColor: '#ffffff',
+                        border: '1px solid #cbd5e1',
+                    }}
+                >
+                    <h3 style={{ margin: '0 0 8px', fontSize: '17px' }}>
+                        Geschätzter Marktwert: {Math.round(result.totalPrice).toLocaleString('de-CH')} CHF
+                    </h3>
+                    <p style={{ margin: '0 0 12px', fontSize: '14px', color: '#475569' }}>
+                        ca. {Math.round(result.pricePerQm).toLocaleString('de-CH')} CHF / m² •{' '}
+                        {result.cantonName} • {result.locationName}
+                    </p>
+                    <div style={{ fontSize: '13px', color: '#334155', marginBottom: '14px' }}>
+                        <div>Eigenkapital (20%): {Math.round(result.eigenkapital20).toLocaleString('de-CH')} CHF</div>
+                        <div>
+                            Monatliche Zinsbelastung ({result.zinssatz}%): ~
+                            {Math.round(result.monatlicherZins).toLocaleString('de-CH')} CHF
+                        </div>
+                    </div>
+
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                        <button
+                            type="button"
+                            onClick={triggerPdfDownload}
+                            style={{ padding: '7px 12px', borderRadius: '7px', border: 'none', backgroundColor: '#2563eb', color: '#fff', fontSize: '12px', cursor: 'pointer' }}
+                        >
+                            PDF-Gutachten
+                        </button>
+                        <button
+                            type="button"
+                            onClick={handleExportTxt}
+                            style={{ padding: '7px 12px', borderRadius: '7px', border: '1px solid #cbd5e1', backgroundColor: '#752905', color: '#0f172a', fontSize: '12px', cursor: 'pointer' }}
+                        >
+                            TXT
+                        </button>
+                        <button
+                            type="button"
+                            onClick={handleExportCsv}
+                            style={{ padding: '7px 12px', borderRadius: '7px', border: '1px solid #cbd5e1', backgroundColor: '#3fd60d', color: '#f', fontSize: '12px', cursor: 'pointer' }}
+                        >
+                            CSV
+                        </button>
+                        <button
+                            type="button"
+                            onClick={handleExportJson}
+                            style={{ padding: '7px 12px', borderRadius: '7px', border: '1px solid #cbd5e1', backgroundColor: '#0d7ce8', color: '#0f172a', fontSize: '12px', cursor: 'pointer' }}
+                        >
+                            JSON
+                        </button>
+                        <button
+                            type="button"
+                            onClick={handleCopySummary}
+                            style={{ padding: '7px 12px', borderRadius: '7px', border: '1px solid #cbd5e1', backgroundColor: '#d80909', color: '#0f172a', fontSize: '12px', cursor: 'pointer' }}
+                        >
+                            {copySuccess ? 'Kopiert!' : 'Kopieren'}
+                        </button>
+                    </div>
+                </div>
             )}
         </div>
     );
