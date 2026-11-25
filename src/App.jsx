@@ -18,6 +18,7 @@ import Imobiliacalculatori from "./pages/ImobiliaCalculatori.jsx";
 import Privacy from "./pages/Privacy.jsx";
 import Impressumpage from "./pages/Impressum.jsx";
 import Avegno from "./pages/Avegno.jsx";
+import { useAuth, ProtectedRoute } from "./main.jsx";
 
 import Locarno from "./pages/Locarno.jsx";
 import SEO from './pages/SEO.jsx';
@@ -247,6 +248,7 @@ function MainContent() {
             <main className="hero-image-wrapper">
                 <div className="content">
                     <Routes>
+                        {/* Öffentliche Seiten */}
                         <Route path="/" element={<Home lang={language} />} />
                         <Route path="/home" element={<Home lang={language} />} />
                         <Route path="/servizi" element={<Servizi lang={language} />} />
@@ -254,19 +256,50 @@ function MainContent() {
                         <Route path="/galeria" element={<Galeria lang={language} />} />
                         <Route path="/aboutus" element={<AboutUs lang={language} />} />
                         <Route path="/sitemap" element={<Sitemap lang={language} />} />
-                        <Route path="/calculatori" element={<Imobiliacalculatori lang={language} />} />
                         <Route path="/kontakte" element={<Kontakte lang={language} />} />
                         <Route path="/impressum" element={<Impressumpage lang={language} />} />
                         <Route path="/privacy" element={<Privacy lang={language} />} />
                         <Route path="/avegno" element={<Avegno lang={language} />} />
                         <Route path="/locarno" element={<Locarno lang={language} />} />
                         <Route path="/chatbot" element={<Chatbot lang={language} />} />
-                        <Route path="/calculator" element={<Calculator lang={language} />} />
                         <Route path="/chatinput" element={<ChatInput lang={language} />} />
                         <Route path="/chatmessage" element={<ChatMessages lang={language} />} />
                         <Route path="/seo" element={<SEO lang={language} />} />
-                        <Route path="/imobiliaportale" element={<ImobiliaPortale lang={language} />}/>
-                        <Route path="/customers" element={<Customers lang={language} />}/>
+
+                        {/* Geschützte Kunden- & Kalkulations-Routes */}
+                        <Route
+                            path="/calculatori"
+                            element={
+                                <ProtectedRoute onRequireAuth={() => setShowAuthModal(true)}>
+                                    <Imobiliacalculatori lang={language} />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/calculator"
+                            element={
+                                <ProtectedRoute onRequireAuth={() => setShowAuthModal(true)}>
+                                    <Calculator lang={language} />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/imobiliaportale"
+                            element={
+                                <ProtectedRoute onRequireAuth={() => setShowAuthModal(true)}>
+                                    <ImobiliaPortale lang={language} />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/customers"
+                            element={
+                                <ProtectedRoute onRequireAuth={() => setShowAuthModal(true)}>
+                                    <Customers lang={language} />
+                                </ProtectedRoute>
+                            }
+                        />
+
                         <Route path="*" element={<Navigate to="/" replace />} />
                     </Routes>
                 </div>
@@ -699,6 +732,7 @@ function MainContent() {
 }
 
 function App() {
+    const [loginModalRequested, setLoginModalRequested] = useState(false);
     return (
         <BrowserRouter
             basename={import.meta.env.BASE_URL}
