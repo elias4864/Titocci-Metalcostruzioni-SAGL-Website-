@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useImmer } from 'use-immer';
 
 import ChatInput from '../pages/ChatInput.jsx';
@@ -6,20 +6,24 @@ import ChatMessages from '../pages/ChatMessages.jsx';
 import { IMMOBILIEN_KNOWLEDGE } from '../data/imobilienknowledge.js';
 import '../Styles/Chatbot.css';
 
+function getStoredKunden() {
+    if (typeof window === 'undefined') return [];
+    try {
+        const raw = window.localStorage.getItem('titocci_kunden');
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed : [];
+    } catch {
+        return [];
+    }
+}
+
 function generateLocalReply(userText) {
     const q = userText.toLowerCase();
-
-    // 1. Gespeicherte Objekte / Kunden aus localStorage prüfen
-    let kundenListe = [];
-    try {
-        kundenListe = JSON.parse(localStorage.getItem('titocci_kunden') || '[]');
-    } catch {
-        kundenListe = [];
-    }
+    const kundenListe = getStoredKunden();
 
     if (q.includes('objekt') || q.includes('immobilie') || q.includes('haus') || q.includes('häuser')) {
         const registrierteObjekte = kundenListe
-            .filter(k => k.immobilienObjekt)
+            .filter(k => k?.immobilienObjekt)
             .map(k => `- **${k.immobilienObjekt}** (${k.firmaOderName}, ${k.kundenTyp})`);
 
         return [
@@ -91,7 +95,18 @@ function Chatbot({ lang }) {
 
     const isLoading = messages.some(message => message.loading);
 
-    async function submitNewMessage(overrideText) {
+    useEffect(() => {
+        if (!isOpen) return;
+        const handleKeyDown = (event) => {
+            if (event.key === 'Escape') {
+                setIsOpen(false);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isOpen]);
+
+    const submitNewMessage = useCallback(async (overrideText) => {
         const rawText = typeof overrideText === 'string' ? overrideText : newMessage;
         const messageText = rawText.trim();
 
@@ -99,48 +114,45 @@ function Chatbot({ lang }) {
 
         setNewMessage('');
 
-        const currentMessages = [
+        const historyPayload = [
             ...messages.filter(m => !m.error && !m.loading),
             { role: 'user', content: messageText }
         ];
 
         setMessages(draft => {
-            draft.push({
-                role: 'user',
-                content: messageText
-            });
-
-            draft.push({
-                role: 'assistant',
-                content: '',
-                loading: true,
-                error: false
-            });
+            draft.push({ role: 'user', content: messageText });
+            draft.push({ role: 'assistant', content: '', loading: true, error: false });
         });
+
+        const controller = new AbortController();
+        const timeoutId = window.setTimeout(() => controller.abort(), 8000);
 
         try {
             const response = await fetch('/api/chat', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
+                signal: controller.signal,
                 body: JSON.stringify({
-                    messages: currentMessages,
+                    messages: historyPayload,
                     lang
                 })
             });
 
             if (!response.ok) {
-                throw new Error(`Server antwortete mit Status ${response.status}`);
+                throw new Error(`HTTP ${response.status}`);
             }
 
             const data = await response.json();
+            const replyText = typeof data?.reply === 'string' && data.reply.trim()
+                ? data.reply
+                : generateLocalReply(messageText);
 
             setMessages(draft => {
                 const lastMessage = draft.at(-1);
-                if (lastMessage) {
-                    lastMessage.content = data.reply || generateLocalReply(messageText);
+                if (lastMessage && lastMessage.role === 'assistant') {
+                    lastMessage.content = replyText;
                     lastMessage.loading = false;
+                    lastMessage.error = false;
                 }
             });
         } catch {
@@ -148,18 +160,23 @@ function Chatbot({ lang }) {
 
             setMessages(draft => {
                 const lastMessage = draft.at(-1);
-                if (lastMessage) {
+                if (lastMessage && lastMessage.role === 'assistant') {
+                    lastMessage.content = localReply;
                     lastMessage.loading = false;
                     lastMessage.error = false;
-                    lastMessage.content = localReply;
                 }
             });
+        } finally {
+            window.clearTimeout(timeoutId);
         }
-    }
+    }, [isLoading, lang, messages, setMessages, newMessage]);
 
     return (
-        <div className={`chatbot-wrapper ${isOpen ? 'open' : 'closed'}`}>
-            {!isOpen && (
+        <aside
+            className={`chatbot-wrapper ${isOpen ? 'open' : 'closed'}`}
+            aria-label="Leo KI-Chatbot"
+        >
+            {!isOpen ? (
                 <button
                     type="button"
                     className="chatbot-toggle-btn"
@@ -168,12 +185,10 @@ function Chatbot({ lang }) {
                 >
                     💬
                 </button>
-            )}
-
-            {isOpen && (
+            ) : (
                 <div className="chatbot-window">
                     <div className="chatbot-header">
-                        <span>Leo KI-Chatbot</span>
+                        <span >Leo KI-Chatbot</span>
                         <button
                             type="button"
                             className="chatbot-close-btn"
@@ -187,23 +202,16 @@ function Chatbot({ lang }) {
                     {messages.length === 0 && (
                         <div className="chatbot-welcome">
                             <h2>Willkommen!</h2>
-                            <p>Frag mich zu Immobilien, Richtpreisen oder Metallbau-Gewerken:</p>
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '10px' }}>
+                            <p className="chatbot-text-violet">
+                                Frag mich zu Immobilien, Richtpreisen oder Metallbau-Gewerken:
+                            </p>
+                            <div className="chatbot-quick-questions">
                                 {QUICK_QUESTIONS.map((question) => (
                                     <button
                                         key={question}
                                         type="button"
+                                        className="chatbot-quick-btn"
                                         onClick={() => submitNewMessage(question)}
-                                        style={{
-                                            padding: '6px 10px',
-                                            borderRadius: '14px',
-                                            border: '1px solid #cbd5e1',
-                                            backgroundColor: '#f8fafc',
-                                            color: '#0f172a',
-                                            fontSize: '12px',
-                                            cursor: 'pointer',
-                                            textAlign: 'left'
-                                        }}
                                     >
                                         {question}
                                     </button>
@@ -222,7 +230,7 @@ function Chatbot({ lang }) {
                     />
                 </div>
             )}
-        </div>
+        </aside>
     );
 }
 

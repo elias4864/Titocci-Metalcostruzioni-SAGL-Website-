@@ -51,6 +51,36 @@
     font-weight: bold;
 }
 
+.chatbot-text-violet {
+    color: violet;
+}
+
+.chatbot-quick-questions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.chatbot-quick-btn {
+    padding: 6px 10px;
+    border-radius: 14px;
+    border: 1px solid #8b5cf6;
+    background-color: #f5f3ff;
+    color: #5b21b6;
+    font-size: 12px;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.chatbot-quick-btn:hover {
+    background-color: #7c3aed;
+    color: #ffffff;
+}
+
+
+
 .chatbot-close-btn {
     background: transparent;
     border: none;
