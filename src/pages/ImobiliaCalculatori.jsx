@@ -533,10 +533,10 @@ export default function HousePriceCalculator() {
                     marginBottom: isOpen ? '20px' : '0',
                     padding: '12px 16px',
                     borderRadius: '12px',
-                    backgroundColor: '#f1f5f9',
+                    backgroundColor: '#e6920a',
                 }}
             >
-                <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 700 }}>
+                <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 700 ,color:'rgb(209 9 56 / 0.89)'}}>
                     Immobilienrechner
                 </h2>
                 <button

@@ -14,7 +14,8 @@ import {
     Calendar,
     Clock,
     MapPin,
-    Building2
+    Building2,
+    X
 } from "lucide-react";
 import emailjs from "@emailjs/browser";
 
@@ -107,10 +108,6 @@ const formatCHFWhole = (amount) => {
     return `${safe.toLocaleString("de-CH")} CHF`;
 };
 
-/**
- * Reine Frontend-Protected-Route (kein Backend):
- * Prüft `user` und optional `allowedTypes` im Client-State.
- */
 const ProtectedRoute = ({ user, allowedTypes = [], onRequireAuth, children }) => {
     const isAuthenticated = Boolean(user && user.email);
     const isAuthorized =
@@ -295,7 +292,7 @@ const ImmobilienPortal = ({ lang = "de" }) => {
     );
 
     const [showAuthModal, setShowAuthModal] = useState(false);
-    const [authMode, setAuthMode] = useState("login"); // "login" | "register" | "reset"
+    const [authMode, setAuthMode] = useState("login");
     const [privacyAccepted, setPrivacyAccepted] = useState(true);
     const [kundenTyp, setKundenTyp] = useState("Immobilienverwaltung");
     const [firmaOderName, setFirmaOderName] = useState("");
@@ -718,14 +715,14 @@ const ImmobilienPortal = ({ lang = "de" }) => {
     const labelStyle = {
         display: "block",
         fontSize: "12px",
-        color: "#bbb",
+        color: "#ccc",
         marginBottom: "6px"
     };
 
     const kpiCardStyle = (highlight = false) => ({
         padding: "16px",
         borderRadius: "8px",
-        backgroundColor: "#141414",
+        backgroundColor: "#bbb",
         border: highlight ? "1px solid #e62b2b" : "1px solid #2c2c2c",
         textAlign: "center"
     });
@@ -759,7 +756,6 @@ const ImmobilienPortal = ({ lang = "de" }) => {
 
     const privateContent = (
         <>
-            {/* Kalkulator */}
             <section aria-label="Metallbau Kalkulator" style={cardStyle}>
                 <h2
                     style={{
@@ -869,7 +865,7 @@ const ImmobilienPortal = ({ lang = "de" }) => {
 
                     <div>
                         <label htmlFor="calc-zins" style={labelStyle}>
-                            Kalk. Zinssatz (% p.a.)
+                            Kalk. Zinssatz (%)
                         </label>
                         <input
                             id="calc-zins"
@@ -884,7 +880,6 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                     </div>
                 </div>
 
-                {/* KPI-Ergebnisse */}
                 <div
                     style={{
                         display: "grid",
@@ -892,123 +887,101 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                         gap: "12px"
                     }}
                 >
-                    <div style={kpiCardStyle(false)}>
-                        <div style={{ fontSize: "12px", color: "#aaa", marginBottom: "6px" }}>
-                            Effektiver lfm-Preis
-                        </div>
-                        <div style={{ fontSize: "1.15rem", fontWeight: "bold" }}>
-                            {formatCHF(effectiveRatePerLfm)}
-                        </div>
-                    </div>
-
                     <div style={kpiCardStyle(true)}>
-                        <div style={{ fontSize: "12px", color: "#ff8585", marginBottom: "6px" }}>
-                            Richtpreis Metallbau
-                        </div>
-                        <div style={{ fontSize: "1.25rem", fontWeight: "bold", color: "#ff5c5c" }}>
+                        <div style={{ fontSize: "12px", color: "#222" }}>Richtpreis Metallbau</div>
+                        <div style={{ fontSize: "1.15rem", fontWeight: "bold", color: "#111", marginTop: "4px" }}>
                             {formatCHF(estimatedMetalworkCost)}
                         </div>
-                    </div>
-
-                    <div style={kpiCardStyle(false)}>
-                        <div style={{ fontSize: "12px", color: "#aaa", marginBottom: "6px" }}>
-                            Eigenmittel / Fremdkapital
-                        </div>
-                        <div style={{ fontSize: "1.05rem", fontWeight: "bold" }}>
-                            {formatCHFWhole(estimatedEigenmittel)} / {formatCHFWhole(estimatedFremdkapital)}
+                        <div style={{ fontSize: "11px", color: "#333", marginTop: "2px" }}>
+                            {formatCHF(effectiveRatePerLfm)} / lfm
                         </div>
                     </div>
 
                     <div style={kpiCardStyle(false)}>
-                        <div style={{ fontSize: "12px", color: "#aaa", marginBottom: "6px" }}>
-                            Kalk. Jahreszins
+                        <div style={{ fontSize: "12px", color: "#222" }}>Eigenmittel ({safeEigenmittelQuote}%)</div>
+                        <div style={{ fontSize: "1.15rem", fontWeight: "bold", color: "#111", marginTop: "4px" }}>
+                            {formatCHFWhole(estimatedEigenmittel)}
                         </div>
-                        <div style={{ fontSize: "1.15rem", fontWeight: "bold" }}>
+                    </div>
+
+                    <div style={kpiCardStyle(false)}>
+                        <div style={{ fontSize: "12px", color: "#222" }}>Fremdkapital</div>
+                        <div style={{ fontSize: "1.15rem", fontWeight: "bold", color: "#111", marginTop: "4px" }}>
+                            {formatCHFWhole(estimatedFremdkapital)}
+                        </div>
+                    </div>
+
+                    <div style={kpiCardStyle(false)}>
+                        <div style={{ fontSize: "12px", color: "#222" }}>Zins / Jahr ({safeZinssatz}%)</div>
+                        <div style={{ fontSize: "1.15rem", fontWeight: "bold", color: "#111", marginTop: "4px" }}>
                             {formatCHF(estimatedYearlyInterest)}
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* Direkt-Buchung */}
             <section aria-label="Direkt-Buchung" style={cardStyle}>
                 <h2 style={{ margin: "0 0 6px", fontSize: "1.15rem" }}>{t.bookingTitle}</h2>
-                <p style={{ margin: "0 0 18px", color: "#aaa", fontSize: "13px" }}>{t.bookingSub}</p>
+                <p style={{ margin: "0 0 18px", color: "#bbb", fontSize: "14px" }}>{t.bookingSub}</p>
 
-                <form onSubmit={handleBookingSubmit}>
+                <form onSubmit={handleBookingSubmit} style={{ display: "grid", gap: "14px" }}>
                     <div
                         style={{
                             display: "grid",
                             gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-                            gap: "14px",
-                            marginBottom: "14px"
+                            gap: "12px"
+                        }}
+                    >
+                        <input
+                            ref={companyInputRef}
+                            type="text"
+                            value={companyName}
+                            onChange={(e) => setCompanyName(e.target.value)}
+                            placeholder={t.namePlaceholder}
+                            style={inputStyle}
+                        />
+                        <input
+                            type="email"
+                            required
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder={t.emailPlaceholder}
+                            style={inputStyle}
+                        />
+                        <input
+                            type="tel"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            placeholder={t.phonePlaceholder}
+                            style={inputStyle}
+                        />
+                    </div>
+
+                    <div
+                        style={{
+                            display: "grid",
+                            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+                            gap: "12px"
                         }}
                     >
                         <div>
-                            <label htmlFor="booking-company" style={labelStyle}>
-                                Firma / Name
-                            </label>
-                            <input
-                                id="booking-company"
-                                ref={companyInputRef}
-                                type="text"
-                                value={companyName}
-                                onChange={(e) => setCompanyName(e.target.value)}
-                                placeholder={t.namePlaceholder}
-                                style={inputStyle}
-                            />
-                        </div>
-
-                        <div>
-                            <label htmlFor="booking-email" style={labelStyle}>
-                                E-Mail *
-                            </label>
-                            <input
-                                id="booking-email"
-                                type="email"
-                                required
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder={t.emailPlaceholder}
-                                style={inputStyle}
-                            />
-                        </div>
-
-                        <div>
-                            <label htmlFor="booking-phone" style={labelStyle}>
-                                Telefon
-                            </label>
-                            <input
-                                id="booking-phone"
-                                type="tel"
-                                value={phone}
-                                onChange={(e) => setPhone(e.target.value)}
-                                placeholder={t.phonePlaceholder}
-                                style={inputStyle}
-                            />
-                        </div>
-
-                        <div>
                             <label htmlFor="booking-location" style={labelStyle}>
-                                <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
-                                    <MapPin size={12} /> Standort / Objekt
-                                </span>
+                                <MapPin size={12} style={{ verticalAlign: "middle", marginRight: "4px" }} />
+                                Objekt / Standort
                             </label>
                             <input
                                 id="booking-location"
                                 type="text"
                                 value={locationInput}
                                 onChange={(e) => setLocationInput(e.target.value)}
-                                placeholder="z.B. Casa Locarno"
                                 style={inputStyle}
                             />
                         </div>
 
                         <div>
                             <label htmlFor="booking-date" style={labelStyle}>
-                                <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
-                                    <Calendar size={12} /> Wunschdatum
-                                </span>
+                                <Calendar size={12} style={{ verticalAlign: "middle", marginRight: "4px" }} />
+                                Wunschdatum
                             </label>
                             <input
                                 id="booking-date"
@@ -1021,97 +994,62 @@ const ImmobilienPortal = ({ lang = "de" }) => {
 
                         <div>
                             <label htmlFor="booking-time" style={labelStyle}>
-                                <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
-                                    <Clock size={12} /> Zeitfenster
-                                </span>
+                                <Clock size={12} style={{ verticalAlign: "middle", marginRight: "4px" }} />
+                                Wunschzeit
                             </label>
                             <input
                                 id="booking-time"
-                                type="text"
+                                type="time"
                                 value={visitTime}
                                 onChange={(e) => setVisitTime(e.target.value)}
-                                placeholder="z.B. 09:00–11:00"
                                 style={inputStyle}
                             />
                         </div>
                     </div>
 
-                    <div style={{ marginBottom: "16px" }}>
-                        <label htmlFor="booking-notes" style={labelStyle}>
-                            Projektbeschreibung / Notizen
-                        </label>
-                        <textarea
-                            id="booking-notes"
-                            rows={3}
-                            value={projectNotes}
-                            onChange={(e) => setProjectNotes(e.target.value)}
-                            placeholder={t.projektDetails}
-                            style={{ ...inputStyle, resize: "vertical" }}
-                        />
-                    </div>
+                    <textarea
+                        rows={3}
+                        value={projectNotes}
+                        onChange={(e) => setProjectNotes(e.target.value)}
+                        placeholder={t.projektDetails}
+                        style={inputStyle}
+                    />
 
                     {submitError && (
-                        <div
-                            role="alert"
-                            style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "8px",
-                                padding: "10px 12px",
-                                borderRadius: "6px",
-                                backgroundColor: "rgba(230, 43, 43, 0.15)",
-                                border: "1px solid rgba(230, 43, 43, 0.4)",
-                                color: "#ff8585",
-                                fontSize: "13px",
-                                marginBottom: "14px"
-                            }}
-                        >
+                        <div style={{ color: "#ff6b6b", fontSize: "13px", display: "flex", alignItems: "center", gap: "6px" }}>
                             <AlertCircle size={16} />
                             <span>{submitError}</span>
                         </div>
                     )}
 
                     {bookingSubmitted && (
-                        <div
-                            role="status"
-                            style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "8px",
-                                padding: "10px 12px",
-                                borderRadius: "6px",
-                                backgroundColor: "rgba(34, 197, 94, 0.14)",
-                                border: "1px solid rgba(34, 197, 94, 0.4)",
-                                color: "#86efac",
-                                fontSize: "13px",
-                                marginBottom: "14px"
-                            }}
-                        >
+                        <div style={{ color: "#51cf66", fontSize: "13px", display: "flex", alignItems: "center", gap: "6px" }}>
                             <CheckCircle2 size={16} />
                             <span>{t.bookingSuccess}</span>
                         </div>
                     )}
 
-                    <button
-                        type="submit"
-                        disabled={isSending}
-                        style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: "8px",
-                            padding: "11px 18px",
-                            borderRadius: "6px",
-                            border: "none",
-                            backgroundColor: isSending ? "#7f1d1d" : "#e62b2b",
-                            color: "#fff",
-                            fontWeight: "bold",
-                            fontSize: "14px",
-                            cursor: isSending ? "not-allowed" : "pointer"
-                        }}
-                    >
-                        <Send size={15} />
-                        <span>{isSending ? "Wird gesendet..." : t.bookingSubmit}</span>
-                    </button>
+                    <div>
+                        <button
+                            type="submit"
+                            disabled={isSending}
+                            style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "8px",
+                                padding: "11px 18px",
+                                borderRadius: "6px",
+                                border: "none",
+                                backgroundColor: "#e62b2b",
+                                color: "#fff",
+                                fontWeight: "bold",
+                                cursor: isSending ? "not-allowed" : "pointer"
+                            }}
+                        >
+                            <Send size={15} />
+                            <span>{isSending ? "Wird gesendet..." : t.bookingSubmit}</span>
+                        </button>
+                    </div>
                 </form>
             </section>
         </>
@@ -1119,43 +1057,35 @@ const ImmobilienPortal = ({ lang = "de" }) => {
 
     return (
         <div style={pageStyle}>
-            {/* Top Bar */}
             <header
                 style={{
                     maxWidth: "960px",
                     margin: "0 auto",
-                    padding: "12px 16px",
-                    borderRadius: "10px",
-                    backgroundColor: "#181818",
-                    border: "1px solid #2b2b2b",
                     display: "flex",
-                    alignItems: "center",
                     justifyContent: "space-between",
-                    gap: "12px",
-                    flexWrap: "wrap"
+                    alignItems: "center",
+                    flexWrap: "wrap",
+                    gap: "12px"
                 }}
             >
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <Building2 size={20} color="#e62b2b" />
-                    <div>
-                        <div style={{ fontSize: "10px", letterSpacing: "0.06em", color: "#999" }}>
-                            {t.heroTag}
-                        </div>
-                        <div style={{ fontWeight: "bold", fontSize: "1rem" }}>{t.heroTitle}</div>
+                <div>
+                    <div style={{ fontSize: "11px", letterSpacing: "0.08em", color: "#ff6b6b" }}>
+                        {t.heroTag}
                     </div>
+                    <h1 style={{ margin: "4px 0 0", fontSize: "1.5rem" }}>{t.heroTitle}</h1>
                 </div>
 
-                <div style={{ display: "flex", alignItems: "center", gap: "14px", flexWrap: "wrap" }}>
-                    <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "13px", cursor: "pointer" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+                    <label style={{ fontSize: "12px", display: "inline-flex", alignItems: "center", gap: "6px", cursor: "pointer" }}>
                         <input
                             type="checkbox"
                             checked={protectPrivateSections}
                             onChange={(e) => setProtectPrivateSections(e.target.checked)}
                         />
-                        <span>Schutz aktiv</span>
+                        <span>Bereich schützen</span>
                     </label>
 
-                    <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "13px", cursor: "pointer" }}>
+                    <label style={{ fontSize: "12px", display: "inline-flex", alignItems: "center", gap: "6px", cursor: "pointer" }}>
                         <input
                             type="checkbox"
                             checked={useMockMode}
@@ -1165,31 +1095,24 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                     </label>
 
                     {currentUser ? (
-                        <div style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
-                            <span style={{ fontSize: "13px", color: "#d4d4d4" }}>
-                                {currentUser.firmaOderName}
-                            </span>
-                            <button
-                                type="button"
-                                onClick={handleLogout}
-                                style={{
-                                    display: "inline-flex",
-                                    alignItems: "center",
-                                    gap: "6px",
-                                    padding: "8px 12px",
-                                    borderRadius: "6px",
-                                    border: "1px solid #444",
-                                    backgroundColor: "#242424",
-                                    color: "#fff",
-                                    fontSize: "13px",
-                                    fontWeight: "bold",
-                                    cursor: "pointer"
-                                }}
-                            >
-                                <LogOut size={14} />
-                                <span>{t.logoutBtn}</span>
-                            </button>
-                        </div>
+                        <button
+                            type="button"
+                            onClick={handleLogout}
+                            style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "6px",
+                                padding: "8px 12px",
+                                borderRadius: "6px",
+                                border: "1px solid #444",
+                                backgroundColor: "#222",
+                                color: "#fff",
+                                cursor: "pointer"
+                            }}
+                        >
+                            <LogOut size={14} />
+                            <span>{t.logoutBtn} ({currentUser.firmaOderName})</span>
+                        </button>
                     ) : (
                         <button
                             type="button"
@@ -1198,12 +1121,11 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                                 display: "inline-flex",
                                 alignItems: "center",
                                 gap: "6px",
-                                padding: "8px 14px",
+                                padding: "8px 12px",
                                 borderRadius: "6px",
                                 border: "none",
                                 backgroundColor: "#e62b2b",
                                 color: "#fff",
-                                fontSize: "13px",
                                 fontWeight: "bold",
                                 cursor: "pointer"
                             }}
@@ -1216,31 +1138,26 @@ const ImmobilienPortal = ({ lang = "de" }) => {
             </header>
 
             {protectPrivateSections ? (
-                <ProtectedRoute
-                    user={currentUser}
-                    onRequireAuth={(mode) => openAuthModal(mode)}
-                >
+                <ProtectedRoute user={currentUser} onRequireAuth={openAuthModal}>
                     {privateContent}
                 </ProtectedRoute>
             ) : (
                 privateContent
             )}
 
-            {/* Auth Modal */}
             {showAuthModal && (
                 <div
                     role="dialog"
                     aria-modal="true"
-                    aria-label="Konto-Verwaltung"
                     style={{
                         position: "fixed",
                         inset: 0,
-                        backgroundColor: "rgba(0, 0, 0, 0.72)",
+                        backgroundColor: "rgba(0, 0, 0, 0.75)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
                         padding: "16px",
-                        zIndex: 50
+                        zIndex: 1000
                     }}
                 >
                     <div
@@ -1250,241 +1167,161 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                             backgroundColor: "#1b1b1b",
                             border: "1px solid #333",
                             borderRadius: "10px",
-                            padding: "22px"
+                            padding: "20px",
+                            position: "relative"
                         }}
                     >
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
-                            <h3 style={{ margin: 0, fontSize: "1.1rem" }}>
-                                {authMode === "login" && "Anmelden"}
-                                {authMode === "register" && "Konto registrieren"}
-                                {authMode === "reset" && "Passwort zurücksetzen"}
-                            </h3>
-                            <button
-                                type="button"
-                                onClick={() => setShowAuthModal(false)}
-                                style={{
-                                    background: "none",
-                                    border: "none",
-                                    color: "#aaa",
-                                    fontSize: "18px",
-                                    cursor: "pointer"
-                                }}
-                            >
-                                ×
-                            </button>
+                        <button
+                            type="button"
+                            onClick={() => setShowAuthModal(false)}
+                            aria-label="Schliessen"
+                            style={{
+                                position: "absolute",
+                                right: "12px",
+                                top: "12px",
+                                background: "none",
+                                border: "none",
+                                color: "#ccc",
+                                cursor: "pointer"
+                            }}
+                        >
+                            <X size={18} />
+                        </button>
+
+                        <h2 style={{ margin: "0 0 12px", fontSize: "1.15rem" }}>
+                            {authMode === "register"
+                                ? "Konto registrieren"
+                                : authMode === "reset"
+                                    ? "Passwort zurücksetzen"
+                                    : "Login"}
+                        </h2>
+
+                        <div style={{ display: "flex", gap: "8px", marginBottom: "14px" }}>
+                            <button type="button" onClick={() => setAuthMode("login")}>Login</button>
+                            <button type="button" onClick={() => setAuthMode("register")}>Registrieren</button>
+                            <button type="button" onClick={() => setAuthMode("reset")}>Passwort</button>
                         </div>
 
-                        <div style={{ display: "flex", gap: "6px", marginBottom: "14px" }}>
-                            {["login", "register", "reset"].map((mode) => (
-                                <button
-                                    key={mode}
-                                    type="button"
-                                    onClick={() => {
-                                        setAuthMode(mode);
-                                        setAuthError("");
-                                        setAuthSuccess("");
-                                    }}
-                                    style={{
-                                        flex: 1,
-                                        padding: "7px 8px",
-                                        borderRadius: "6px",
-                                        border: "1px solid #383838",
-                                        backgroundColor: authMode === mode ? "#e62b2b" : "#141414",
-                                        color: "#fff",
-                                        fontSize: "12px",
-                                        fontWeight: "bold",
-                                        cursor: "pointer"
-                                    }}
-                                >
-                                    {mode === "login" ? "Login" : mode === "register" ? "Registrieren" : "Reset"}
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* Schnell-Login für Mock-Benutzer */}
-                        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "14px" }}>
-                            {MOCK_USERS.map((u) => (
-                                <button
-                                    key={u.id}
-                                    type="button"
-                                    onClick={() => quickMockLogin(u)}
-                                    style={{
-                                        padding: "5px 10px",
-                                        borderRadius: "5px",
-                                        border: "1px solid #3a3a3a",
-                                        backgroundColor: "#242424",
-                                        color: "#ddd",
-                                        fontSize: "11px",
-                                        cursor: "pointer"
-                                    }}
-                                >
-                                    Demo: {u.firmaOderName}
-                                </button>
-                            ))}
-                        </div>
-
-                        {authError && (
-                            <div style={{ color: "#ff8585", fontSize: "12px", marginBottom: "10px" }}>
-                                {authError}
-                            </div>
-                        )}
-                        {authSuccess && (
-                            <div style={{ color: "#86efac", fontSize: "12px", marginBottom: "10px" }}>
-                                {authSuccess}
-                            </div>
-                        )}
+                        {authError && <div style={{ color: "#ff6b6b", fontSize: "13px", marginBottom: "10px" }}>{authError}</div>}
+                        {authSuccess && <div style={{ color: "#51cf66", fontSize: "13px", marginBottom: "10px" }}>{authSuccess}</div>}
 
                         {authMode === "reset" ? (
-                            <form onSubmit={handlePasswordReset} style={{ display: "grid", gap: "12px" }}>
-                                <div>
-                                    <label htmlFor="reset-email" style={labelStyle}>E-Mail *</label>
-                                    <input
-                                        id="reset-email"
-                                        type="email"
-                                        required
-                                        value={authEmail}
-                                        onChange={(e) => setAuthEmail(e.target.value)}
-                                        style={inputStyle}
-                                    />
-                                </div>
-                                <div>
-                                    <label htmlFor="reset-current-pw" style={labelStyle}>Aktuelles Passwort *</label>
-                                    {renderPasswordInput({
-                                        id: "reset-current-pw",
-                                        value: currentPasswordInput,
-                                        onChange: (e) => setCurrentPasswordInput(e.target.value),
-                                        fieldKey: "current",
-                                        required: true
-                                    })}
-                                </div>
-                                <div>
-                                    <label htmlFor="reset-new-pw" style={labelStyle}>Neues Passwort (min. 8 Zeichen) *</label>
-                                    {renderPasswordInput({
-                                        id: "reset-new-pw",
-                                        value: resetNewPassword,
-                                        onChange: (e) => setResetNewPassword(e.target.value),
-                                        fieldKey: "resetNew",
-                                        required: true
-                                    })}
-                                </div>
-                                <button
-                                    type="submit"
-                                    disabled={isResetSending}
-                                    style={{
-                                        padding: "10px",
-                                        borderRadius: "6px",
-                                        border: "none",
-                                        backgroundColor: "#e62b2b",
-                                        color: "#fff",
-                                        fontWeight: "bold",
-                                        cursor: "pointer"
-                                    }}
-                                >
-                                    {isResetSending ? "Speichere..." : "Passwort aktualisieren"}
+                            <form onSubmit={handlePasswordReset} style={{ display: "grid", gap: "10px" }}>
+                                <input
+                                    type="email"
+                                    required
+                                    value={authEmail}
+                                    onChange={(e) => setAuthEmail(e.target.value)}
+                                    placeholder="E-Mail-Adresse"
+                                    style={inputStyle}
+                                />
+                                {renderPasswordInput({
+                                    id: "reset-current-pw",
+                                    value: currentPasswordInput,
+                                    onChange: (e) => setCurrentPasswordInput(e.target.value),
+                                    fieldKey: "current",
+                                    placeholder: "Aktuelles Passwort",
+                                    required: true
+                                })}
+                                {renderPasswordInput({
+                                    id: "reset-new-pw",
+                                    value: resetNewPassword,
+                                    onChange: (e) => setResetNewPassword(e.target.value),
+                                    fieldKey: "resetNew",
+                                    placeholder: "Neues Passwort (mind. 8 Zeichen)",
+                                    required: true
+                                })}
+                                <button type="submit" disabled={isResetSending} style={inputStyle}>
+                                    {isResetSending ? "Wird gespeichert..." : "Passwort aktualisieren"}
                                 </button>
                             </form>
                         ) : (
-                            <form onSubmit={handleAuthSubmit} style={{ display: "grid", gap: "12px" }}>
+                            <form onSubmit={handleAuthSubmit} style={{ display: "grid", gap: "10px" }}>
                                 {authMode === "register" && (
                                     <>
-                                        <div>
-                                            <label htmlFor="reg-type" style={labelStyle}>Kundentyp</label>
-                                            <select
-                                                id="reg-type"
-                                                value={kundenTyp}
-                                                onChange={(e) => setKundenTyp(e.target.value)}
-                                                style={inputStyle}
-                                            >
-                                                <option value="Immobilienverwaltung">Immobilienverwaltung</option>
-                                                <option value="Privatkunde">Privatkunde</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label htmlFor="reg-name" style={labelStyle}>Firma / Name</label>
-                                            <input
-                                                id="reg-name"
-                                                type="text"
-                                                value={firmaOderName}
-                                                onChange={(e) => setFirmaOderName(e.target.value)}
-                                                style={inputStyle}
-                                            />
-                                        </div>
-                                        <div>
-                                            <label htmlFor="reg-objekt" style={labelStyle}>Immobilienobjekt (optional)</label>
-                                            <input
-                                                id="reg-objekt"
-                                                type="text"
-                                                value={immobilienObjekt}
-                                                onChange={(e) => setImmobilienObjekt(e.target.value)}
-                                                style={inputStyle}
-                                            />
-                                        </div>
+                                        <select
+                                            value={kundenTyp}
+                                            onChange={(e) => setKundenTyp(e.target.value)}
+                                            style={inputStyle}
+                                        >
+                                            <option value="Immobilienverwaltung">Immobilienverwaltung</option>
+                                            <option value="Privatkunde">Privatkunde</option>
+                                        </select>
+                                        <input
+                                            type="text"
+                                            value={firmaOderName}
+                                            onChange={(e) => setFirmaOderName(e.target.value)}
+                                            placeholder="Firma oder Name"
+                                            style={inputStyle}
+                                        />
+                                        <input
+                                            type="text"
+                                            value={immobilienObjekt}
+                                            onChange={(e) => setImmobilienObjekt(e.target.value)}
+                                            placeholder="Immobilienobjekt (optional)"
+                                            style={inputStyle}
+                                        />
                                     </>
                                 )}
 
-                                <div>
-                                    <label htmlFor="auth-email" style={labelStyle}>E-Mail *</label>
-                                    <input
-                                        id="auth-email"
-                                        type="email"
-                                        required
-                                        value={authEmail}
-                                        onChange={(e) => setAuthEmail(e.target.value)}
-                                        style={inputStyle}
-                                    />
-                                </div>
+                                <input
+                                    type="email"
+                                    required
+                                    value={authEmail}
+                                    onChange={(e) => setAuthEmail(e.target.value)}
+                                    placeholder="E-Mail-Adresse"
+                                    style={inputStyle}
+                                />
 
-                                <div>
-                                    <label htmlFor="auth-password" style={labelStyle}>Passwort *</label>
-                                    {renderPasswordInput({
-                                        id: "auth-password",
-                                        value: authPassword,
-                                        onChange: (e) => setAuthPassword(e.target.value),
-                                        fieldKey: "auth",
-                                        required: true
-                                    })}
-                                </div>
+                                {renderPasswordInput({
+                                    id: "auth-password",
+                                    value: authPassword,
+                                    onChange: (e) => setAuthPassword(e.target.value),
+                                    fieldKey: "auth",
+                                    placeholder: "Passwort",
+                                    required: true
+                                })}
 
                                 {authMode === "register" && (
                                     <>
-                                        <div>
-                                            <label htmlFor="auth-password-confirm" style={labelStyle}>Passwort bestätigen *</label>
-                                            {renderPasswordInput({
-                                                id: "auth-password-confirm",
-                                                value: authPasswordConfirm,
-                                                onChange: (e) => setAuthPasswordConfirm(e.target.value),
-                                                fieldKey: "confirm",
-                                                required: true
-                                            })}
-                                        </div>
-
-                                        <label style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontSize: "12px", color: "#ccc" }}>
+                                        {renderPasswordInput({
+                                            id: "auth-password-confirm",
+                                            value: authPasswordConfirm,
+                                            onChange: (e) => setAuthPasswordConfirm(e.target.value),
+                                            fieldKey: "confirm",
+                                            placeholder: "Passwort bestätigen",
+                                            required: true
+                                        })}
+                                        <label style={{ fontSize: "12px", display: "flex", alignItems: "center", gap: "6px" }}>
                                             <input
                                                 type="checkbox"
                                                 checked={privacyAccepted}
                                                 onChange={(e) => setPrivacyAccepted(e.target.checked)}
                                             />
-                                            <span>Ich akzeptiere die Datenschutzerklärung.</span>
+                                            <span>Datenschutzerklärung akzeptieren</span>
                                         </label>
                                     </>
                                 )}
 
-                                <button
-                                    type="submit"
-                                    style={{
-                                        padding: "10px",
-                                        borderRadius: "6px",
-                                        border: "none",
-                                        backgroundColor: "#e62b2b",
-                                        color: "#fff",
-                                        fontWeight: "bold",
-                                        cursor: "pointer"
-                                    }}
-                                >
-                                    {authMode === "register" ? "Konto erstellen" : "Einloggen"}
+                                <button type="submit" style={{ ...inputStyle, backgroundColor: "#e62b2b", border: "none", fontWeight: "bold" }}>
+                                    {authMode === "register" ? "Registrieren" : "Einloggen"}
                                 </button>
                             </form>
                         )}
+
+                        <div style={{ marginTop: "12px", display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                            {MOCK_USERS.map((mu) => (
+                                <button
+                                    key={mu.id}
+                                    type="button"
+                                    onClick={() => quickMockLogin(mu)}
+                                    style={{ fontSize: "11px", padding: "5px 8px", cursor: "pointer" }}
+                                >
+                                    <Building2 size={12} style={{ verticalAlign: "middle", marginRight: "4px" }} />
+                                    {mu.firmaOderName}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
             )}

@@ -1,130 +1,189 @@
-import React, { createContext, useState } from 'react';
-import Keypad from '../pages/KeyPad.jsx';
-import Header from '../pages/Header.jsx';
-import Display from '../pages/Display.jsx';
-import '../Styles/Calculator.css';
-import '../Styles/theme-1.css';
-import '../Styles/theme-2.css';
-import '../Styles/theme-3.css';
-import '../Styles/theme-4.css';
+        import React, { createContext, useState } from 'react';
+        import Keypad from '../pages/KeyPad.jsx';
+        import '../Styles/Calculator.css';
+        import '../Styles/theme-1.css';
+        import '../Styles/theme-2.css';
+        import '../Styles/theme-3.css';
+        import '../Styles/theme-4.css';
 
-// 1. Context exportieren, damit untergeordnete Komponenten darauf zugreifen können
-export const ThemeContext = createContext("1");
+        export const ThemeContext = createContext({
+            theme: "1",
+            setTheme: () => {},
+        });
 
-export default function Calculator() {
-    const [currentInput, setCurrentInput] = useState("0");
-    const [theme, setTheme] = useState("1"); // Standard-Theme ist "1"
+        const OPERATORS = ["+", "-", "*", "/"];
 
-    // Zeichen / Ziffern hinzufügen
-    const addChar = (char) => {
-        setCurrentInput(prev => (prev === "0" ? String(char) : prev + char));
-    };
+        function evaluateExpression(expr) {
+            const normalized = expr
+                .replace(/×/g, "*")
+                .replace(/÷/g, "/")
+                .replace(/,/g, ".")
+                .trim();
 
-    // Letztes Zeichen löschen (Backspace)
-    const delChar = () => {
-        setCurrentInput(prev => (prev.length > 1 ? prev.slice(0, -1) : "0"));
-    };
+            if (!normalized) return 0;
 
-    // Alles zurücksetzen (AC / RESET)
-    const reset = () => {
-        setCurrentInput("0");
-    };
+            // Nur Ziffern, Punkte, Operatoren, Klammern und Leerzeichen zulassen
+            if (!/^[0-9+\-*/().\s]+$/.test(normalized)) {
+                throw new Error("Ungültige Zeichen");
+            }
 
-    // Operatoren (+, -, *, /) hinzufügen
-    const handleOperator = (op) => {
-        setCurrentInput(prev => prev + " " + op + " ");
-    };
+            // Kein führender/abschließender binärer Operator außer '-' am Anfang
+            const cleaned = normalized.replace(/[+\-*/.\s]+$/, "");
+            if (!cleaned) return 0;
 
-    // Quadrat-Berechnung (x²) - Korrigiert
-    const handleSquare = () => {
-        const value = parseFloat(currentInput);
-        if (!isNaN(value)) {
-            setCurrentInput(String(value * value));
+            const result = Function(`"use strict"; return (${cleaned});`)();
+            if (typeof result !== "number" || !Number.isFinite(result)) {
+                throw new Error("Ungültiges Ergebnis");
+            }
+
+            // Rundungsartefakte wie 0.1 + 0.2 = 0.30000000000000004 abmildern
+            return Number(result.toPrecision(12));
         }
-    };
 
-    // Prozent-Berechnung
-    const handlePercent = () => {
-        const value = parseFloat(currentInput);
-        if (!isNaN(value)) {
-            setCurrentInput(String(value / 100));
-        }
-    };
+        export default function Calculator() {
+            const [currentInput, setCurrentInput] = useState("0");
+            const [theme, setTheme] = useState("1");
 
-    // Quadratwurzel-Berechnung
-    const handleSqrt = () => {
-        const value = parseFloat(currentInput);
-        if (!isNaN(value) && value >= 0) {
-            setCurrentInput(String(Math.sqrt(value)));
-        } else {
-            alert(`Fehler: Ungültiger Wert für die Wurzel (${currentInput})`);
-        }
-    };
+            const addChar = (char) => {
+                const token = String(char);
 
-    // Ergebnis berechnen (=)
-    const handleEquals = () => {
-        try {
-            const result = eval(currentInput);
-            setCurrentInput(String(result));
-        } catch (error) {
-            alert("Ungültige Berechnung");
-            setCurrentInput("0");
-        }
-    };
+                setCurrentInput((prev) => {
+                    if (token === ".") {
+                        const parts = prev.split(/[\s+\-*/]+/);
+                        const lastPart = parts[parts.length - 1] || "";
+                        if (lastPart.includes(".")) return prev;
+                        return prev + ".";
+                    }
 
-    return (
-        <ThemeContext.Provider value={theme}>
-            <div className={`calc-wrapper theme-${theme}-main`}>
-                <div className="calc-container">
+                    if (prev === "0") {
+                        return token;
+                    }
+                    return prev + token;
+                });
+            };
 
-                    {/* Header mit Logo und Theme-Switch für 4 Themes */}
-                    <div className="calc-header">
-                        <div className={`header-logo theme-${theme}-header-logo`}>Online Rechner</div>
-                        <div className="calc-header-switch">
-                            <span className={`header-switch-prompt theme-${theme}-header-switch-prompt`}>THEME</span>
-                            <div style={{ position: 'relative', marginBottom: '30px' }}>
-                                {/* Zahlen 1 bis 4 */}
-                                <div className="header-switch-positions" style={{ display: 'flex', justifyContent: 'space-between', padding: '0 4px', marginBottom: '30px' }}>
-                                    <span className={`theme-${theme}-header-switch-position`}>1</span>
-                                    <span className={`theme-${theme}-header-switch-position`}>2</span>
-                                    <span className={`theme-${theme}-header-switch-position`}>3</span>
-                                    <span className={`theme-${theme}-header-switch-position`}>4</span>
-                                </div>
-                                <div className={`header-switch-container theme-${theme}-header-switch-container`}>
-                                    {/* Klickbare Bereiche für die Themes 1 bis 4 */}
-                                    <div className="ghost ghost-1" onClick={() => setTheme("1")}></div>
-                                    <div className="ghost ghost-2" onClick={() => setTheme("2")}></div>
-                                    <div className="ghost ghost-3" onClick={() => setTheme("3")}></div>
-                                    <div className="ghost ghost-4" onClick={() => setTheme("4")}></div>
+            const delChar = () => {
+                setCurrentInput((prev) => {
+                    if (prev.length <= 1) return "0";
+                    // Falls am Ende ein Leerzeichen steht (z. B. nach " + "), ganzen Operatorblock entfernen
+                    if (prev.endsWith(" ")) {
+                        const trimmed = prev.trimEnd();
+                        const lastSpace = trimmed.lastIndexOf(" ");
+                        return lastSpace === -1 ? "0" : trimmed.slice(0, lastSpace);
+                    }
+                    const next = prev.slice(0, -1);
+                    return next.trim() === "" ? "0" : next;
+                });
+            };
 
-                                    {/* Schieber / Toggle */}
-                                    <div className={`header-switch-toggle theme-${theme}-header-switch-toggle toggle-position-${theme}`}></div>
+            const reset = () => {
+                setCurrentInput("0");
+            };
+
+            const handleOperator = (op) => {
+                const symbol = op === "×" ? "*" : op === "÷" ? "/" : op;
+                if (!OPERATORS.includes(symbol)) return;
+
+                setCurrentInput((prev) => {
+                    const trimmed = prev.trimEnd();
+                    const lastChar = trimmed.slice(-1);
+
+                    if (OPERATORS.includes(lastChar)) {
+                        return trimmed.slice(0, -1) + symbol + " ";
+                    }
+                    return `${trimmed} ${symbol} `;
+                });
+            };
+
+            const handleSquare = () => {
+                try {
+                    const value = evaluateExpression(currentInput);
+                    setCurrentInput(String(Number((value * value).toPrecision(12))));
+                } catch {
+                    alert("Ungültige Eingabe für x²");
+                }
+            };
+
+            const handlePercent = () => {
+                try {
+                    const value = evaluateExpression(currentInput);
+                    setCurrentInput(String(Number((value / 100).toPrecision(12))));
+                } catch {
+                    alert("Ungültige Eingabe für %");
+                }
+            };
+
+            const handleSqrt = () => {
+                try {
+                    const value = evaluateExpression(currentInput);
+                    if (value < 0) {
+                        alert(`Fehler: Ungültiger Wert für die Wurzel (${value})`);
+                        return;
+                    }
+                    setCurrentInput(String(Number(Math.sqrt(value).toPrecision(12))));
+                } catch {
+                    alert(`Fehler: Ungültiger Wert für die Wurzel (${currentInput})`);
+                }
+            };
+
+            const handleEquals = () => {
+                try {
+                    const result = evaluateExpression(currentInput);
+                    setCurrentInput(String(result));
+                } catch {
+                    alert("Ungültige Berechnung");
+                    setCurrentInput("0");
+                }
+            };
+
+            return (
+                <ThemeContext.Provider value={{ theme, setTheme }}>
+                    <div className={`calc-wrapper theme-${theme}-main`}>
+                        <div className="calc-container">
+
+                            <div className="calc-header">
+                                <div className={`header-logo theme-${theme}-header-logo`}>Online Rechner</div>
+                                <div className="calc-header-switch">
+                                    <span className={`header-switch-prompt theme-${theme}-header-switch-prompt`}>THEME</span>
+                                    <div style={{ position: 'relative', marginBottom: '30px' }}>
+                                        <div className="header-switch-positions" style={{ display: 'flex', justifyContent: 'space-between', padding: '0 4px', marginBottom: '30px' }}>
+                                            {["1", "2", "3", "4"].map((t) => (
+                                                <span key={t} className={`theme-${theme}-header-switch-position`}>{t}</span>
+                                            ))}
+                                        </div>
+                                        <div className={`header-switch-container theme-${theme}-header-switch-container`}>
+                                            {["1", "2", "3", "4"].map((t) => (
+                                                <div
+                                                    key={t}
+                                                    className={`ghost ghost-${t}`}
+                                                    onClick={() => setTheme(t)}
+                                                />
+                                            ))}
+                                            <div className={`header-switch-toggle theme-${theme}-header-switch-toggle toggle-position-${theme}`} />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+
+                            <div className={`display theme-${theme}-display`}>
+                                <div className="display-text">{currentInput}</div>
+                            </div>
+
+                            <div className={`keypad theme-${theme}-keypad`}>
+                                <Keypad
+                                    addChar={addChar}
+                                    delChar={delChar}
+                                    reset={reset}
+                                    handleOperator={handleOperator}
+                                    handleSquare={handleSquare}
+                                    handlePercent={handlePercent}
+                                    handleSqrt={handleSqrt}
+                                    handleEquals={handleEquals}
+                                />
+                            </div>
+
                         </div>
                     </div>
-
-                    {/* Display */}
-                    <div className={`display theme-${theme}-display`}>
-                        <div className="display-text">{currentInput}</div>
-                    </div>
-
-                    {/* Keypad */}
-                    <div className={`keypad theme-${theme}-keypad`}>
-                        <Keypad
-                            addChar={addChar}
-                            delChar={delChar}
-                            reset={reset}
-                            handleOperator={handleOperator}
-                            handleSquare={handleSquare}
-                            handlePercent={handlePercent}
-                            handleSqrt={handleSqrt}
-                            handleEquals={handleEquals}
-                        />
-                    </div>
-
-                </div>
-            </div>
-        </ThemeContext.Provider>
-    );
-}
+                </ThemeContext.Provider>
+            );
+        }

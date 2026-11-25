@@ -89,9 +89,27 @@
       } else if(path.includes('/locarno')){
         title = "Locarno-Titocci Metalconstrutioni SAGL"
         description = "Übersicht über Imobillienhäuse in Locarno.";
-      } else if(path.includes('/calculator')){
-        title="Online Calculator- Titocci Metalconstruzione SAGL";
-        description="Der ultimative Online-Preisrechner für die Titocci Metalconstruzione SAGL erstellt mit allen Operationen integriert!";
+
+      }
+
+      else if (path.includes('/calculatori')) {
+        title = "Online Immobilien Preisrechner - Titocci Metalcostruzioni SAGL";
+        description = "Immobilien- und Metallbau-Preisrechner für Richtpreise, Eigenmittel und Finanzierung.";
+      } else if (path.includes('/calculator')) {
+        title = "Online Calculator - Titocci Metalcostruzioni SAGL";
+        description = "Der Online-Preisrechner für Titocci Metalcostruzioni SAGL mit allen Berechnungsfunktionen.";
+
+
+      else if (path.includes('/imobiliaportale')) {
+        title = "Immobilienportal - Titocci Metalcostruzioni SAGL";
+        description = "B2B- und Immobilienportal für Verwaltungen, Aufmass-Termine und Metallbau-Offerten im Tessin und der Schweiz.";
+      }
+      else if (path.includes('/customers')) {
+        title = "Kundenansicht - Titocci Metalcostruzioni SAGL";
+        description = "Kundenbereich und Projektübersicht für Auftraggeber von Titocci Metalcostruzioni SAGL.";
+
+      else if(path.includes('/imobiliaportale')){
+
       }
 
       document.title = title;

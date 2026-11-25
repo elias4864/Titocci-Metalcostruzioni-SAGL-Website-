@@ -4,10 +4,8 @@ import { HelmetProvider } from 'react-helmet-async';
 import { Lock } from 'lucide-react';
 import  App from '../App.jsx';
 
-/**
- * Storage Key for Users
- * @type {string}
- */
+
+
 const STORAGE_USERS_KEY = 'titocci_kunden';
 const STORAGE_CURRENT_USER_KEY = 'titocci_current_user';
 
