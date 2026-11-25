@@ -94,6 +94,12 @@ export default function HousePriceCalculator() {
     const [imagePreview, setImagePreview] = useState(null);
     const [isOpen, setIsOpen] = useState(true);
     const [isSending, setIsSending] = useState(false);
+    const[aiAnalysis, setAiAnalysis] = useState(null);
+    const [isAiLoading, setIsAiLoading] = useState(false);
+    const [aiError, setAiError] = useState('');
+    const [aiQuestion, setAiQuestion] = useState('');
+    const [aiReply, setAiReply] = useState('');
+
 
     const [uploadedPdf, setUploadedPdf] = useState(null);
     const [pdfError, setPdfError] = useState('');
@@ -106,7 +112,7 @@ export default function HousePriceCalculator() {
     const pdfUrlRef = useRef(null);
     const currentYear = new Date().getFullYear();
 
-    const currentGroesse = useMemo(() => getGroesseCategory(qm), [qm]);
+    const currentGroesse = useMemo(() => getGroesseCategory(Number(qm) || 0), [qm]);
 
     const setPdfObjectUrl = (nextUrl) => {
         if (pdfUrlRef.current) {
@@ -131,6 +137,114 @@ export default function HousePriceCalculator() {
                 el.focus({ preventScroll: true });
             }
         });
+    };
+
+
+    const buildLocalAiAnalysis = (data, hasImage) => {
+        const currentYear = new Date().getFullYear();
+        const age = Math.max(0, currentYear - (Number(data.year) || currentYear));
+        const plausibilityNotes = [];
+
+        if (data.condition === 'new' && age > 5) {
+            plausibilityNotes.push(
+                `Hinweis: Der Zustand „Neubau / Erstbezug“ passt kaum zum Baujahr ${data.year} (Alter ca. ${age} Jahre).`
+            );
+        }
+        if (data.condition === 'need_repair' && age < 5) {
+            plausibilityNotes.push(
+                `Hinweis: „Renovierungsbedürftig“ bei Baujahr ${data.year} ist untypisch – bitte Baujahr oder Zustand prüfen.`
+            );
+        }
+        if (Number(data.zinssatz) > 5) {
+            plausibilityNotes.push(
+                `Hinweis: Ein Zinssatz von ${data.zinssatz}% liegt über dem üblichen Richtwert – die monatliche Zinsbelastung fällt entsprechend höher aus.`
+            );
+        }
+        if (plausibilityNotes.length === 0) {
+            plausibilityNotes.push('Alle Eingaben sind plausibel und stimmig zueinander.');
+        }
+
+        const recommendations = [
+            age >= 20
+                ? 'Bei einem Objektalter ab ca. 20 Jahren lohnt sich ein Blick auf Heizung, Fenster, Dach und Fassade (Renovations- & Sanierungsbudget einplanen).'
+                : 'Bei neueren Objekten empfiehlt sich vor allem die Prüfung von Gewährleistung, Nebenkosten und langfristigem Unterhalt.',
+            `Mit 20 % Eigenkapital (${Math.round(data.eigenkapital20).toLocaleString('de-CH')} CHF) liegt die geschätzte monatliche Zinsbelastung bei rund ${Math.round(data.monatlicherZins).toLocaleString('de-CH')} CHF.`
+        ];
+
+        if (hasImage) {
+            recommendations.push(
+                'Ein Objektfoto wurde hochgeladen – ideal als Ergänzung für eine Vorab-Einschätzung von Bausubstanz und Umgebung.'
+            );
+        }
+
+        return {
+            generatedAt: new Date().toLocaleString('de-CH'),
+            headline: `KI-Einschätzung für ${data.cantonName} (${data.qm} m²)`,
+            summary: `Geschätzter Gesamtwert von ${Math.round(data.totalPrice).toLocaleString('de-CH')} CHF (${Math.round(data.pricePerQm).toLocaleString('de-CH')} CHF / m²) in der Lage „${data.locationName}“ (${data.conditionName}).`,
+            plausibilityNotes,
+            recommendations
+        };
+    };
+
+    const handleRunAiAnalysis = async () => {
+        if (!result) {
+            setAiError('Bitte führe zuerst eine Immobilienwert-Berechnung durch.');
+            return;
+        }
+
+        setIsAiLoading(true);
+        setAiError('');
+        setAiReply('');
+
+        try {
+            // Simuliert eine asynchrone Analyse (kann später durch einen echten API-Call ersetzt werden)
+            await new Promise((resolve) => setTimeout(resolve, 350));
+            const analysis = buildLocalAiAnalysis(result, Boolean(imagePreview));
+            setAiAnalysis(analysis);
+        } catch (error) {
+            console.error('Fehler bei der KI-Analyse:', error);
+            setAiError('Die KI-Analyse konnte nicht erstellt werden.');
+        } finally {
+            setIsAiLoading(false);
+        }
+    };
+
+    const handleAskAiQuestion = async (e) => {
+        if (e) e.preventDefault();
+
+        const trimmedQuestion = aiQuestion.trim();
+        if (!trimmedQuestion) {
+            setAiError('Bitte gib zuerst eine Frage ein.');
+            return;
+        }
+        if (!result) {
+            setAiError('Bitte berechne zuerst einen Immobilienwert, damit sich die KI auf deine Daten beziehen kann.');
+            return;
+        }
+
+        setIsAiLoading(true);
+        setAiError('');
+
+        try {
+            await new Promise((resolve) => setTimeout(resolve, 250));
+            const qLower = trimmedQuestion.toLowerCase();
+
+            let answer;
+            if (qLower.includes('eigenkapital') || qLower.includes('zins') || qLower.includes('hypothek')) {
+                answer = `Bei einem Gesamtwert von ${Math.round(result.totalPrice).toLocaleString('de-CH')} CHF entsprechen 20 % Eigenkapital rund ${Math.round(result.eigenkapital20).toLocaleString('de-CH')} CHF. Bei ${result.zinssatz}% Zinssatz liegt die monatliche Zinsbelastung bei ca. ${Math.round(result.monatlicherZins).toLocaleString('de-CH')} CHF (ohne Amortisation und Nebenkosten).`;
+            } else if (qLower.includes('renov') || qLower.includes('sanier') || qLower.includes('baujahr')) {
+                answer = `Das Objekt hat Baujahr ${result.year} und ist als „${result.conditionName}“ eingestuft. Besonders bei älteren Liegenschaften sollten energetische Massnahmen, Küche/Bäder und Leitungen im Budget berücksichtigt werden.`;
+            } else {
+                answer = `Zur aktuellen Berechnung (${result.qm} m², ${result.cantonName}, ${result.locationName}) liegt der Richtwert bei ${Math.round(result.totalPrice).toLocaleString('de-CH')} CHF (${Math.round(result.pricePerQm).toLocaleString('de-CH')} CHF/m²). Du kannst gerne gezielt nach Eigenkapital, Zinsen oder Sanierung fragen.`;
+            }
+
+            setAiReply(answer);
+        } catch (error) {
+            console.error('Fehler bei der KI-Rückfrage:', error);
+            setAiError('Antwort auf die Frage konnte nicht erzeugt werden.');
+        } finally {
+            setIsAiLoading(false);
+        }
     };
 
     const handleImageChange = async (e) => {
@@ -193,8 +307,6 @@ export default function HousePriceCalculator() {
         }
     };
 
-
-
     const escapeXml = (value) =>
         String(value ?? '')
             .replace(/&/g, '&amp;')
@@ -202,6 +314,59 @@ export default function HousePriceCalculator() {
             .replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&apos;');
+
+    const buildSummaryText = (data) =>
+        [
+            `Immobilien-Marktwertanalyse (${data.date}) – Titocci Metalcostruzioni SAGL`,
+            '--------------------------------------------------',
+            `Gesamtwert: ${Math.round(data.totalPrice).toLocaleString('de-CH')} CHF (${Math.round(data.pricePerQm).toLocaleString('de-CH')} CHF / m²)`,
+            `Wohnfläche: ${data.qm} m² (${data.groesseName})`,
+            `Kanton / Region: ${data.cantonName}`,
+            `Lage: ${data.locationName}`,
+            `Zustand: ${data.conditionName}`,
+            `Baujahr: ${data.year}`,
+            `Personen: ${data.personen}`,
+            `Eigenkapital (20%): ${Math.round(data.eigenkapital20).toLocaleString('de-CH')} CHF`,
+            `Monatliche Zinsbelastung (${data.zinssatz}%): ~${Math.round(data.monatlicherZins).toLocaleString('de-CH')} CHF`,
+            `E-Mail: ${data.email}`,
+            data.phone ? `Telefon: ${data.phone}` : null,
+            data.pdfName ? `PDF-Dokument: ${data.pdfName}` : null,
+        ]
+            .filter(Boolean)
+            .join('\n');
+
+    const buildMarkdownText = (data) =>
+        [
+            `# Immobilien-Marktwertanalyse (${data.date})`,
+            `**Anbieter:** Titocci Metalcostruzioni SAGL`,
+            '',
+            `| Kennzahl | Wert |`,
+            `| --- | --- |`,
+            `| Geschätzter Gesamtwert | **${Math.round(data.totalPrice).toLocaleString('de-CH')} CHF** |`,
+            `| Preis pro m² | ${Math.round(data.pricePerQm).toLocaleString('de-CH')} CHF / m² |`,
+            `| Wohnfläche | ${data.qm} m² (${data.groesseName}) |`,
+            `| Kanton / Region | ${data.cantonName} |`,
+            `| Lage | ${data.locationName} |`,
+            `| Zustand | ${data.conditionName} |`,
+            `| Baujahr | ${data.year} |`,
+            `| Personen | ${data.personen} |`,
+            `| Eigenkapital (20%) | ${Math.round(data.eigenkapital20).toLocaleString('de-CH')} CHF |`,
+            `| Monatliche Zinsbelastung (${data.zinssatz}%) | ~${Math.round(data.monatlicherZins).toLocaleString('de-CH')} CHF |`,
+            `| E-Mail | ${data.email} |`,
+            `| Telefon | ${data.phone || 'Keine'} |`,
+            `| PDF-Dokument | ${data.pdfName || 'Keines'} |`,
+        ].join('\n');
+
+    const triggerDownload = (content, mimeType, extension) => {
+        if (!result) return;
+        const blob = new Blob([content], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Immobilien-Bewertung-${result.canton}-${new Date().toISOString().slice(0, 10)}.${extension}`;
+        link.click();
+        URL.revokeObjectURL(url);
+    };
 
     const handleExportXml = () => {
         if (!result) return;
@@ -234,41 +399,14 @@ export default function HousePriceCalculator() {
         triggerDownload(xmlContent, 'application/xml;charset=utf-8;', 'xml');
     };
 
-
-    const buildSummaryText = (data) =>
-        [
-            `Immobilien-Marktwertanalyse (${data.date}) – Titocci Metalcostruzioni SAGL`,
-            '--------------------------------------------------',
-            `Gesamtwert: ${Math.round(data.totalPrice).toLocaleString('de-CH')} CHF (${Math.round(data.pricePerQm).toLocaleString('de-CH')} CHF / m²)`,
-            `Wohnfläche: ${data.qm} m² (${data.groesseName})`,
-            `Kanton / Region: ${data.cantonName}`,
-            `Lage: ${data.locationName}`,
-            `Zustand: ${data.conditionName}`,
-            `Baujahr: ${data.year}`,
-            `Personen: ${data.personen}`,
-            `Eigenkapital (20%): ${Math.round(data.eigenkapital20).toLocaleString('de-CH')} CHF`,
-            `Monatliche Zinsbelastung (${data.zinssatz}%): ~${Math.round(data.monatlicherZins).toLocaleString('de-CH')} CHF`,
-            `E-Mail: ${data.email}`,
-            data.phone ? `Telefon: ${data.phone}` : null,
-            data.pdfName ? `PDF-Dokument: ${data.pdfName}` : null,
-        ]
-            .filter(Boolean)
-            .join('\n');
-
-    const triggerDownload = (content, mimeType, extension) => {
-        if (!result) return;
-        const blob = new Blob([content], { type: mimeType });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `Immobilien-Bewertung-${result.canton}-${new Date().toISOString().slice(0, 10)}.${extension}`;
-        link.click();
-        URL.revokeObjectURL(url);
-    };
-
     const handleExportTxt = () => {
         if (!result) return;
         triggerDownload(buildSummaryText(result), 'text/plain;charset=utf-8;', 'txt');
+    };
+
+    const handleExportMd = () => {
+        if (!result) return;
+        triggerDownload(buildMarkdownText(result), 'text/markdown;charset=utf-8;', 'md');
     };
 
     const triggerPdfDownload = () => {
@@ -368,7 +506,6 @@ export default function HousePriceCalculator() {
         attachedPdfName
     ) => {
         if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
-            alert('EmailJS ist nicht vollständig konfiguriert (VITE_EMAILJS_* Variablen prüfen).');
             return;
         }
 
@@ -410,13 +547,8 @@ export default function HousePriceCalculator() {
                 templateParams,
                 EMAILJS_PUBLIC_KEY
             );
-            alert(
-                `Der Bericht wurde erfolgreich an ${email.trim()} und an Titocci Metalcostruzioni gesendet!`
-            );
         } catch (error) {
             console.error('Fehler beim E-Mail-Versand:', error);
-            const detail = error?.text || error?.message || 'Unbekannter Fehler';
-            alert(`Beim Senden des Berichts ist ein Fehler aufgetreten: ${detail}`);
         } finally {
             setIsSending(false);
         }
@@ -426,7 +558,10 @@ export default function HousePriceCalculator() {
         e.preventDefault();
 
         const trimmedEmail = email.trim();
-        if (!qm===10 || qm <= 0) {
+        const numericQm = Number(qm);
+        const numericPersonen = Number(personen);
+
+        if (!numericQm || numericQm <= 0) {
             alert('Bitte gib eine gültige Wohnfläche ein.');
             return;
         }
@@ -435,25 +570,23 @@ export default function HousePriceCalculator() {
             focusEmailField();
             return;
         }
-
-        if(!personen===0){
-            alert("Gib bitte eine Person ein fü eine gültige Berechnung!");
+        if (!numericPersonen || numericPersonen < 1) {
+            alert('Gib bitte mindestens 1 Person für eine gültige Berechnung ein.');
             return;
         }
-
-
 
         const safeLocation = LOCATION_FACTORS[location] || LOCATION_FACTORS.suburb;
         const safeCanton = CANTON_FACTORS[canton] || CANTON_FACTORS.CH;
         const safeCondition = CONDITION_FACTORS[condition] || CONDITION_FACTORS.good;
+        const groesseCat = getGroesseCategory(numericQm);
 
         const base = safeLocation.basePrice;
         const cantonFactor = safeCanton.factor;
         const conditionMult = safeCondition.multiplier;
-        const groesseFactor = currentGroesse.multiplier;
+        const groesseFactor = groesseCat.multiplier;
 
         const safeYear = Math.min(currentYear, Math.max(1850, Number(year) || currentYear));
-        const safePersonen = Math.max(1, Number(personen) || 1);
+        const safePersonen = Math.max(1, numericPersonen);
         const safeZins = Math.max(0, Number(zinssatz) || 0);
 
         const age = Math.max(0, currentYear - safeYear);
@@ -469,21 +602,21 @@ export default function HousePriceCalculator() {
             ageFactor *
             personenFactor *
             zinsFactor;
-        const totalPrice = pricePerQm * qm;
+        const totalPrice = pricePerQm * numericQm;
 
         const jahresZins = totalPrice * (safeZins / 100);
         const monatlicherZins = jahresZins / 12;
         const eigenkapital20 = totalPrice * 0.20;
 
         const calculationResult = {
-            qm,
+            qm: numericQm,
             canton,
             cantonName: safeCanton.name,
             location,
             locationName: safeLocation.name,
             condition,
             conditionName: safeCondition.name,
-            groesseName: currentGroesse.name,
+            groesseName: groesseCat.name,
             year: safeYear,
             personen: safePersonen,
             zinssatz: safeZins,
@@ -508,10 +641,21 @@ export default function HousePriceCalculator() {
         );
     };
 
+    const exportBtnStyle = (bgColor) => ({
+        backgroundColor: bgColor,
+        color: '#ffffff',
+        border: 'none',
+        borderRadius: '8px',
+        padding: '8px 12px',
+        fontSize: '12px',
+        fontWeight: 600,
+        cursor: 'pointer',
+    });
+
     return (
         <div
             style={{
-                maxWidth: '540px',
+                maxWidth: '580px',
                 margin: '20px auto',
                 padding: '24px',
                 fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
@@ -520,8 +664,6 @@ export default function HousePriceCalculator() {
                     'linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(241, 245, 249, 0.92))',
                 border: '1px solid #e2e8f0',
                 boxShadow: '0 10px 25px -5px rgba(15, 23, 42, 0.08)',
-                color: '#cda60f',
-                backgroundCOlor:'#b67a08'
             }}
         >
             <SEO title="Immobilienrechner - Titocci Metalcostruzioni SAGL" />
@@ -534,10 +676,11 @@ export default function HousePriceCalculator() {
                     marginBottom: isOpen ? '20px' : '0',
                     padding: '12px 16px',
                     borderRadius: '12px',
-                    backgroundColor: '#e6920a',
+                    backgroundColor: '#0f172a',
+                    color: '#ffffff',
                 }}
             >
-                <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 700 ,color:'rgb(209 9 56 / 0.89)'}}>
+                <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 700 }}>
                     Immobilienrechner
                 </h2>
                 <button
@@ -566,12 +709,7 @@ export default function HousePriceCalculator() {
                     <div>
                         <label
                             htmlFor="imageUploadInput"
-                            style={{
-                                display: 'block',
-                                marginBottom: '6px',
-                                fontWeight: 600,
-                                fontSize: '14px',
-                            }}
+                            style={{ display: 'block', marginBottom: '6px', fontWeight: 600, fontSize: '14px' }}
                         >
                             Foto der Immobilie hochladen:
                         </label>
@@ -583,13 +721,7 @@ export default function HousePriceCalculator() {
                             style={{ width: '100%', boxSizing: 'border-box' }}
                         />
                         {imagePreview && (
-                            <div
-                                style={{
-                                    marginTop: '10px',
-                                    position: 'relative',
-                                    textAlign: 'center',
-                                }}
-                            >
+                            <div style={{ marginTop: '10px', position: 'relative', textAlign: 'center' }}>
                                 <img
                                     src={imagePreview}
                                     alt="Vorschau"
@@ -632,12 +764,7 @@ export default function HousePriceCalculator() {
                     >
                         <label
                             htmlFor="pdfUploadInput"
-                            style={{
-                                display: 'block',
-                                marginBottom: '6px',
-                                fontWeight: 600,
-                                fontSize: '14px',
-                            }}
+                            style={{ display: 'block', marginBottom: '6px', fontWeight: 600, fontSize: '14px' }}
                         >
                             Dokument / Grundriss (PDF) hochladen (max. 10 MB):
                         </label>
@@ -650,14 +777,7 @@ export default function HousePriceCalculator() {
                             style={{ width: '100%', boxSizing: 'border-box' }}
                         />
                         {pdfError && (
-                            <p
-                                style={{
-                                    color: '#dc2626',
-                                    fontSize: '13px',
-                                    margin: '6px 0 0 0',
-                                    fontWeight: 600,
-                                }}
-                            >
+                            <p style={{ color: '#dc2626', fontSize: '13px', margin: '6px 0 0 0', fontWeight: 600 }}>
                                 {pdfError}
                             </p>
                         )}
@@ -728,10 +848,7 @@ export default function HousePriceCalculator() {
                     </div>
 
                     <div>
-                        <label
-                            htmlFor="emailInput"
-                            style={{ display: 'block', marginBottom: '6px', fontWeight: 600, fontSize: '14px' }}
-                        >
+                        <label htmlFor="emailInput" style={{ display: 'block', marginBottom: '6px', fontWeight: 600, fontSize: '14px' }}>
                             E-Mail-Adresse:
                         </label>
                         <input
@@ -742,21 +859,12 @@ export default function HousePriceCalculator() {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
-                            style={{
-                                width: '100%',
-                                padding: '10px 12px',
-                                borderRadius: '8px',
-                                border: '1px solid #cbd5e1',
-                                boxSizing: 'border-box',
-                            }}
+                            style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', boxSizing: 'border-box' }}
                         />
                     </div>
 
                     <div>
-                        <label
-                            htmlFor="phoneInput"
-                            style={{ display: 'block', marginBottom: '6px', fontWeight: 600, fontSize: '14px' }}
-                        >
+                        <label htmlFor="phoneInput" style={{ display: 'block', marginBottom: '6px', fontWeight: 600, fontSize: '14px' }}>
                             Ihre Telefonnummer:
                         </label>
                         <input
@@ -766,93 +874,58 @@ export default function HousePriceCalculator() {
                             value={phone}
                             required
                             onChange={(e) => setPhone(e.target.value)}
-                            style={{
-                                width: '100%',
-                                padding: '10px 12px',
-                                borderRadius: '8px',
-                                border: '1px solid #cbd5e1',
-                                boxSizing: 'border-box',
-                            }}
+                            style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', boxSizing: 'border-box' }}
                         />
                     </div>
 
                     <div>
-                        <div
-                            style={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                marginBottom: '6px',
-                            }}
-                        >
-                            <label htmlFor="qmRange" style={{ fontWeight: 600, fontSize: '14px' }}>
-                                Wohnfläche (m²):
-                            </label>
-                            <span style={{ fontWeight: 700, color: '#2563eb' }}>{qm} m²</span>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '14px', fontWeight: 600 }}>
+                            <label htmlFor="qmInput">Wohnfläche (m²): {currentGroesse.name}</label>
+                            <span>{qm} m²</span>
                         </div>
                         <input
-                            id="qmRange"
-                            type="range"
-                            min="10"
-                            max="300"
+                            id="qmInput"
+                            type="number"
+                            min="1"
+                            max="2000"
                             value={qm}
-                            onChange={(e) => setQm(Number(e.target.value))}
-                            style={{ width: '100%', cursor: 'pointer' }}
+                            onChange={(e) => setQm(e.target.value)}
+                            style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', boxSizing: 'border-box' }}
                         />
-                        <span style={{ fontSize: '12px', color: '#64748b' }}>
-                            Kategorie: {currentGroesse.name}
-                        </span>
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                         <div>
-                            <label
-                                htmlFor="cantonSelect"
-                                style={{ display: 'block', marginBottom: '6px', fontWeight: 600, fontSize: '14px' }}
-                            >
+                            <label htmlFor="cantonSelect" style={{ display: 'block', marginBottom: '6px', fontWeight: 600, fontSize: '14px' }}>
                                 Kanton / Region:
                             </label>
                             <select
                                 id="cantonSelect"
                                 value={canton}
                                 onChange={(e) => setCanton(e.target.value)}
-                                style={{
-                                    width: '100%',
-                                    padding: '10px 12px',
-                                    borderRadius: '8px',
-                                    border: '1px solid #cbd5e1',
-                                    backgroundColor: '#fff',
-                                }}
+                                style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', boxSizing: 'border-box' }}
                             >
-                                {Object.entries(CANTON_FACTORS).map(([key, val]) => (
-                                    <option key={key} value={key}>
-                                        {val.name}
+                                {Object.entries(CANTON_FACTORS).map(([code, item]) => (
+                                    <option key={code} value={code}>
+                                        {item.name}
                                     </option>
                                 ))}
                             </select>
                         </div>
 
                         <div>
-                            <label
-                                htmlFor="locationSelect"
-                                style={{ display: 'block', marginBottom: '6px', fontWeight: 600, fontSize: '14px' }}
-                            >
+                            <label htmlFor="locationSelect" style={{ display: 'block', marginBottom: '6px', fontWeight: 600, fontSize: '14px' }}>
                                 Lage:
                             </label>
                             <select
                                 id="locationSelect"
                                 value={location}
                                 onChange={(e) => setLocation(e.target.value)}
-                                style={{
-                                    width: '100%',
-                                    padding: '10px 12px',
-                                    borderRadius: '8px',
-                                    border: '1px solid #cbd5e1',
-                                    backgroundColor: '#fff',
-                                }}
+                                style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', boxSizing: 'border-box' }}
                             >
-                                {Object.entries(LOCATION_FACTORS).map(([key, val]) => (
+                                {Object.entries(LOCATION_FACTORS).map(([key, item]) => (
                                     <option key={key} value={key}>
-                                        {val.name}
+                                        {item.name}
                                     </option>
                                 ))}
                             </select>
@@ -861,37 +934,25 @@ export default function HousePriceCalculator() {
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                         <div>
-                            <label
-                                htmlFor="conditionSelect"
-                                style={{ display: 'block', marginBottom: '6px', fontWeight: 600, fontSize: '14px' }}
-                            >
+                            <label htmlFor="conditionSelect" style={{ display: 'block', marginBottom: '6px', fontWeight: 600, fontSize: '14px' }}>
                                 Zustand:
                             </label>
                             <select
                                 id="conditionSelect"
                                 value={condition}
                                 onChange={(e) => setCondition(e.target.value)}
-                                style={{
-                                    width: '100%',
-                                    padding: '10px 12px',
-                                    borderRadius: '8px',
-                                    border: '1px solid #cbd5e1',
-                                    backgroundColor: '#fff',
-                                }}
+                                style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', boxSizing: 'border-box' }}
                             >
-                                {Object.entries(CONDITION_FACTORS).map(([key, val]) => (
+                                {Object.entries(CONDITION_FACTORS).map(([key, item]) => (
                                     <option key={key} value={key}>
-                                        {val.name}
+                                        {item.name}
                                     </option>
                                 ))}
                             </select>
                         </div>
 
                         <div>
-                            <label
-                                htmlFor="yearInput"
-                                style={{ display: 'block', marginBottom: '6px', fontWeight: 600, fontSize: '14px' }}
-                            >
+                            <label htmlFor="yearInput" style={{ display: 'block', marginBottom: '6px', fontWeight: 600, fontSize: '14px' }}>
                                 Baujahr:
                             </label>
                             <input
@@ -900,65 +961,41 @@ export default function HousePriceCalculator() {
                                 min="1850"
                                 max={currentYear}
                                 value={year}
-                                onChange={(e) => setYear(Number(e.target.value))}
-                                style={{
-                                    width: '100%',
-                                    padding: '10px 12px',
-                                    borderRadius: '8px',
-                                    border: '1px solid #cbd5e1',
-                                    boxSizing: 'border-box',
-                                }}
+                                onChange={(e) => setYear(e.target.value)}
+                                style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', boxSizing: 'border-box' }}
                             />
                         </div>
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                         <div>
-                            <label
-                                htmlFor="personenInput"
-                                style={{ display: 'block', marginBottom: '6px', fontWeight: 600, fontSize: '14px' }}
-                            >
+                            <label htmlFor="personenInput" style={{ display: 'block', marginBottom: '6px', fontWeight: 600, fontSize: '14px' }}>
                                 Personen:
                             </label>
                             <input
                                 id="personenInput"
                                 type="number"
                                 min="1"
-                                max="20"
+                                max="30"
                                 value={personen}
-                                onChange={(e) => setPersonen(Number(e.target.value))}
-                                style={{
-                                    width: '100%',
-                                    padding: '10px 12px',
-                                    borderRadius: '8px',
-                                    border: '1px solid #cbd5e1',
-                                    boxSizing: 'border-box',
-                                }}
+                                onChange={(e) => setPersonen(e.target.value)}
+                                style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', boxSizing: 'border-box' }}
                             />
                         </div>
 
                         <div>
-                            <label
-                                htmlFor="zinssatzInput"
-                                style={{ display: 'block', marginBottom: '6px', fontWeight: 600, fontSize: '14px' }}
-                            >
-                                Hypothekarzins (%):
+                            <label htmlFor="zinsInput" style={{ display: 'block', marginBottom: '6px', fontWeight: 600, fontSize: '14px' }}>
+                                Zinssatz (%):
                             </label>
                             <input
-                                id="zinssatzInput"
+                                id="zinsInput"
                                 type="number"
-                                step="0.05"
                                 min="0"
-                                max="15"
+                                max="20"
+                                step="0.05"
                                 value={zinssatz}
-                                onChange={(e) => setZinssatz(Number(e.target.value))}
-                                style={{
-                                    width: '100%',
-                                    padding: '10px 12px',
-                                    borderRadius: '8px',
-                                    border: '1px solid #cbd5e1',
-                                    boxSizing: 'border-box',
-                                }}
+                                onChange={(e) => setZinssatz(e.target.value)}
+                                style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', boxSizing: 'border-box' }}
                             />
                         </div>
                     </div>
@@ -967,7 +1004,7 @@ export default function HousePriceCalculator() {
                         type="submit"
                         disabled={isSending}
                         style={{
-                            backgroundColor: isSending ? '#94a3b8' : '#2563eb',
+                            backgroundColor: isSending ? '#64748b' : '#0f172a',
                             color: '#ffffff',
                             border: 'none',
                             padding: '12px 18px',
@@ -977,95 +1014,119 @@ export default function HousePriceCalculator() {
                             cursor: isSending ? 'not-allowed' : 'pointer',
                         }}
                     >
-                        {isSending ? 'Wird berechnet & gesendet...' : 'Berechnen & Bericht senden'}
+                        {isSending ? 'Berechne & sende...' : 'Immobilienwert berechnen'}
                     </button>
                 </form>
             )}
 
             {result && (
-                <div
-                    ref={reportRef}
-                    style={{
-                        marginTop: '24px',
-                        padding: '18px',
-                        borderRadius: '12px',
-                        backgroundColor: '#ffffff',
-                        border: '1px solid #cbd5e1',
-                    }}
-                >
-                    <h3 style={{ margin: '0 0 8px', fontSize: '17px' }}>
-                        Geschätzter Marktwert: {Math.round(result.totalPrice).toLocaleString('de-CH')} CHF
-                    </h3>
-                    <p style={{ margin: '0 0 12px', fontSize: '14px', color: '#475569' }}>
-                        ca. {Math.round(result.pricePerQm).toLocaleString('de-CH')} CHF / m² •{' '}
-                        {result.cantonName} • {result.locationName}
-                    </p>
-                    <div style={{ fontSize: '13px', color: '#334155', marginBottom: '14px' }}>
-                        <div>Eigenkapital (20%): {Math.round(result.eigenkapital20).toLocaleString('de-CH')} CHF</div>
-                        <div>
-                            Monatliche Zinsbelastung ({result.zinssatz}%): ~
-                            {Math.round(result.monatlicherZins).toLocaleString('de-CH')} CHF
-                        </div>
+                <div style={{ marginTop: '24px' }}>
+                    <div
+                        ref={reportRef}
+                        style={{
+                            padding: '18px',
+                            borderRadius: '12px',
+                            backgroundColor: '#ffffff',
+                            border: '1px solid #cbd5e1',
+                            color: '#0f172a',
+                        }}
+                    >
+                        <h3 style={{ margin: '0 0 12px 0', fontSize: '17px' }}>
+                            Auswertung ({result.date})
+                        </h3>
+                        <p style={{ margin: '4px 0', fontSize: '18px', fontWeight: 700, color: '#1d4ed8' }}>
+                            Gesamtwert: {Math.round(result.totalPrice).toLocaleString('de-CH')} CHF
+                        </p>
+                        <p style={{ margin: '4px 0', fontSize: '14px' }}>
+                            Preis pro m²: {Math.round(result.pricePerQm).toLocaleString('de-CH')} CHF / m²
+                        </p>
+                        <p style={{ margin: '4px 0', fontSize: '14px' }}>
+                            Eigenkapital (20%): {Math.round(result.eigenkapital20).toLocaleString('de-CH')} CHF
+                        </p>
+                        <p style={{ margin: '4px 0', fontSize: '14px' }}>
+                            Monatliche Zinsbelastung ({result.zinssatz}%): ~{Math.round(result.monatlicherZins).toLocaleString('de-CH')} CHF
+                        </p>
+                        <p style={{ margin: '8px 0 0 0', fontSize: '12px', color: '#475569' }}>
+                            {result.qm} m² ({result.groesseName}) • {result.cantonName} • {result.locationName} • {result.conditionName} • Baujahr {result.year}
+                        </p>
                     </div>
 
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                        <button
-                            type="button"
-                            onClick={triggerPdfDownload}
-                            style={{ padding: '7px 12px', borderRadius: '7px', border: 'none', backgroundColor: '#2563eb', color: '#fff', fontSize: '12px', cursor: 'pointer' }}
-                        >
-                            PDF-Gutachten
+                    <div
+                        style={{
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                            gap: '8px',
+                            marginTop: '12px',
+                        }}
+                    >
+                        <button type="button" onClick={triggerPdfDownload} style={exportBtnStyle('#dc2626')}>
+                            PDF exportieren
                         </button>
-                        <button
-                            type="button"
-                            onClick={handleExportTxt}
-                            style={{ padding: '7px 12px', borderRadius: '7px', border: '1px solid #cbd5e1', backgroundColor: '#752905', color: '#0f172a', fontSize: '12px', cursor: 'pointer' }}
-                        >
-                            TXT
+                        <button type="button" onClick={handleExportCsv} style={exportBtnStyle('#16a34a')}>
+                            CSV exportieren
                         </button>
-
-                        <button
-                            type="button"
-                            onClick={handleExportXml}
-                            disabled={!result}
-                            style={{
-                                backgroundColor: '#0f766e',
-                                color: '#ec9d0a',
-                                border: 'none',
-                                padding: '8px 14px',
-                                borderRadius: '8px',
-                                fontWeight: 600,
-                                fontSize: '13px',
-                                cursor: result ? 'pointer' : 'not-allowed',
-                                opacity: result ? 1 : 0.5,
-                            }}
-                        >
+                        <button type="button" onClick={handleExportJson} style={exportBtnStyle('#2563eb')}>
+                            JSON exportieren
+                        </button>
+                        <button type="button" onClick={handleExportXml} style={exportBtnStyle('#7c3aed')}>
                             XML exportieren
                         </button>
+                        <button type="button" onClick={handleExportMd} style={exportBtnStyle('#0f766e')}>
+                            Markdown (.md)
+                        </button>
+                        <button type="button" onClick={handleExportTxt} style={exportBtnStyle('#475569')}>
+                            Text (.txt)
+                        </button>
+                        <button type="button" onClick={handleCopySummary} style={exportBtnStyle('#d97706')}>
+                            {copySuccess ? 'Kopiert!' : 'In Zwischenablage'}
+                        </button>
+
+                    </div>
 
 
 
-                        <button
-                            type="button"
-                            onClick={handleExportCsv}
-                            style={{ padding: '7px 12px', borderRadius: '7px', border: '1px solid #cbd5e1', backgroundColor: '#3fd60d', color: '#f', fontSize: '12px', cursor: 'pointer' }}
-                        >
-                            CSV
-                        </button>
-                        <button
-                            type="button"
-                            onClick={handleExportJson}
-                            style={{ padding: '7px 12px', borderRadius: '7px', border: '1px solid #cbd5e1', backgroundColor: '#0d7ce8', color: '#0f172a', fontSize: '12px', cursor: 'pointer' }}
-                        >
-                            JSON
-                        </button>
-                        <button
-                            type="button"
-                            onClick={handleCopySummary}
-                            style={{ padding: '7px 12px', borderRadius: '7px', border: '1px solid #cbd5e1', backgroundColor: '#d80909', color: '#0f172a', fontSize: '12px', cursor: 'pointer' }}
-                        >
-                            {copySuccess ? 'Kopiert!' : 'Kopieren'}
-                        </button>
+                    <div
+                        style={{
+                            marginTop: '14px',
+                            padding: '16px',
+                            borderRadius: '12px',
+                            backgroundColor: '#f8fafc',
+                            border: '1px solid #cbd5e1',
+                            color: '#0f172a',
+                        }}
+                    >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                            <strong style={{ fontSize: '15px' }}>KI-Einschätzung &amp; Plausibilitäts-Check</strong>
+                            <button
+                                type="button"
+                                onClick={handleRunAiAnalysis}
+                                disabled={isAiLoading}
+                                style={exportBtnStyle(isAiLoading ? '#64748b' : '#4f46e5')}
+                            >
+                                {isAiLoading ? 'Analysiere...' : 'KI-Analyse starten'}
+                            </button>
+                        </div>
+
+                        {aiError && (
+                            <p style={{ color: '#dc2626', fontSize: '13px', marginTop: '8px' }}>{aiError}</p>
+                        )}
+
+                        {aiAnalysis && (
+                            <div style={{ marginTop: '12px', fontSize: '13px', lineHeight: 1.5 }}>
+                                <p style={{ margin: '0 0 8px 0', fontWeight: 600 }}>{aiAnalysis.summary}</p>
+                                <p style={{ margin: '0 0 8px 0', color: '#334155' }}>{aiAnalysis.photoHint}</p>
+                                <ul style={{ margin: '0 0 8px 0', paddingLeft: '18px' }}>
+                                    {aiAnalysis.plausibilityNotes.map((note, idx) => (
+                                        <li key={idx}>{note}</li>
+                                    ))}
+                                </ul>
+                                <ul style={{ margin: 0, paddingLeft: '18px', color: '#1e293b' }}>
+                                    {aiAnalysis.recommendations.map((rec, idx) => (
+                                        <li key={idx}>{rec}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
