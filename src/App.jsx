@@ -18,7 +18,7 @@ import Imobiliacalculatori from "./pages/ImobiliaCalculatori.jsx";
 import Privacy from "./pages/Privacy.jsx";
 import Impressumpage from "./pages/Impressum.jsx";
 import Avegno from "./pages/Avegno.jsx";
-import { useAuth, ProtectedRoute } from "./main.jsx";
+import { useAuth, ProtectedRoute } from "./context/AuthContext.jsx";
 
 import Locarno from "./pages/Locarno.jsx";
 import SEO from './pages/SEO.jsx';
@@ -33,7 +33,6 @@ import Verifizierungbild from "./assets/Verifizierung.gif";
 import './Styles/App.css';
 import ChatInput from "./pages/ChatInput.jsx";
 import ChatMessages from "./pages/ChatMessages.jsx";
-import Kundenansicht from "./pages/Kundenansicht.jsx";
 
 export const ThemeContext = createContext();
 
@@ -85,8 +84,21 @@ const COOKIE_TEXTS = {
 };
 
 function MainContent() {
+    const { currentUser, isAuthenticated, login, register, logout } = useAuth();
+
     const [showBanner, setShowBanner] = useState(false);
     const [showPreferencesModal, setShowPreferencesModal] = useState(false);
+    const [showAuthModal, setShowAuthModal] = useState(false);
+    const [authMode, setAuthMode] = useState("login"); // "login" | "register"
+
+    // Auth-Formular-Felder
+    const [authEmail, setAuthEmail] = useState("");
+    const [authPassword, setAuthPassword] = useState("");
+    const [authPasswordConfirm, setAuthPasswordConfirm] = useState("");
+    const [firmaOderName, setFirmaOderName] = useState("");
+    const [kundenTyp, setKundenTyp] = useState("Immobilienverwaltung");
+    const [authError, setAuthError] = useState("");
+
     const [cookiePrefs, setCookiePrefs] = useState({
         necessary: true,
         analytics: false,
@@ -153,6 +165,49 @@ function MainContent() {
             setShowBanner(true);
         }
     }, []);
+
+    const handleOpenAuth = (mode = "login") => {
+        setAuthMode(mode);
+        setAuthError("");
+        setAuthPassword("");
+        setAuthPasswordConfirm("");
+        setShowAuthModal(true);
+    };
+
+    const handleAuthSubmit = (e) => {
+        e.preventDefault();
+        setAuthError("");
+
+        if (authMode === "register") {
+            if (authPassword.length < 6) {
+                setAuthError("Das Passwort muss mindestens 6 Zeichen lang sein.");
+                return;
+            }
+            if (authPassword !== authPasswordConfirm) {
+                setAuthError("Die Passwörter stimmen nicht überein.");
+                return;
+            }
+            const result = register({
+                kundenTyp,
+                firmaOderName,
+                immobilienObjekt: "",
+                email: authEmail,
+                password: authPassword
+            });
+            if (!result.ok) {
+                setAuthError(result.error);
+                return;
+            }
+            setShowAuthModal(false);
+        } else {
+            const result = login(authEmail, authPassword);
+            if (!result.ok) {
+                setAuthError(result.error);
+                return;
+            }
+            setShowAuthModal(false);
+        }
+    };
 
     const saveCookieSettings = (choiceLabel, prefs) => {
         localStorage.setItem('cookieConsent', choiceLabel);
@@ -226,7 +281,6 @@ function MainContent() {
 
             alert('Vielen Dank! Deine Nachricht wurde erfolgreich versendet.');
             navigate('/calculator');
-
         } catch (error) {
             console.error("Fehler beim Absenden des Formulars:", error.message);
         }
@@ -241,7 +295,56 @@ function MainContent() {
                 </div>
             </div>
 
-            <div style={{ padding: '10px 20px', backgroundColor: '#222', display: 'flex', justifyContent: 'flex-end', color: 'orange' }}>
+            <div
+                style={{
+                    padding: '10px 20px',
+                    backgroundColor: '#222',
+                    display: 'flex',
+                    justifyContent: 'flex-end',
+                    alignItems: 'center',
+                    gap: '12px',
+                    color: 'orange'
+                }}
+            >
+                {isAuthenticated ? (
+                    <>
+                        <span style={{ color: '#fff', fontSize: '13px' }}>
+                            {currentUser?.firmaOderName || currentUser?.email}
+                        </span>
+                        <button
+                            type="button"
+                            onClick={logout}
+                            style={{
+                                padding: '6px 12px',
+                                borderRadius: '6px',
+                                border: '1px solid #555',
+                                backgroundColor: '#18181b',
+                                color: '#fff',
+                                cursor: 'pointer',
+                                fontSize: '12.5px'
+                            }}
+                        >
+                            Logout
+                        </button>
+                    </>
+                ) : (
+                    <button
+                        type="button"
+                        onClick={() => handleOpenAuth("login")}
+                        style={{
+                            padding: '6px 12px',
+                            borderRadius: '6px',
+                            border: 'none',
+                            backgroundColor: '#e62b2b',
+                            color: '#fff',
+                            cursor: 'pointer',
+                            fontSize: '12.5px',
+                            fontWeight: 700
+                        }}
+                    >
+                        Login
+                    </button>
+                )}
                 <LanguageSwitcher lang={language} onLanguageChange={setLanguage} />
             </div>
 
@@ -270,7 +373,7 @@ function MainContent() {
                         <Route
                             path="/calculatori"
                             element={
-                                <ProtectedRoute onRequireAuth={() => setShowAuthModal(true)}>
+                                <ProtectedRoute onRequireAuth={handleOpenAuth}>
                                     <Imobiliacalculatori lang={language} />
                                 </ProtectedRoute>
                             }
@@ -278,7 +381,7 @@ function MainContent() {
                         <Route
                             path="/calculator"
                             element={
-                                <ProtectedRoute onRequireAuth={() => setShowAuthModal(true)}>
+                                <ProtectedRoute onRequireAuth={handleOpenAuth}>
                                     <Calculator lang={language} />
                                 </ProtectedRoute>
                             }
@@ -286,7 +389,7 @@ function MainContent() {
                         <Route
                             path="/imobiliaportale"
                             element={
-                                <ProtectedRoute onRequireAuth={() => setShowAuthModal(true)}>
+                                <ProtectedRoute onRequireAuth={handleOpenAuth}>
                                     <ImobiliaPortale lang={language} />
                                 </ProtectedRoute>
                             }
@@ -294,7 +397,7 @@ function MainContent() {
                         <Route
                             path="/customers"
                             element={
-                                <ProtectedRoute onRequireAuth={() => setShowAuthModal(true)}>
+                                <ProtectedRoute onRequireAuth={handleOpenAuth}>
                                     <Customers lang={language} />
                                 </ProtectedRoute>
                             }
@@ -304,6 +407,149 @@ function MainContent() {
                     </Routes>
                 </div>
             </main>
+
+            {/* Login / Registrierungs Modal */}
+            {showAuthModal && (
+                <div
+                    role="dialog"
+                    aria-modal="true"
+                    style={{
+                        position: 'fixed',
+                        inset: 0,
+                        backgroundColor: 'rgba(0, 0, 0, 0.78)',
+                        backdropFilter: 'blur(4px)',
+                        zIndex: 10000,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '16px'
+                    }}
+                >
+                    <div
+                        style={{
+                            backgroundColor: '#18181b',
+                            color: '#ffffff',
+                            border: '1px solid #38383e',
+                            borderTop: '3px solid #e62b2b',
+                            borderRadius: '12px',
+                            maxWidth: '420px',
+                            width: '100%',
+                            padding: '22px'
+                        }}
+                    >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                            <h3 style={{ margin: 0, fontSize: '18px' }}>
+                                {authMode === 'register' ? 'Konto registrieren' : 'Jetzt einloggen'}
+                            </h3>
+                            <button
+                                type="button"
+                                onClick={() => setShowAuthModal(false)}
+                                style={{ background: 'none', border: 'none', color: '#aaa', fontSize: '22px', cursor: 'pointer' }}
+                            >
+                                ×
+                            </button>
+                        </div>
+
+                        {authMode === 'login' && (
+                            <p style={{ fontSize: '12px', color: '#a1a1aa', marginTop: 0 }}>
+                                Testkonto: <strong>verwaltung@mock.ch</strong> / <strong>Password123</strong>
+                            </p>
+                        )}
+
+                        {authError && (
+                            <div
+                                style={{
+                                    padding: '10px',
+                                    borderRadius: '6px',
+                                    backgroundColor: 'rgba(230, 43, 43, 0.16)',
+                                    border: '1px solid #e62b2b',
+                                    color: '#ff8585',
+                                    fontSize: '13px',
+                                    marginBottom: '12px'
+                                }}
+                            >
+                                {authError}
+                            </div>
+                        )}
+
+                        <form onSubmit={handleAuthSubmit} style={{ display: 'grid', gap: '12px' }}>
+                            {authMode === 'register' && (
+                                <>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={firmaOderName}
+                                        onChange={(e) => setFirmaOderName(e.target.value)}
+                                        placeholder="Firma oder Name"
+                                        style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #38383e', backgroundColor: '#111', color: '#fff', boxSizing: 'border-box' }}
+                                    />
+                                    <select
+                                        value={kundenTyp}
+                                        onChange={(e) => setKundenTyp(e.target.value)}
+                                        style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #38383e', backgroundColor: '#111', color: '#fff', boxSizing: 'border-box' }}
+                                    >
+                                        <option value="Immobilienverwaltung">Immobilienverwaltung</option>
+                                        <option value="Privatkunde">Privatkunde</option>
+                                    </select>
+                                </>
+                            )}
+
+                            <input
+                                type="email"
+                                required
+                                value={authEmail}
+                                onChange={(e) => setAuthEmail(e.target.value)}
+                                placeholder="E-Mail-Adresse"
+                                style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #38383e', backgroundColor: '#111', color: '#fff', boxSizing: 'border-box' }}
+                            />
+
+                            <input
+                                type="password"
+                                required
+                                value={authPassword}
+                                onChange={(e) => setAuthPassword(e.target.value)}
+                                placeholder="Passwort"
+                                style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #38383e', backgroundColor: '#111', color: '#fff', boxSizing: 'border-box' }}
+                            />
+
+                            {authMode === 'register' && (
+                                <input
+                                    type="password"
+                                    required
+                                    value={authPasswordConfirm}
+                                    onChange={(e) => setAuthPasswordConfirm(e.target.value)}
+                                    placeholder="Passwort bestätigen"
+                                    style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #38383e', backgroundColor: '#111', color: '#fff', boxSizing: 'border-box' }}
+                                />
+                            )}
+
+                            <button
+                                type="submit"
+                                style={{ padding: '10px 14px', borderRadius: '7px', border: 'none', backgroundColor: '#e62b2b', color: '#fff', fontWeight: 700, cursor: 'pointer' }}
+                            >
+                                {authMode === 'register' ? 'Registrieren' : 'Einloggen'}
+                            </button>
+                        </form>
+
+                        <div style={{ marginTop: '12px', display: 'flex', justifyContent: 'space-between', fontSize: '12.5px' }}>
+                            <button
+                                type="button"
+                                onClick={() => handleOpenAuth(authMode === 'register' ? 'login' : 'register')}
+                                style={{ background: 'none', border: 'none', color: '#ff6b6b', cursor: 'pointer', padding: 0 }}
+                            >
+                                {authMode === 'register' ? 'Schon ein Konto? Login' : 'Noch kein Konto? Registrieren'}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setShowAuthModal(false)}
+                                style={{ background: 'none', border: 'none', color: '#a1a1aa', cursor: 'pointer', padding: 0 }}
+                            >
+                                Abbrechen
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Verbesserte Cookie Banner Ansicht */}
             {showBanner && (
@@ -649,8 +895,8 @@ function MainContent() {
 
                 <div>
                     <h2 className="newsletter"><marquee>Abonniere jetzt unseren Newsletter</marquee></h2>
-                    <form className="formular">
-                        <span ><label><b>Nome:*</b></label></span>
+                    <form className="formular" onSubmit={sendEmail}>
+                        <span><label htmlFor="name"><b>Nome:*</b></label></span>
                         <input
                             type="text"
                             id="name"
@@ -663,11 +909,11 @@ function MainContent() {
                                 setFocusedField('name');
                                 scrollToInput(nameInputRef);
                             }}
-                            onBlur={() => setFocusedField('name')}
-                            required={true}
+                            onBlur={() => setFocusedField(null)}
+                            required
                             style={getInputStyle('name')}
                         />
-                        <span><label><b>E-Mail-Adresse*</b></label></span>
+                        <span><label htmlFor="email"><b>E-Mail-Adresse*</b></label></span>
                         <input
                             type="email"
                             id="email"
@@ -684,47 +930,25 @@ function MainContent() {
                             onBlur={() => setFocusedField(null)}
                             style={getInputStyle('email')}
                         />
-                        <span><label><b>Nachricht:*</b></label>
-                            <textarea
-                                id="message"
-                                name="message"
-                                ref={messageInputRef}
-                                value={formData.message}
-                                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                                onFocus={() => {
-                                    setFocusedField('message');
-                                    scrollToInput(messageInputRef);
-                                }}
-                                onBlur={() => setFocusedField('message')}
-                                style={getInputStyle('message')}
-                                rows="10"
-                                cols="100"
-                                required={true}
-                                placeholder="Bitte eine Nachricht eingeben"
-                            />
-
-                        </span>
+                        <span><label htmlFor="message"><b>Nachricht:*</b></label></span>
+                        <textarea
+                            id="message"
+                            name="message"
+                            ref={messageInputRef}
+                            value={formData.message}
+                            onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                            onFocus={() => {
+                                setFocusedField('message');
+                                scrollToInput(messageInputRef);
+                            }}
+                            onBlur={() => setFocusedField(null)}
+                            required
+                            style={getInputStyle('message')}
+                        />
+                        <button type="submit" style={{ marginTop: '10px', padding: '10px 16px', cursor: 'pointer' }}>
+                            Absenden
+                        </button>
                     </form>
-                    <button onClick={sendEmail} className="red-btn">
-                        Newsletter abonnieren
-                    </button>
-                </div>
-
-                <div className="footer-bottom">
-                    <p>
-                        © 2026 <Link to="/home" className="footer-links">Titocci Metalcostruzioni SAGL</Link>{' '}
-                        <span>|</span>{' '}
-                        <Link to="/impressum" className="footer-links">Impressum</Link>{' '}
-                        <span>|</span>{' '}
-                        <Link to="/privacy" className="footer-links">Privacy</Link>
-                    </p>
-                    <p className="footer-copyright">
-                        Web Design by{' '}
-                        <a href="https://marketingmaster.ch" target="_blank" rel="noreferrer" className="footer-links">
-                            marketingmaster.ch
-                        </a>{' '}
-                        with love
-                    </p>
                 </div>
             </footer>
         </>
@@ -732,17 +956,14 @@ function MainContent() {
 }
 
 function App() {
-    const [loginModalRequested, setLoginModalRequested] = useState(false);
+    const [theme, setTheme] = useState("dark");
+
     return (
-        <BrowserRouter
-            basename={import.meta.env.BASE_URL}
-            future={{
-                v7_startTransition: true,
-                v7_relativeSplatPath: true
-            }}
-        >
-            <MainContent />
-        </BrowserRouter>
+        <ThemeContext.Provider value={{ theme, setTheme }}>
+            <BrowserRouter>
+                <MainContent />
+            </BrowserRouter>
+        </ThemeContext.Provider>
     );
 }
 
