@@ -217,7 +217,7 @@ function MainContent() {
                         <Route path="/chatinput" element={<ChatInput lang={language} />} />
                         <Route path="/chatmessage" element={<ChatMessages lang={language} />} />
                         <Route path="/seo" element={<SEO lang={language} />} />
-                        <Route path="/imobilieninserate" element={<Imobilieninserate lang={{language}}/>}/>
+                        <Route path="/imobilieninserate" element={<Imobilieninserate lang={language}/>}/>
                         <Route path="/imobiliaportale" element={<ImobiliaPortale lang={language} />}/>
                         <Route path="/customers" element={<Customers lang={language} />}/>
                         <Route path="*" element={<Navigate to="/" replace />} />
