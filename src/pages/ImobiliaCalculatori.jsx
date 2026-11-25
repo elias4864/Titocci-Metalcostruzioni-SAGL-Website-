@@ -688,6 +688,7 @@ export default function HousePriceCalculator() {
                     'linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(241, 245, 249, 0.92))',
                 border: '1px solid #e2e8f0',
                 boxShadow: '0 10px 25px -5px rgba(15, 23, 42, 0.08)',
+                backgroundColor:'#18c50f'
             }}
         >
             <SEO title="Immobilienrechner - Titocci Metalcostruzioni SAGL" />

@@ -17,6 +17,7 @@ import LanguageSwitcher from "./pages/LanguageDropwdon.jsx";
 import Imobiliacalculatori from "./pages/ImobiliaCalculatori.jsx";
 import Privacy from "./pages/Privacy.jsx";
 import Impressumpage from "./pages/Impressum.jsx";
+import Imobilieninserate from "./pages/ImobilieninseratePage.jsx";
 import Avegno from "./pages/Avegno.jsx";
 
 import Locarno from "./pages/Locarno.jsx";
@@ -216,6 +217,7 @@ function MainContent() {
                         <Route path="/chatinput" element={<ChatInput lang={language} />} />
                         <Route path="/chatmessage" element={<ChatMessages lang={language} />} />
                         <Route path="/seo" element={<SEO lang={language} />} />
+                        <Route path="/imobilieninserate" element={<Imobilieninserate lang={{language}}/>}/>
                         <Route path="/imobiliaportale" element={<ImobiliaPortale lang={language} />}/>
                         <Route path="/customers" element={<Customers lang={language} />}/>
                         <Route path="*" element={<Navigate to="/" replace />} />

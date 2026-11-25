@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+
 import {
     Calculator,
     Send,
@@ -17,7 +18,6 @@ import {
     Building2,
     X
 } from "lucide-react";
-import emailjs from "@emailjs/browser";
 
 const GEWERK_CONFIG = {
     "Parapetti & Balkongeländer": {
@@ -238,22 +238,18 @@ const ImmobilienPortal = ({ lang = "de" }) => {
             heroTag: "B2B & IMMOBILIENPORTAL • TESSIN & SCHWEIZ",
             heroTitle: "Titocci Metalcostruzioni",
             bookingTitle: "Direkt-Buchung: Aufmass & Technische Beratung vor Ort",
-            bookingSub: "Wählen Sie Ihr Projektfenster und senden Sie Ihre Anfrage direkt per E-Mail oder im Mock-Modus.",
+            bookingSub: "Wählen Sie Ihr Projektfenster und speichern Sie Ihre Anfrage lokal im Portal.",
             namePlaceholder: "Firma / Verwaltung / Name",
             emailPlaceholder: "Geschäftliche E-Mail",
             phonePlaceholder: "Telefonnummer (optional)",
             projektDetails: "Beschreiben Sie kurz das Bauvorhaben (z.B. 45 lfm Balkongeländer, Sanierung Mehrfamilienhaus)...",
             bookingSubmit: "Termin verbindlich anfragen",
-            bookingSuccess: "Vielen Dank! Ihre Anfrage wurde erfolgreich versendet bzw. im Mock gespeichert.",
-            bookingError: "Beim Senden ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
+            bookingSuccess: "Vielen Dank! Ihre Anfrage wurde erfolgreich lokal erfasst.",
+            bookingError: "Beim Speichern ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
         }
     };
 
     const t = translations[lang] || translations.de;
-
-    const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || "";
-    const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || "";
-    const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || "";
 
     const getStoredUsers = () => {
         try {
@@ -287,9 +283,6 @@ const ImmobilienPortal = ({ lang = "de" }) => {
     });
 
     const [protectPrivateSections, setProtectPrivateSections] = useState(false);
-    const [useMockMode, setUseMockMode] = useState(
-        !(EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && EMAILJS_PUBLIC_KEY)
-    );
 
     const [showAuthModal, setShowAuthModal] = useState(false);
     const [authMode, setAuthMode] = useState("login");
@@ -303,6 +296,20 @@ const ImmobilienPortal = ({ lang = "de" }) => {
     const [authPasswordConfirm, setAuthPasswordConfirm] = useState("");
     const [currentPasswordInput, setCurrentPasswordInput] = useState("");
     const [resetNewPassword, setResetNewPassword] = useState("");
+
+    const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "";
+    const [showStreetView, setShowStreetView] = useState(true);
+
+    const cleanLocationQuery = (locationInput || "Locarno, Schweiz").trim();
+    const streetViewEmbedUrl = GOOGLE_MAPS_API_KEY
+        ? `https://www.google.com/maps/embed/v1/streetview?key=${encodeURIComponent(
+            GOOGLE_MAPS_API_KEY
+        )}&location=${encodeURIComponent(cleanLocationQuery)}`
+        : "";
+
+    const googleMapsSearchUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+        cleanLocationQuery
+    )}`;
 
     const [showPasswordMap, setShowPasswordMap] = useState({
         auth: false,
@@ -447,49 +454,32 @@ const ImmobilienPortal = ({ lang = "de" }) => {
             return;
         }
 
-        const updatedUser = {
-            ...storedUsers[userIndex],
-            password: resetNewPassword
-        };
-
-        const updatedUsers = [...storedUsers];
-        updatedUsers[userIndex] = updatedUser;
-        localStorage.setItem("titocci_kunden", JSON.stringify(updatedUsers));
-
-        if (currentUser?.email === cleanEmail) {
-            localStorage.setItem("titocci_current_user", JSON.stringify(updatedUser));
-            setCurrentUser(updatedUser);
-        }
-
         setIsResetSending(true);
         try {
-            if (!useMockMode && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && EMAILJS_PUBLIC_KEY) {
-                const now = new Date().toLocaleString("de-CH");
-                await emailjs.send(
-                    EMAILJS_SERVICE_ID,
-                    EMAILJS_TEMPLATE_ID,
-                    {
-                        subject: "Passwort geändert – Titocci Metalcostruzioni Portal",
-                        from_name: "Titocci Metalcostruzioni",
-                        from_email: "info@titocci.ch",
-                        reply_to: "info@titocci.ch",
-                        to_email: cleanEmail,
-                        signup_date: now,
-                        message: `Passwort für ${cleanEmail} am ${now} geändert.`
-                    },
-                    EMAILJS_PUBLIC_KEY
-                );
+            const updatedUser = {
+                ...storedUsers[userIndex],
+                password: resetNewPassword
+            };
+
+            const updatedUsers = [...storedUsers];
+            updatedUsers[userIndex] = updatedUser;
+            localStorage.setItem("titocci_kunden", JSON.stringify(updatedUsers));
+
+            if (currentUser?.email === cleanEmail) {
+                localStorage.setItem("titocci_current_user", JSON.stringify(updatedUser));
+                setCurrentUser(updatedUser);
             }
+
+            setCurrentPasswordInput("");
+            setResetNewPassword("");
+            setAuthSuccess(`Passwort für ${cleanEmail} erfolgreich aktualisiert. Du kannst dich jetzt einloggen.`);
+            setAuthMode("login");
         } catch (error) {
-            console.error("Fehler beim Senden der Passwort-Reset-E-Mail:", error);
+            console.error("Fehler beim Zurücksetzen des Passworts:", error);
+            setAuthError("Passwort konnte nicht aktualisiert werden.");
         } finally {
             setIsResetSending(false);
         }
-
-        setCurrentPasswordInput("");
-        setResetNewPassword("");
-        setAuthSuccess(`Passwort für ${cleanEmail} erfolgreich aktualisiert. Du kannst dich jetzt einloggen.`);
-        setAuthMode("login");
     };
 
     const handleAuthSubmit = (e) => {
@@ -565,13 +555,12 @@ const ImmobilienPortal = ({ lang = "de" }) => {
         setCurrentUser(null);
     };
 
-    const sendEmailCalc = async ({
-                                     calculatedTotalPrice = 0,
-                                     calculatedPricePerQm = 0,
-                                     attachedImage = "",
-                                     attachedPdfName = "",
-                                     customMessage = ""
-                                 } = {}) => {
+    const saveInquiryLocally = async ({
+                                          calculatedTotalPrice = 0,
+                                          calculatedPricePerQm = 0,
+                                          attachedPdfName = "",
+                                          customMessage = ""
+                                      } = {}) => {
         setSubmitError("");
         setBookingSubmitted(false);
 
@@ -581,75 +570,53 @@ const ImmobilienPortal = ({ lang = "de" }) => {
             return false;
         }
 
-        if (useMockMode) {
-            setIsSending(true);
-            await new Promise((resolve) => setTimeout(resolve, 350));
-            setIsSending(false);
-            setBookingSubmitted(true);
-            return true;
-        }
-
-        if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
-            setSubmitError("EmailJS-Konfiguration fehlt (VITE_EMAILJS_* prüfen oder Mock-Modus aktivieren).");
-            return false;
-        }
-
         setIsSending(true);
         const safeQm = Math.max(1, Number(qm) || 1);
         const finalTotal = Number(calculatedTotalPrice) || estimatedMetalworkCost;
         const finalPerQm = Number(calculatedPricePerQm) || finalTotal / safeQm;
 
         try {
-            const noteBlock = projectNotes.trim() ? `Projektnotizen:\n${projectNotes.trim()}\n\n` : "";
-            const detailsBlock = customMessage ? `${customMessage}\n\n` : "";
-
-            const templateParams = {
-                subject: "Neue Immobilien- & Metallbau-Anfrage von Titocci Metalcostruzioni",
-                from_name: companyName.trim() || "Nicht angegeben",
-                from_email: email.trim(),
-                reply_to: email.trim(),
+            const inquiryRecord = {
+                id: Date.now(),
+                createdAt: new Date().toISOString(),
+                customer: currentUser
+                    ? `${currentUser.firmaOderName} (${currentUser.kundenTyp})`
+                    : "Gast",
+                companyName: companyName.trim() || "Nicht angegeben",
+                email: email.trim(),
                 phone: phone.trim() || "Keine Telefonnummer angegeben",
-                tender_ref: selectedTender.trim() || "Keine Referenz gewählt",
-                property_type: selectedPropertyType,
-                service_type: selectedService,
+                tenderRef: selectedTender.trim() || "Keine Referenz gewählt",
+                propertyType: selectedPropertyType,
+                serviceType: selectedService,
+                bkp: activeGewerk.bkp,
+                material: activeMaterial.label,
+                montage: activeMontage.label,
+                lfm: safeLfm,
+                estimatedMetalworkCost: finalTotal,
+                estimatedPricePerQm: finalPerQm,
+                eigenmittelQuote: safeEigenmittelQuote,
+                estimatedEigenmittel,
+                estimatedFremdkapital,
+                zinssatz: safeZinssatz,
+                estimatedYearlyInterest,
                 location: locationInput || "Nicht angegeben",
-                visit_date: visitDate ? `${visitDate}${visitTime ? ` (${visitTime})` : ""}` : "Kein Wunschdatum angegeben",
-                message:
-                    `${detailsBlock}${noteBlock}` +
-                    `Kunde / Konto: ${currentUser ? `${currentUser.firmaOderName} (${currentUser.kundenTyp})` : "Gast"}\n` +
-                    `Objekttyp: ${selectedPropertyType}\n` +
-                    `Gewerk: ${selectedService} (${activeGewerk.bkp}, ${activeGewerk.normHint})\n` +
-                    `Laufmeter (lfm): ${safeLfm} lfm (Richtpreis: ${formatCHF(effectiveRatePerLfm)}/lfm)\n` +
-                    `Material / Oberfläche: ${activeMaterial.label}\n` +
-                    `Montage / Ausführung: ${activeMontage.label}\n` +
-                    `Richtpreis Metallbau: ${formatCHF(estimatedMetalworkCost)}\n` +
-                    `Eigenmittel (${safeEigenmittelQuote}%): ${formatCHFWhole(estimatedEigenmittel)} | Fremdkapital: ${formatCHFWhole(estimatedFremdkapital)}\n` +
-                    `Kalk. Jahreszins (${safeZinssatz}%): ${formatCHF(estimatedYearlyInterest)}\n` +
-                    `Standort: ${locationInput}\n` +
-                    `Wunschtermin: ${visitDate || "Nicht angegeben"}${visitTime ? ` (${visitTime})` : ""}\n` +
-                    `Wohnfläche: ${safeQm} m²\n` +
-                    `Kanton: ${canton}\n` +
-                    `Telefon: ${phone.trim() || "Keine Telefonnummer angegeben"}\n` +
-                    `Geschätzter Quadratmeterpreis: ${formatCHF(finalPerQm)}\n` +
-                    `Geschätzter Gesamtpreis: ${formatCHF(finalTotal)}\n` +
-                    `PDF-Dokument: ${attachedPdfName || "Kein PDF hochgeladen"}`,
-                to_email: "info@titocci.ch",
-                signup_date: new Date().toLocaleDateString("de-CH"),
-                image_url: attachedImage || "Kein Bild angehängt",
-                pdf_filename: attachedPdfName || "Kein PDF hochgeladen"
+                visitDate: visitDate || "Kein Wunschdatum angegeben",
+                visitTime: visitTime || "",
+                qm: safeQm,
+                canton,
+                pdfFilename: attachedPdfName || "",
+                projectNotes: projectNotes.trim(),
+                customMessage
             };
 
-            await emailjs.send(
-                EMAILJS_SERVICE_ID,
-                EMAILJS_TEMPLATE_ID,
-                templateParams,
-                EMAILJS_PUBLIC_KEY
-            );
+            const existing = JSON.parse(localStorage.getItem("titocci_anfragen") || "[]");
+            const nextList = Array.isArray(existing) ? [inquiryRecord, ...existing] : [inquiryRecord];
+            localStorage.setItem("titocci_anfragen", JSON.stringify(nextList));
 
             setBookingSubmitted(true);
             return true;
         } catch (error) {
-            console.error("Fehler beim E-Mail-Versand:", error);
+            console.error("Fehler beim Speichern der Anfrage:", error);
             setSubmitError(t.bookingError);
             return false;
         } finally {
@@ -659,7 +626,7 @@ const ImmobilienPortal = ({ lang = "de" }) => {
 
     const handleBookingSubmit = async (e) => {
         e.preventDefault();
-        await sendEmailCalc({
+        await saveInquiryLocally({
             calculatedTotalPrice: estimatedMetalworkCost
         });
     };
@@ -722,7 +689,8 @@ const ImmobilienPortal = ({ lang = "de" }) => {
     const kpiCardStyle = (highlight = false) => ({
         padding: "16px",
         borderRadius: "8px",
-        backgroundColor: "#bbb",
+        backgroundColor: "#141414",
+        color: "#f5f5f5",
         border: highlight ? "1px solid #e62b2b" : "1px solid #2c2c2c",
         textAlign: "center"
     });
@@ -840,7 +808,7 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                             id="calc-lfm"
                             type="number"
                             min="0"
-                            step="0.5"
+                            step="1"
                             value={lfm}
                             onChange={(e) => setLfm(e.target.value)}
                             style={inputStyle}
@@ -865,7 +833,7 @@ const ImmobilienPortal = ({ lang = "de" }) => {
 
                     <div>
                         <label htmlFor="calc-zins" style={labelStyle}>
-                            Kalk. Zinssatz (%)
+                            Kalk. Zinssatz (% p.a.)
                         </label>
                         <input
                             id="calc-zins"
@@ -888,40 +856,31 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                     }}
                 >
                     <div style={kpiCardStyle(true)}>
-                        <div style={{ fontSize: "12px", color: "#222" }}>Richtpreis Metallbau</div>
-                        <div style={{ fontSize: "1.15rem", fontWeight: "bold", color: "#111", marginTop: "4px" }}>
+                        <div style={{ fontSize: "12px", color: "#aaa" }}>Richtpreis Metallbau</div>
+                        <div style={{ fontSize: "1.15rem", fontWeight: "bold", marginTop: "4px" }}>
                             {formatCHF(estimatedMetalworkCost)}
                         </div>
-                        <div style={{ fontSize: "11px", color: "#333", marginTop: "2px" }}>
-                            {formatCHF(effectiveRatePerLfm)} / lfm
-                        </div>
                     </div>
-
-                    <div style={kpiCardStyle(false)}>
-                        <div style={{ fontSize: "12px", color: "#222" }}>Eigenmittel ({safeEigenmittelQuote}%)</div>
-                        <div style={{ fontSize: "1.15rem", fontWeight: "bold", color: "#111", marginTop: "4px" }}>
+                    <div style={kpiCardStyle()}>
+                        <div style={{ fontSize: "12px", color: "#aaa" }}>Eigenmittel</div>
+                        <div style={{ fontSize: "1.15rem", fontWeight: "bold", marginTop: "4px" }}>
                             {formatCHFWhole(estimatedEigenmittel)}
                         </div>
                     </div>
-
-                    <div style={kpiCardStyle(false)}>
-                        <div style={{ fontSize: "12px", color: "#222" }}>Fremdkapital</div>
-                        <div style={{ fontSize: "1.15rem", fontWeight: "bold", color: "#111", marginTop: "4px" }}>
+                    <div style={kpiCardStyle()}>
+                        <div style={{ fontSize: "12px", color: "#aaa" }}>Fremdkapital</div>
+                        <div style={{ fontSize: "1.15rem", fontWeight: "bold", marginTop: "4px" }}>
                             {formatCHFWhole(estimatedFremdkapital)}
                         </div>
                     </div>
-
-                    <div style={kpiCardStyle(false)}>
-                        <div style={{ fontSize: "12px", color: "#222" }}>Zins / Jahr ({safeZinssatz}%)</div>
-                        <div style={{ fontSize: "1.15rem", fontWeight: "bold", color: "#111", marginTop: "4px" }}>
+                    <div style={kpiCardStyle()}>
+                        <div style={{ fontSize: "12px", color: "#aaa" }}>Kalk. Jahreszins</div>
+                        <div style={{ fontSize: "1.15rem", fontWeight: "bold", marginTop: "4px" }}>
                             {formatCHF(estimatedYearlyInterest)}
                         </div>
                     </div>
                 </div>
             </section>
-
-
-
 
             <section aria-label="Direkt-Buchung" style={cardStyle}>
                 <h2 style={{ margin: "0 0 6px", fontSize: "1.15rem" }}>{t.bookingTitle}</h2>
@@ -935,29 +894,49 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                             gap: "12px"
                         }}
                     >
-                        <input
-                            ref={companyInputRef}
-                            type="text"
-                            value={companyName}
-                            onChange={(e) => setCompanyName(e.target.value)}
-                            placeholder={t.namePlaceholder}
-                            style={inputStyle}
-                        />
-                        <input
-                            type="email"
-                            required
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder={t.emailPlaceholder}
-                            style={inputStyle}
-                        />
-                        <input
-                            type="tel"
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            placeholder={t.phonePlaceholder}
-                            style={inputStyle}
-                        />
+                        <div>
+                            <label htmlFor="booking-name" style={labelStyle}>
+                                {t.namePlaceholder}
+                            </label>
+                            <input
+                                id="booking-name"
+                                ref={companyInputRef}
+                                type="text"
+                                value={companyName}
+                                onChange={(e) => setCompanyName(e.target.value)}
+                                placeholder={t.namePlaceholder}
+                                style={inputStyle}
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor="booking-email" style={labelStyle}>
+                                {t.emailPlaceholder}
+                            </label>
+                            <input
+                                id="booking-email"
+                                type="email"
+                                required
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder={t.emailPlaceholder}
+                                style={inputStyle}
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor="booking-phone" style={labelStyle}>
+                                {t.phonePlaceholder}
+                            </label>
+                            <input
+                                id="booking-phone"
+                                type="tel"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
+                                placeholder={t.phonePlaceholder}
+                                style={inputStyle}
+                            />
+                        </div>
                     </div>
 
                     <div
@@ -969,8 +948,7 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                     >
                         <div>
                             <label htmlFor="booking-location" style={labelStyle}>
-                                <MapPin size={12} style={{ verticalAlign: "middle", marginRight: "4px" }} />
-                                Objekt / Standort
+                                Standort / Objekt
                             </label>
                             <input
                                 id="booking-location"
@@ -983,7 +961,6 @@ const ImmobilienPortal = ({ lang = "de" }) => {
 
                         <div>
                             <label htmlFor="booking-date" style={labelStyle}>
-                                <Calendar size={12} style={{ verticalAlign: "middle", marginRight: "4px" }} />
                                 Wunschdatum
                             </label>
                             <input
@@ -997,7 +974,6 @@ const ImmobilienPortal = ({ lang = "de" }) => {
 
                         <div>
                             <label htmlFor="booking-time" style={labelStyle}>
-                                <Clock size={12} style={{ verticalAlign: "middle", marginRight: "4px" }} />
                                 Wunschzeit
                             </label>
                             <input
@@ -1010,23 +986,29 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                         </div>
                     </div>
 
-                    <textarea
-                        rows={3}
-                        value={projectNotes}
-                        onChange={(e) => setProjectNotes(e.target.value)}
-                        placeholder={t.projektDetails}
-                        style={inputStyle}
-                    />
+                    <div>
+                        <label htmlFor="booking-notes" style={labelStyle}>
+                            Projektbeschreibung
+                        </label>
+                        <textarea
+                            id="booking-notes"
+                            rows={3}
+                            value={projectNotes}
+                            onChange={(e) => setProjectNotes(e.target.value)}
+                            placeholder={t.projektDetails}
+                            style={inputStyle}
+                        />
+                    </div>
 
                     {submitError && (
-                        <div style={{ color: "#ff6b6b", fontSize: "13px", display: "flex", alignItems: "center", gap: "6px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#ff6b6b", fontSize: "13px" }}>
                             <AlertCircle size={16} />
                             <span>{submitError}</span>
                         </div>
                     )}
 
                     {bookingSubmitted && (
-                        <div style={{ color: "#51cf66", fontSize: "13px", display: "flex", alignItems: "center", gap: "6px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#4ade80", fontSize: "13px" }}>
                             <CheckCircle2 size={16} />
                             <span>{t.bookingSuccess}</span>
                         </div>
@@ -1046,11 +1028,12 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                                 backgroundColor: "#e62b2b",
                                 color: "#fff",
                                 fontWeight: "bold",
-                                cursor: isSending ? "not-allowed" : "pointer"
+                                fontSize: "14px",
+                                cursor: "pointer"
                             }}
                         >
                             <Send size={15} />
-                            <span>{isSending ? "Wird gesendet..." : t.bookingSubmit}</span>
+                            <span>{isSending ? "Wird gespeichert..." : t.bookingSubmit}</span>
                         </button>
                     </div>
                 </form>
@@ -1068,54 +1051,53 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                     justifyContent: "space-between",
                     alignItems: "center",
                     flexWrap: "wrap",
-                    gap: "12px"
+                    gap: "12px",
+                    paddingBottom: "14px",
+                    borderBottom: "1px solid #262626"
                 }}
             >
                 <div>
                     <div style={{ fontSize: "11px", letterSpacing: "0.08em", color: "#ff6b6b" }}>
                         {t.heroTag}
                     </div>
-                    <h1 style={{ margin: "4px 0 0", fontSize: "1.5rem" }}>{t.heroTitle}</h1>
+                    <h1 style={{ margin: "2px 0 0", fontSize: "1.5rem" }}>{t.heroTitle}</h1>
                 </div>
 
                 <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-                    <label style={{ fontSize: "12px", display: "inline-flex", alignItems: "center", gap: "6px", cursor: "pointer" }}>
+                    <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#ccc" }}>
                         <input
                             type="checkbox"
                             checked={protectPrivateSections}
                             onChange={(e) => setProtectPrivateSections(e.target.checked)}
                         />
-                        <span>Bereich schützen</span>
-                    </label>
-
-                    <label style={{ fontSize: "12px", display: "inline-flex", alignItems: "center", gap: "6px", cursor: "pointer" }}>
-                        <input
-                            type="checkbox"
-                            checked={useMockMode}
-                            onChange={(e) => setUseMockMode(e.target.checked)}
-                        />
-                        <span>Mock-Modus</span>
+                        <span>Bereich sperren</span>
                     </label>
 
                     {currentUser ? (
-                        <button
-                            type="button"
-                            onClick={handleLogout}
-                            style={{
-                                display: "inline-flex",
-                                alignItems: "center",
-                                gap: "6px",
-                                padding: "8px 12px",
-                                borderRadius: "6px",
-                                border: "1px solid #444",
-                                backgroundColor: "#222",
-                                color: "#fff",
-                                cursor: "pointer"
-                            }}
-                        >
-                            <LogOut size={14} />
-                            <span>{t.logoutBtn} ({currentUser.firmaOderName})</span>
-                        </button>
+                        <>
+                            <span style={{ fontSize: "13px", color: "#ddd" }}>
+                                {currentUser.firmaOderName}
+                            </span>
+                            <button
+                                type="button"
+                                onClick={handleLogout}
+                                style={{
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    gap: "6px",
+                                    padding: "8px 12px",
+                                    borderRadius: "6px",
+                                    border: "1px solid #444",
+                                    backgroundColor: "#222",
+                                    color: "#fff",
+                                    fontSize: "13px",
+                                    cursor: "pointer"
+                                }}
+                            >
+                                <LogOut size={14} />
+                                <span>{t.logoutBtn}</span>
+                            </button>
+                        </>
                     ) : (
                         <button
                             type="button"
@@ -1124,12 +1106,13 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                                 display: "inline-flex",
                                 alignItems: "center",
                                 gap: "6px",
-                                padding: "8px 12px",
+                                padding: "8px 14px",
                                 borderRadius: "6px",
                                 border: "none",
                                 backgroundColor: "#e62b2b",
                                 color: "#fff",
                                 fontWeight: "bold",
+                                fontSize: "13px",
                                 cursor: "pointer"
                             }}
                         >
@@ -1148,6 +1131,60 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                 privateContent
             )}
 
+            <section aria-label="Standort & Kartenansicht" style={cardStyle}>
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        flexWrap: "wrap",
+                        gap: "10px",
+                        marginBottom: "12px"
+                    }}
+                >
+                    <h2 style={{ margin: 0, fontSize: "1.1rem", display: "flex", alignItems: "center", gap: "8px" }}>
+                        <MapPin size={18} color="#e62b2b" />
+                        <span>Standort: {cleanLocationQuery}</span>
+                    </h2>
+
+                    <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                        <button
+                            type="button"
+                            onClick={() => setShowStreetView((prev) => !prev)}
+                            style={{
+                                padding: "6px 12px",
+                                borderRadius: "6px",
+                                border: "1px solid #444",
+                                backgroundColor: "#242424",
+                                color: "#fff",
+                                fontSize: "12px",
+                                cursor: "pointer"
+                            }}
+                        >
+                            {showStreetView ? "Ansicht ausblenden" : "Ansicht einblenden"}
+                        </button>
+                        <a
+                            href={googleMapsSearchUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{ color: "#ff8787", fontSize: "12px" }}
+                        >
+                            In Google Maps öffnen
+                        </a>
+                    </div>
+                </div>
+
+                {showStreetView && streetViewEmbedUrl && (
+                    <iframe
+                        title="Google Maps Street View"
+                        src={streetViewEmbedUrl}
+                        style={{ width: "100%", height: "320px", border: 0, borderRadius: "8px" }}
+                        allowFullScreen
+                        loading="lazy"
+                    />
+                )}
+            </section>
+
             {showAuthModal && (
                 <div
                     role="dialog"
@@ -1155,12 +1192,12 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                     style={{
                         position: "fixed",
                         inset: 0,
-                        backgroundColor: "rgba(0, 0, 0, 0.75)",
+                        backgroundColor: "rgba(0,0,0,0.75)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
                         padding: "16px",
-                        zIndex: 1000
+                        zIndex: 50
                     }}
                 >
                     <div
@@ -1170,185 +1207,149 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                             backgroundColor: "#1b1b1b",
                             border: "1px solid #333",
                             borderRadius: "10px",
-                            padding: "20px",
-                            position: "relative"
+                            padding: "22px"
                         }}
                     >
-                        <button
-                            type="button"
-                            onClick={() => setShowAuthModal(false)}
-                            aria-label="Schliessen"
-                            style={{
-                                position: "absolute",
-                                right: "12px",
-                                top: "12px",
-                                background: "none",
-                                border: "none",
-                                color: "#ccc",
-                                cursor: "pointer"
-                            }}
-                        >
-                            <X size={18} />
-                        </button>
-
-                        <h2 style={{ margin: "0 0 12px", fontSize: "1.15rem" }}>
-                            {authMode === "register"
-                                ? "Konto registrieren"
-                                : authMode === "reset"
-                                    ? "Passwort zurücksetzen"
-                                    : "Login"}
-                        </h2>
-
-                        <div style={{ display: "flex", gap: "8px", marginBottom: "14px",color:'red' }}>
-                            <button type="button" onClick={() => setAuthMode("login")}>Login</button>
-                            <button type="button" onClick={() => setAuthMode("register")}>Registrieren</button>
-                            <button type="button" onClick={() => setAuthMode("reset")}>Passwort</button>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
+                            <h3 style={{ margin: 0, fontSize: "1.1rem" }}>
+                                {authMode === "register"
+                                    ? "Konto registrieren"
+                                    : authMode === "reset"
+                                        ? "Passwort zurücksetzen"
+                                        : "Login"}
+                            </h3>
+                            <button
+                                type="button"
+                                onClick={() => setShowAuthModal(false)}
+                                style={{ background: "none", border: "none", color: "#bbb", cursor: "pointer" }}
+                            >
+                                <X size={18} />
+                            </button>
                         </div>
 
-                        {authError && <div style={{ color: "#ff6b6b", fontSize: "13px", marginBottom: "10px" }}>{authError}</div>}
-                        {authSuccess && <div style={{ color: "#51cf66", fontSize: "13px", marginBottom: "10px" }}>{authSuccess}</div>}
+                        <div style={{ display: "flex", gap: "8px", marginBottom: "14px" }}>
+                            <button type="button" onClick={() => setAuthMode("login")} style={{ padding: "6px 10px", fontSize: "12px" }}>
+                                Login
+                            </button>
+                            <button type="button" onClick={() => setAuthMode("register")} style={{ padding: "6px 10px", fontSize: "12px" }}>
+                                Registrieren
+                            </button>
+                            <button type="button" onClick={() => setAuthMode("reset")} style={{ padding: "6px 10px", fontSize: "12px" }}>
+                                Passwort
+                            </button>
+                        </div>
 
                         {authMode === "reset" ? (
-                            <form onSubmit={handlePasswordReset} style={{ display: "grid", gap: "10px" }}>
-                                <input
-                                    type="email"
-                                    required
-                                    value={authEmail}
-                                    onChange={(e) => setAuthEmail(e.target.value)}
-                                    placeholder="E-Mail-Adresse"
-                                    style={inputStyle}
-                                />
-                                {renderPasswordInput({
-                                    id: "reset-current-pw",
-                                    value: currentPasswordInput,
-                                    onChange: (e) => setCurrentPasswordInput(e.target.value),
-                                    fieldKey: "current",
-                                    placeholder: "Aktuelles Passwort",
-                                    required: true
-                                })}
-                                {renderPasswordInput({
-                                    id: "reset-new-pw",
-                                    value: resetNewPassword,
-                                    onChange: (e) => setResetNewPassword(e.target.value),
-                                    fieldKey: "resetNew",
-                                    placeholder: "Neues Passwort (mind. 8 Zeichen)",
-                                    required: true
-                                })}
-                                <button type="submit" disabled={isResetSending} style={inputStyle}>
-                                    {isResetSending ? "Wird gespeichert..." : "Passwort aktualisieren"}
+                            <form onSubmit={handlePasswordReset} style={{ display: "grid", gap: "12px" }}>
+                                <div>
+                                    <label style={labelStyle}>E-Mail</label>
+                                    <input
+                                        type="email"
+                                        required
+                                        value={authEmail}
+                                        onChange={(e) => setAuthEmail(e.target.value)}
+                                        style={inputStyle}
+                                    />
+                                </div>
+                                <div>
+                                    <label style={labelStyle}>Aktuelles Passwort</label>
+                                    {renderPasswordInput({
+                                        id: "reset-current-pw",
+                                        value: currentPasswordInput,
+                                        onChange: (e) => setCurrentPasswordInput(e.target.value),
+                                        fieldKey: "current",
+                                        required: true
+                                    })}
+                                </div>
+                                <div>
+                                    <label style={labelStyle}>Neues Passwort (mind. 8 Zeichen)</label>
+                                    {renderPasswordInput({
+                                        id: "reset-new-pw",
+                                        value: resetNewPassword,
+                                        onChange: (e) => setResetNewPassword(e.target.value),
+                                        fieldKey: "resetNew",
+                                        required: true
+                                    })}
+                                </div>
+                                <button type="submit" disabled={isResetSending} style={{ padding: "10px", backgroundColor: "#e62b2b", color: "#fff", border: "none", borderRadius: "6px", fontWeight: "bold", cursor: "pointer" }}>
+                                    {isResetSending ? "Speichert..." : "Passwort aktualisieren"}
                                 </button>
                             </form>
                         ) : (
-                            <form onSubmit={handleAuthSubmit} style={{ display: "grid", gap: "10px" }}>
+                            <form onSubmit={handleAuthSubmit} style={{ display: "grid", gap: "12px" }}>
                                 {authMode === "register" && (
                                     <>
-                                        <select
-                                            value={kundenTyp}
-                                            onChange={(e) => setKundenTyp(e.target.value)}
-                                            style={inputStyle}
-                                        >
-                                            <option value="Immobilienverwaltung">Immobilienverwaltung</option>
-                                            <option value="Privatkunde">Privatkunde</option>
-                                        </select>
-                                        <input
-                                            type="text"
-                                            value={firmaOderName}
-                                            onChange={(e) => setFirmaOderName(e.target.value)}
-                                            placeholder="Firma oder Name"
-                                            style={inputStyle}
-                                            onFocus={companyInputRef}
-
-                                        />
-
                                         <div>
-                                            <label htmlFor="booking-type" style={labelStyle}>Art des Termins</label>
-                                            <select
-                                                id="booking-type"
-                                                value={bookingType}
-                                                onChange={(e) => setBookingType(e.target.value)}
-                                                style={inputStyle}
-                                            >
-                                                <option value="Aufmass vor Ort">Aufmass vor Ort</option>
-                                                <option value="Technische Beratung">Technische Beratung vor Ort</option>
-                                                <option value="Sanierungs-Check">Sanierungs- &amp; Machbarkeits-Check</option>
+                                            <label style={labelStyle}>Kundentyp</label>
+                                            <select value={kundenTyp} onChange={(e) => setKundenTyp(e.target.value)} style={inputStyle}>
+                                                <option value="Immobilienverwaltung">Immobilienverwaltung</option>
+                                                <option value="Privatkunde">Privatkunde</option>
                                             </select>
                                         </div>
-
-                                        <label htmlFor="booking-ref" style={labelStyle}>Objekt- / Dossier-Nr. (optional)</label>
-                                        <input
-                                            id="booking-ref"
-                                            type="text"
-                                            value={dossierRef}
-                                            onChange={(e) => setDossierRef(e.target.value)}
-                                            placeholder="z.B. IM-2026-042"
-                                            style={inputStyle}
-                                        />
-
-                                        <input
-                                            type="text"
-                                            value={immobilienObjekt}
-                                            onChange={(e) => setImmobilienObjekt(e.target.value)}
-                                            placeholder="Immobilienobjekt (optional)"
-                                            style={inputStyle}
-                                        />
+                                        <div>
+                                            <label style={labelStyle}>Firma / Name</label>
+                                            <input type="text" value={firmaOderName} onChange={(e) => setFirmaOderName(e.target.value)} style={inputStyle} />
+                                        </div>
+                                        <div>
+                                            <label style={labelStyle}>Immobilienobjekt</label>
+                                            <input type="text" value={immobilienObjekt} onChange={(e) => setImmobilienObjekt(e.target.value)} style={inputStyle} />
+                                        </div>
                                     </>
                                 )}
 
-                                <input
-                                    type="email"
-                                    required
-                                    value={authEmail}
-                                    onChange={(e) => setAuthEmail(e.target.value)}
-                                    placeholder="E-Mail-Adresse"
-                                    style={inputStyle}
-                                />
+                                <div>
+                                    <label style={labelStyle}>E-Mail</label>
+                                    <input type="email" required value={authEmail} onChange={(e) => setAuthEmail(e.target.value)} style={inputStyle} />
+                                </div>
 
-                                {renderPasswordInput({
-                                    id: "auth-password",
-                                    value: authPassword,
-                                    onChange: (e) => setAuthPassword(e.target.value),
-                                    fieldKey: "auth",
-                                    placeholder: "Passwort",
-                                    required: true
-                                })}
+                                <div>
+                                    <label style={labelStyle}>Passwort</label>
+                                    {renderPasswordInput({
+                                        id: "auth-password",
+                                        value: authPassword,
+                                        onChange: (e) => setAuthPassword(e.target.value),
+                                        fieldKey: "auth",
+                                        required: true
+                                    })}
+                                </div>
 
                                 {authMode === "register" && (
                                     <>
-                                        {renderPasswordInput({
-                                            id: "auth-password-confirm",
-                                            value: authPasswordConfirm,
-                                            onChange: (e) => setAuthPasswordConfirm(e.target.value),
-                                            fieldKey: "confirm",
-                                            placeholder: "Passwort bestätigen",
-                                            required: true
-                                        })}
-                                        <label style={{ fontSize: "12px", display: "flex", alignItems: "center", gap: "6px" }}>
-                                            <input
-                                                type="checkbox"
-                                                checked={privacyAccepted}
-                                                onChange={(e) => setPrivacyAccepted(e.target.checked)}
-                                            />
+                                        <div>
+                                            <label style={labelStyle}>Passwort bestätigen</label>
+                                            {renderPasswordInput({
+                                                id: "auth-password-confirm",
+                                                value: authPasswordConfirm,
+                                                onChange: (e) => setAuthPasswordConfirm(e.target.value),
+                                                fieldKey: "confirm",
+                                                required: true
+                                            })}
+                                        </div>
+                                        <label style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px", color: "#ccc" }}>
+                                            <input type="checkbox" checked={privacyAccepted} onChange={(e) => setPrivacyAccepted(e.target.checked)} />
                                             <span>Datenschutzerklärung akzeptieren</span>
                                         </label>
                                     </>
                                 )}
 
-                                <button type="submit" style={{ ...inputStyle, backgroundColor: "#e62b2b", border: "none", fontWeight: "bold" }}>
+                                <button type="submit" style={{ padding: "10px", backgroundColor: "#e62b2b", color: "#fff", border: "none", borderRadius: "6px", fontWeight: "bold", cursor: "pointer" }}>
                                     {authMode === "register" ? "Registrieren" : "Einloggen"}
                                 </button>
                             </form>
                         )}
 
-                        <div style={{ marginTop: "12px", display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                            {MOCK_USERS.map((mu) => (
+                        {authError && <p style={{ color: "#ff6b6b", fontSize: "12px", marginTop: "10px" }}>{authError}</p>}
+                        {authSuccess && <p style={{ color: "#4ade80", fontSize: "12px", marginTop: "10px" }}>{authSuccess}</p>}
+
+                        <div style={{ marginTop: "14px", paddingTop: "12px", borderTop: "1px solid #2c2c2c", display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                            {MOCK_USERS.map((mock) => (
                                 <button
-                                    key={mu.id}
+                                    key={mock.id}
                                     type="button"
-                                    onClick={() => quickMockLogin(mu)}
-                                    style={{ fontSize: "11px", padding: "5px 8px", cursor: "pointer" }}
+                                    onClick={() => quickMockLogin(mock)}
+                                    style={{ padding: "5px 8px", fontSize: "11px", backgroundColor: "#262626", color: "#ddd", border: "1px solid #3c3c3c", borderRadius: "4px", cursor: "pointer" }}
                                 >
-                                    <Building2 size={12} style={{ verticalAlign: "middle", marginRight: "4px" }} />
-                                    {mu.firmaOderName}
+                                    Demo: {mock.firmaOderName}
                                 </button>
                             ))}
                         </div>
