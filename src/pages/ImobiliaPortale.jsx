@@ -497,6 +497,11 @@ const ImmobilienPortal = ({ lang = "de" }) => {
                 setAuthError("Die beiden Passwörter stimmen nicht überein.");
                 return;
             }
+
+            if(authPassword<=8){
+                alert("Das Password ist zu kurz gib bitte ein längeres ein");
+                return;
+            }
             if (!privacyAccepted) {
                 setAuthError("Bitte akzeptiere die Datenschutzerklärung.");
                 return;

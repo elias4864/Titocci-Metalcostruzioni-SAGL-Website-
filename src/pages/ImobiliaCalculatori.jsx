@@ -193,6 +193,48 @@ export default function HousePriceCalculator() {
         }
     };
 
+
+
+    const escapeXml = (value) =>
+        String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&apos;');
+
+    const handleExportXml = () => {
+        if (!result) return;
+
+        const xmlContent = [
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            `<immobilienBewertung datum="${escapeXml(result.date)}" anbieter="Titocci Metalcostruzioni SAGL">`,
+            '  <eingaben>',
+            `    <wohnflaeche einheit="m2">${Number(result.qm)}</wohnflaeche>`,
+            `    <kategorie>${escapeXml(result.groesseName)}</kategorie>`,
+            `    <kanton code="${escapeXml(result.canton)}">${escapeXml(result.cantonName)}</kanton>`,
+            `    <lage code="${escapeXml(result.location)}">${escapeXml(result.locationName)}</lage>`,
+            `    <zustand code="${escapeXml(result.condition)}">${escapeXml(result.conditionName)}</zustand>`,
+            `    <baujahr>${Number(result.year)}</baujahr>`,
+            `    <personen>${Number(result.personen)}</personen>`,
+            `    <hypothekarzins einheit="prozent">${Number(result.zinssatz)}</hypothekarzins>`,
+            `    <email>${escapeXml(result.email)}</email>`,
+            `    <telefon>${escapeXml(result.phone || 'Keine')}</telefon>`,
+            `    <pdfDokument>${escapeXml(result.pdfName || 'Keines')}</pdfDokument>`,
+            '  </eingaben>',
+            '  <ergebnis waehrung="CHF">',
+            `    <preisProQm>${Number(result.pricePerQm).toFixed(2)}</preisProQm>`,
+            `    <gesamtwert>${Number(result.totalPrice).toFixed(2)}</gesamtwert>`,
+            `    <eigenkapital20Prozent>${Number(result.eigenkapital20).toFixed(2)}</eigenkapital20Prozent>`,
+            `    <monatlicherZins>${Number(result.monatlicherZins).toFixed(2)}</monatlicherZins>`,
+            '  </ergebnis>',
+            '</immobilienBewertung>',
+        ].join('\n');
+
+        triggerDownload(xmlContent, 'application/xml;charset=utf-8;', 'xml');
+    };
+
+
     const buildSummaryText = (data) =>
         [
             `Immobilien-Marktwertanalyse (${data.date}) – Titocci Metalcostruzioni SAGL`,
@@ -980,6 +1022,28 @@ export default function HousePriceCalculator() {
                         >
                             TXT
                         </button>
+
+                        <button
+                            type="button"
+                            onClick={handleExportXml}
+                            disabled={!result}
+                            style={{
+                                backgroundColor: '#0f766e',
+                                color: '#ec9d0a',
+                                border: 'none',
+                                padding: '8px 14px',
+                                borderRadius: '8px',
+                                fontWeight: 600,
+                                fontSize: '13px',
+                                cursor: result ? 'pointer' : 'not-allowed',
+                                opacity: result ? 1 : 0.5,
+                            }}
+                        >
+                            XML exportieren
+                        </button>
+
+
+
                         <button
                             type="button"
                             onClick={handleExportCsv}
