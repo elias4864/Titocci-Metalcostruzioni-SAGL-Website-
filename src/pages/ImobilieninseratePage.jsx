@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Bell, PlusCircle, Building2, MapPin, X, CheckCircle2, Compass } from "lucide-react";
+import { Bell, PlusCircle, Building2, MapPin, X, CheckCircle2, Compass, Trash2 } from "lucide-react";
 
 import Locarno from "../assets/Locarno.jfif";
 import Steinhaus from "../assets/Steinhaus.jfif";
@@ -164,6 +164,23 @@ export default function ImmobilienInseratePage({ lang }) {
             title: "Neues Immobilien-Inserat!",
             text: `${item.title} (${item.ort}) – ${item.preis}`
         });
+    };
+
+    const handleDeleteInserat = (id) => {
+        const target = inserate.find((item) => item.id === id);
+        setInserate((prev) => prev.filter((item) => item.id !== id));
+        setOpenStreetViewIds((prev) => {
+            const next = { ...prev };
+            delete next[id];
+            return next;
+        });
+        if (target) {
+            setNotification({
+                id: Date.now(),
+                title: "Inserat  wurde entfernt",
+                text: `${target.title} (${target.ort})`
+            });
+        }
     };
 
     const handleAddCustomInserat = (e) => {
@@ -442,6 +459,31 @@ export default function ImmobilienInseratePage({ lang }) {
                                     >
                                         {item.tag || "Inserat"}
                                     </span>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => handleDeleteInserat(item.id)}
+                                        aria-label={`Inserat ${item.title} entfernen`}
+                                        style={{
+                                            position: "absolute",
+                                            top: "10px",
+                                            right: "10px",
+                                            display: "inline-flex",
+                                            alignItems: "center",
+                                            gap: "5px",
+                                            padding: "5px 9px",
+                                            borderRadius: "5px",
+                                            border: "1px solid rgba(255,255,255,0.18)",
+                                            backgroundColor: "rgba(17,17,17,0.82)",
+                                            color: "#dc4b0a",
+                                            fontSize: "30px",
+                                            fontWeight: "bold",
+                                            cursor: "pointer"
+                                        }}
+                                    >
+                                        <Trash2 size={12} />
+                                        <span>Inserat entfernen</span>
+                                    </button>
                                 </div>
 
                                 <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "8px", flexGrow: 1 }}>
