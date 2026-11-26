@@ -1,6 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Bell, PlusCircle, Building2, MapPin, X, CheckCircle2, Compass, Trash2, Heart, Users } from "lucide-react";
+import {
+    Bell,
+    PlusCircle,
+    Building2,
+    MapPin,
+    X,
+    CheckCircle2,
+    Compass,
+    Trash2,
+    Heart,
+    Users,
+    Star,
+    MessageSquarePlus,
+    Sparkles,
+    CheckCheck
+} from "lucide-react";
 
 import Locarno from "../assets/Locarno.jfif";
 import Steinhaus from "../assets/Steinhaus.jfif";
@@ -10,6 +25,8 @@ import Innenhof from "../assets/Innenhof.jpg";
 const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "";
 const STORAGE_KEY_INSERATE = "titocci_immobilien_inserate";
 const STORAGE_KEY_FAVORITES = "titocci_immobilien_favoriten";
+const STORAGE_KEY_REVIEWS = "titocci_immobilien_reviews";
+const STORAGE_KEY_NOTIFICATIONS = "titocci_immobilien_notifications";
 
 const INITIAL_INSERATE = [
     {
@@ -44,6 +61,29 @@ const INITIAL_INSERATE = [
         personen: "3 Personen",
         image: Innenhof,
         tag: "Ruhig"
+    }
+];
+
+const INITIAL_REVIEWS = {
+    1: [
+        {
+            id: 1001,
+            author: "Marco Conti",
+            rating: 5,
+            comment: "Fantastische Aussicht auf den See und sehr gepflegte Terrasse.",
+            createdAt: "2026-10-12"
+        }
+    ]
+};
+
+const INITIAL_NOTIFICATIONS = [
+    {
+        id: 9001,
+        title: "Willkommen bei den Immobilien-Updates",
+        text: "Neue Inserate, Bewertungen und Favoriten-Änderungen werden hier gesammelt.",
+        meta: "Locarno TI • Systeminfo",
+        createdAt: "Heute",
+        unread: true
     }
 ];
 
@@ -145,6 +185,39 @@ export default function ImmobilienInseratePage({ lang }) {
         return [];
     });
 
+    const [reviewsByInserat, setReviewsByInserat] = useState(() => {
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY_REVIEWS);
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (parsed && typeof parsed === "object") return parsed;
+            }
+        } catch {
+            // Fallback auf INITIAL_REVIEWS
+        }
+        return INITIAL_REVIEWS;
+    });
+
+    const [notifications, setNotifications] = useState(() => {
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY_NOTIFICATIONS);
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed)) return parsed;
+            }
+        } catch {
+            // Fallback auf INITIAL_NOTIFICATIONS
+        }
+        return INITIAL_NOTIFICATIONS;
+    });
+
+    const [isInfoPopupOpen, setIsInfoPopupOpen] = useState(false);
+
+    const [activeReviewInseratId, setActiveReviewInseratId] = useState(null);
+    const [reviewAuthor, setReviewAuthor] = useState("");
+    const [reviewRating, setReviewRating] = useState(5);
+    const [reviewComment, setReviewComment] = useState("");
+
     const [onlyFavorites, setOnlyFavorites] = useState(false);
     const [notification, setNotification] = useState(null);
     const [demoIndex, setDemoIndex] = useState(0);
@@ -175,6 +248,22 @@ export default function ImmobilienInseratePage({ lang }) {
     }, [favoriteIds]);
 
     useEffect(() => {
+        try {
+            localStorage.setItem(STORAGE_KEY_REVIEWS, JSON.stringify(reviewsByInserat));
+        } catch {
+            // Storage-Fehler ignorieren
+        }
+    }, [reviewsByInserat]);
+
+    useEffect(() => {
+        try {
+            localStorage.setItem(STORAGE_KEY_NOTIFICATIONS, JSON.stringify(notifications));
+        } catch {
+            // Storage-Fehler ignorieren
+        }
+    }, [notifications]);
+
+    useEffect(() => {
         if (!notification) return;
         const timer = setTimeout(() => {
             setNotification(null);
@@ -182,15 +271,107 @@ export default function ImmobilienInseratePage({ lang }) {
         return () => clearTimeout(timer);
     }, [notification]);
 
+    const pushNotification = ({ title, text, meta = "", openPopup = false }) => {
+        const nowTime = new Date().toLocaleTimeString("de-CH", {
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+
+        const entry = {
+            id: Date.now() + Math.floor(Math.random() * 1000),
+            title,
+            text,
+            meta,
+            createdAt: nowTime,
+            unread: true
+        };
+
+        setNotification(entry);
+        setNotifications((prev) => [entry, ...prev]);
+
+        if (openPopup) {
+            setIsInfoPopupOpen(true);
+        }
+    };
+
+    const openInfoPopup = () => {
+        setIsInfoPopupOpen(true);
+    };
+
+    const closeInfoPopup = () => {
+        setIsInfoPopupOpen(false);
+        setNotifications((prev) => prev.map((item) => ({ ...item, unread: false })));
+    };
+
+    const markAllNotificationsRead = () => {
+        setNotifications((prev) => prev.map((item) => ({ ...item, unread: false })));
+    };
+
+    const clearNotifications = () => {
+        setNotifications([]);
+    };
+
+    const unreadCount = notifications.filter((item) => item.unread).length;
+
+    const openReviewPopup = (inseratId) => {
+        setActiveReviewInseratId(inseratId);
+        setReviewRating(5);
+        setReviewComment("");
+    };
+
+    const closeReviewPopup = () => {
+        setActiveReviewInseratId(null);
+    };
+
+    const handleAddReview = (e) => {
+        e.preventDefault();
+        if (!activeReviewInseratId || !reviewComment.trim()) return;
+
+        const newReview = {
+            id: Date.now(),
+            author: reviewAuthor.trim() || "Anonymer Besucher",
+            rating: Number(reviewRating) || 5,
+            comment: reviewComment.trim(),
+            createdAt: new Date().toISOString().slice(0, 10)
+        };
+
+        setReviewsByInserat((prev) => {
+            const currentList = Array.isArray(prev[activeReviewInseratId]) ? prev[activeReviewInseratId] : [];
+            return {
+                ...prev,
+                [activeReviewInseratId]: [newReview, ...currentList]
+            };
+        });
+
+        const targetInserat = inserate.find((item) => item.id === activeReviewInseratId);
+        pushNotification({
+            title: "Bewertung gespeichert",
+            text: `${newReview.rating}/5 Sterne von ${newReview.author} für ${targetInserat?.title || "Inserat"}`,
+            meta: targetInserat?.ort || "Tessin TI"
+        });
+
+        setReviewComment("");
+    };
+
+    const getRatingSummary = (inseratId) => {
+        const list = Array.isArray(reviewsByInserat[inseratId]) ? reviewsByInserat[inseratId] : [];
+        if (list.length === 0) return { avg: null, count: 0 };
+        const sum = list.reduce((acc, r) => acc + (Number(r.rating) || 0), 0);
+        return {
+            avg: (sum / list.length).toFixed(1),
+            count: list.length
+        };
+    };
+
     const toggleFavorite = (item) => {
         setFavoriteIds((prev) => {
             const exists = prev.includes(item.id);
             const next = exists ? prev.filter((id) => id !== item.id) : [...prev, item.id];
 
-            setNotification({
-                id: Date.now(),
+            pushNotification({
                 title: exists ? "Aus Favoriten entfernt" : "Zu Favoriten hinzugefügt",
-                text: `${item.title} (${item.ort})`
+                text: `${item.title} – ${item.preis}`,
+                meta: item.ort
             });
 
             return next;
@@ -211,20 +392,17 @@ export default function ImmobilienInseratePage({ lang }) {
         }));
     };
 
-    /**
-     * Öffnet den Standort in einem neuen Browser-Tab auf Google Maps.
-     * @param {string} location
-     */
     const openInGoogleMaps = (location) => {
         const url = buildGoogleMapsLink(location);
         window.open(url, "_blank", "noopener,noreferrer");
     };
 
-    const triggerNotification = (item) => {
-        setNotification({
-            id: Date.now(),
+    const triggerNotification = (item, openPopup = false) => {
+        pushNotification({
             title: "Neues Immobilien-Inserat!",
-            text: `${item.title} (${item.ort}) – ${item.preis}`
+            text: `${item.title} (${item.ort}) – ${item.preis}`,
+            meta: `${item.zimmer} • ${item.flaeche} • ${item.personen}`,
+            openPopup
         });
     };
 
@@ -232,16 +410,24 @@ export default function ImmobilienInseratePage({ lang }) {
         const target = inserate.find((item) => item.id === id);
         setInserate((prev) => prev.filter((item) => item.id !== id));
         setFavoriteIds((prev) => prev.filter((favId) => favId !== id));
+        setReviewsByInserat((prev) => {
+            const next = { ...prev };
+            delete next[id];
+            return next;
+        });
+        if (activeReviewInseratId === id) {
+            setActiveReviewInseratId(null);
+        }
         setOpenStreetViewIds((prev) => {
             const next = { ...prev };
             delete next[id];
             return next;
         });
         if (target) {
-            setNotification({
-                id: Date.now(),
+            pushNotification({
                 title: "Inserat wurde entfernt",
-                text: `${target.title} (${target.ort})`
+                text: `${target.title} (${target.ort})`,
+                meta: target.preis
             });
         }
     };
@@ -263,7 +449,7 @@ export default function ImmobilienInseratePage({ lang }) {
         };
 
         setInserate((prev) => [created, ...prev]);
-        triggerNotification(created);
+        triggerNotification(created, true);
         setNewTitle("");
     };
 
@@ -277,12 +463,17 @@ export default function ImmobilienInseratePage({ lang }) {
         };
 
         setInserate((prev) => [created, ...prev]);
-        triggerNotification(created);
+        triggerNotification(created, true);
     };
 
     const visibleInserate = onlyFavorites
         ? inserate.filter((item) => favoriteIds.includes(item.id))
         : inserate;
+
+    const activeReviewInserat = inserate.find((item) => item.id === activeReviewInseratId) || null;
+    const activeReviews = activeReviewInseratId
+        ? reviewsByInserat[activeReviewInseratId] || []
+        : [];
 
     return (
         <div
@@ -291,7 +482,7 @@ export default function ImmobilienInseratePage({ lang }) {
                 backgroundColor: "#111111",
                 color: "#f5f5f5",
                 fontFamily: "system-ui, -apple-system, sans-serif",
-                padding: "24px 20px 80px"
+                padding: "24px 20px 96px"
             }}
         >
             <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
@@ -317,6 +508,40 @@ export default function ImmobilienInseratePage({ lang }) {
                     </div>
 
                     <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center" }}>
+                        <button
+                            type="button"
+                            onClick={openInfoPopup}
+                            style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "8px",
+                                padding: "10px 14px",
+                                borderRadius: "6px",
+                                border: unreadCount > 0 ? "1px solid #ff6b6b" : "1px solid #3a3a3a",
+                                backgroundColor: unreadCount > 0 ? "#2a1414" : "#1d1d1d",
+                                color: "#fff",
+                                fontWeight: "bold",
+                                fontSize: "13px",
+                                cursor: "pointer"
+                            }}
+                        >
+                            <Sparkles size={15} color="#ff6b6b" />
+                            <span>Neuigkeiten ({notifications.length})</span>
+                            {unreadCount > 0 && (
+                                <span
+                                    style={{
+                                        backgroundColor: "#e62b2b",
+                                        color: "#fff",
+                                        borderRadius: "999px",
+                                        padding: "1px 7px",
+                                        fontSize: "11px"
+                                    }}
+                                >
+                                    {unreadCount} neu
+                                </span>
+                            )}
+                        </button>
+
                         <button
                             type="button"
                             onClick={() => setOnlyFavorites((prev) => !prev)}
@@ -579,6 +804,7 @@ export default function ImmobilienInseratePage({ lang }) {
                             const mapUrls = buildMapEmbedUrls(item.ort);
                             const activeIframeSrc =
                                 activeMode === "place" ? mapUrls.placeSrc : mapUrls.streetViewSrc;
+                            const ratingInfo = getRatingSummary(item.id);
 
                             return (
                                 <article
@@ -658,36 +884,58 @@ export default function ImmobilienInseratePage({ lang }) {
                                             <span>{item.personen || "4 Personen"} im Haus</span>
                                         </div>
 
-                                        <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", paddingTop: "4px" }}>
+                                        <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#fbbf24", fontSize: "13px" }}>
+                                            <Star size={14} fill="#fbbf24" color="#fbbf24" />
+                                            <span>
+                                                {ratingInfo.avg
+                                                    ? `${ratingInfo.avg} / 5 (${ratingInfo.count} ${ratingInfo.count === 1 ? "Review" : "Reviews"})`
+                                                    : "Noch keine Reviews"}
+                                            </span>
+                                        </div>
+
+                                        <div style={{ fontSize: "1.1rem", fontWeight: "bold", color: "#ff7b7b", marginTop: "4px" }}>
+                                            {item.preis}
+                                        </div>
+
+                                        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "auto", paddingTop: "8px" }}>
                                             <button
                                                 type="button"
                                                 onClick={() => toggleFavorite(item)}
-                                                aria-pressed={isFavorite}
-                                                aria-label={
-                                                    isFavorite
-                                                        ? `${item.title} aus Favoriten entfernen`
-                                                        : `${item.title} als Favorit speichern`
-                                                }
                                                 style={{
                                                     display: "inline-flex",
                                                     alignItems: "center",
-                                                    gap: "6px",
-                                                    padding: "6px 10px",
+                                                    gap: "5px",
+                                                    padding: "7px 10px",
                                                     borderRadius: "6px",
-                                                    border: isFavorite ? "1px solid #f43f5e" : "1px solid #3c3c3c",
-                                                    backgroundColor: isFavorite ? "#4c0519" : "#242424",
-                                                    color: isFavorite ? "#fda4af" : "#fff",
+                                                    border: isFavorite ? "1px solid #f43f5e" : "1px solid #3a3a3a",
+                                                    backgroundColor: isFavorite ? "#4c0519" : "#222",
+                                                    color: isFavorite ? "#fda4af" : "#eee",
                                                     fontSize: "12px",
-                                                    fontWeight: isFavorite ? "bold" : "normal",
                                                     cursor: "pointer"
                                                 }}
                                             >
-                                                <Heart
-                                                    size={13}
-                                                    fill={isFavorite ? "#f43f5e" : "none"}
-                                                    color={isFavorite ? "#f43f5e" : "#fff"}
-                                                />
-                                                <span>{isFavorite ? "Favorit" : "Liken"}</span>
+                                                <Heart size={13} fill={isFavorite ? "#f43f5e" : "none"} color="#f43f5e" />
+                                                <span>{isFavorite ? "Favorit" : "Merken"}</span>
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                onClick={() => openReviewPopup(item.id)}
+                                                style={{
+                                                    display: "inline-flex",
+                                                    alignItems: "center",
+                                                    gap: "5px",
+                                                    padding: "7px 10px",
+                                                    borderRadius: "6px",
+                                                    border: "1px solid #3a3a3a",
+                                                    backgroundColor: "#222",
+                                                    color: "#eee",
+                                                    fontSize: "12px",
+                                                    cursor: "pointer"
+                                                }}
+                                            >
+                                                <MessageSquarePlus size={13} color="#fbbf24" />
+                                                <span>Bewerten</span>
                                             </button>
 
                                             <button
@@ -696,101 +944,82 @@ export default function ImmobilienInseratePage({ lang }) {
                                                 style={{
                                                     display: "inline-flex",
                                                     alignItems: "center",
-                                                    gap: "6px",
-                                                    padding: "6px 10px",
+                                                    gap: "5px",
+                                                    padding: "7px 10px",
                                                     borderRadius: "6px",
-                                                    border: "1px solid #3c3c3c",
-                                                    backgroundColor: isStreetViewOpen ? "#e62b2b" : "#242424",
-                                                    color: "#fff",
+                                                    border: "1px solid #3a3a3a",
+                                                    backgroundColor: isStreetViewOpen ? "#2a2222" : "#222",
+                                                    color: "#eee",
                                                     fontSize: "12px",
                                                     cursor: "pointer"
                                                 }}
                                             >
-                                                <Compass size={13} />
-                                                <span>{isStreetViewOpen ? "360° schliessen" : "Google Street View 360°"}</span>
+                                                <Compass size={13} color="#ff6b6b" />
+                                                <span>{isStreetViewOpen ? "Karte schliessen" : "Ansicht"}</span>
                                             </button>
 
                                             <button
                                                 type="button"
                                                 onClick={() => openInGoogleMaps(item.ort)}
                                                 style={{
-                                                    padding: "6px 10px",
+                                                    padding: "7px 10px",
                                                     borderRadius: "6px",
-                                                    border: "1px solid #3c3c3c",
-                                                    backgroundColor: "#181818",
-                                                    color: "#93c5fd",
+                                                    border: "1px solid #3a3a3a",
+                                                    backgroundColor: "transparent",
+                                                    color: "#ccc",
                                                     fontSize: "12px",
                                                     cursor: "pointer"
                                                 }}
                                             >
-                                                Auf Google Maps öffnen
+                                                Maps
                                             </button>
                                         </div>
 
                                         {isStreetViewOpen && (
-                                            <div style={{ marginTop: "6px", borderRadius: "8px", overflow: "hidden", border: "1px solid #333" }}>
-                                                <div
-                                                    style={{
-                                                        display: "flex",
-                                                        justifyContent: "space-between",
-                                                        alignItems: "center",
-                                                        padding: "6px 10px",
-                                                        backgroundColor: "#151515",
-                                                        borderBottom: "1px solid #2b2b2b",
-                                                        fontSize: "11px"
-                                                    }}
-                                                >
-                                                    <div style={{ display: "flex", gap: "6px" }}>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => setMapMode(item.id, "streetview")}
-                                                            style={{
-                                                                padding: "3px 8px",
-                                                                borderRadius: "4px",
-                                                                border: "none",
-                                                                backgroundColor: activeMode === "streetview" ? "#e62b2b" : "#262626",
-                                                                color: "#fff",
-                                                                cursor: "pointer"
-                                                            }}
-                                                        >
-                                                            Street View
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => setMapMode(item.id, "place")}
-                                                            style={{
-                                                                padding: "3px 8px",
-                                                                borderRadius: "4px",
-                                                                border: "none",
-                                                                backgroundColor: activeMode === "place" ? "#e62b2b" : "#262626",
-                                                                color: "#fff",
-                                                                cursor: "pointer"
-                                                            }}
-                                                        >
-                                                            Karte
-                                                        </button>
-                                                    </div>
-                                                    {!mapUrls.hasApiKey && (
-                                                        <span style={{ color: "#aaa" }}>Fallback-Karte (ohne API-Key)</span>
-                                                    )}
+                                            <div style={{ marginTop: "10px", borderRadius: "8px", overflow: "hidden", border: "1px solid #333" }}>
+                                                <div style={{ display: "flex", gap: "6px", padding: "6px", backgroundColor: "#141414" }}>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setMapMode(item.id, "streetview")}
+                                                        style={{
+                                                            padding: "4px 8px",
+                                                            borderRadius: "4px",
+                                                            border: "none",
+                                                            backgroundColor: activeMode === "streetview" ? "#e62b2b" : "#262626",
+                                                            color: "#fff",
+                                                            fontSize: "11px",
+                                                            cursor: "pointer"
+                                                        }}
+                                                    >
+                                                        Luftbild / Street
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setMapMode(item.id, "place")}
+                                                        style={{
+                                                            padding: "4px 8px",
+                                                            borderRadius: "4px",
+                                                            border: "none",
+                                                            backgroundColor: activeMode === "place" ? "#e62b2b" : "#262626",
+                                                            color: "#fff",
+                                                            fontSize: "11px",
+                                                            cursor: "pointer"
+                                                        }}
+                                                    >
+                                                        Ort
+                                                    </button>
                                                 </div>
-
                                                 <iframe
-                                                    title={`Google Maps (${activeMode}) – ${item.title}`}
+                                                    title={`Karte für ${item.ort}`}
                                                     src={activeIframeSrc}
                                                     width="100%"
-                                                    height="210"
+                                                    height="180"
                                                     style={{ border: 0, display: "block" }}
                                                     loading="lazy"
-                                                    allowFullScreen
                                                     referrerPolicy="no-referrer-when-downgrade"
                                                 />
                                             </div>
                                         )}
-
-                                        <div style={{ marginTop: "auto", paddingTop: "10px", fontSize: "1.1rem", fontWeight: "bold", color: "#4ade80" }}>
-                                            {item.preis}
-                                        </div>
                                     </div>
                                 </article>
                             );
@@ -799,51 +1028,331 @@ export default function ImmobilienInseratePage({ lang }) {
                 </section>
             </div>
 
-            {/* Notification Popup bei neuem Immobilien-Inserat */}
+            {/* Popup für neue Informationen & Benachrichtigungen */}
+            {isInfoPopupOpen && (
+                <div
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label="Neue Informationen und Benachrichtigungen"
+                    style={{
+                        position: "fixed",
+                        inset: 0,
+                        backgroundColor: "rgba(0, 0, 0, 0.72)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        padding: "16px",
+                        zIndex: 1100
+                    }}
+                >
+                    <div
+                        style={{
+                            width: "100%",
+                            maxWidth: "540px",
+                            maxHeight: "82vh",
+                            display: "flex",
+                            flexDirection: "column",
+                            backgroundColor: "#1a1a1a",
+                            border: "1px solid #363636",
+                            borderRadius: "12px",
+                            overflow: "hidden"
+                        }}
+                    >
+                        <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                padding: "16px 18px",
+                                borderBottom: "1px solid #2b2b2b"
+                            }}
+                        >
+                            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                <Bell size={18} color="#ff6b6b" />
+                                <h2 style={{ margin: 0, fontSize: "1.15rem" }}>
+                                    Neue Informationen &amp; Notifications
+                                </h2>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={closeInfoPopup}
+                                aria-label="Neuigkeiten-Popup schliessen"
+                                style={{
+                                    background: "transparent",
+                                    border: "none",
+                                    color: "#bbb",
+                                    cursor: "pointer"
+                                }}
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                gap: "8px",
+                                padding: "10px 18px",
+                                backgroundColor: "#151515",
+                                borderBottom: "1px solid #262626"
+                            }}
+                        >
+                            <button
+                                type="button"
+                                onClick={markAllNotificationsRead}
+                                style={{
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    gap: "6px",
+                                    padding: "6px 10px",
+                                    borderRadius: "6px",
+                                    border: "1px solid #333",
+                                    backgroundColor: "#202020",
+                                    color: "#ddd",
+                                    fontSize: "12px",
+                                    cursor: "pointer"
+                                }}
+                            >
+                                <CheckCheck size={14} color="#4ade80" />
+                                <span>Alle als gelesen markieren</span>
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={clearNotifications}
+                                style={{
+                                    padding: "6px 10px",
+                                    borderRadius: "6px",
+                                    border: "1px solid #333",
+                                    backgroundColor: "transparent",
+                                    color: "#ff8577",
+                                    fontSize: "12px",
+                                    cursor: "pointer"
+                                }}
+                            >
+                                Verlauf leeren
+                            </button>
+                        </div>
+
+                        <div style={{ padding: "16px 18px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "10px" }}>
+                            {notifications.length === 0 ? (
+                                <p style={{ margin: 0, color: "#aaa", textAlign: "center", padding: "20px 0" }}>
+                                    Keine aktuellen Benachrichtigungen vorhanden.
+                                </p>
+                            ) : (
+                                notifications.map((entry) => (
+                                    <div
+                                        key={entry.id}
+                                        style={{
+                                            padding: "12px 14px",
+                                            borderRadius: "8px",
+                                            backgroundColor: entry.unread ? "#231717" : "#151515",
+                                            border: entry.unread ? "1px solid #e62b2b" : "1px solid #2a2a2a"
+                                        }}
+                                    >
+                                        <div style={{ display: "flex", justifyContent: "space-between", gap: "8px" }}>
+                                            <strong style={{ fontSize: "14px", color: "#fff" }}>
+                                                {entry.unread ? "● " : ""}
+                                                {entry.title}
+                                            </strong>
+                                            <span style={{ fontSize: "11px", color: "#999" }}>{entry.createdAt}</span>
+                                        </div>
+                                        <p style={{ margin: "6px 0 0", fontSize: "13px", color: "#ddd" }}>{entry.text}</p>
+                                        {entry.meta && (
+                                            <div style={{ marginTop: "6px", fontSize: "12px", color: "#ff8577" }}>
+                                                {entry.meta}
+                                            </div>
+                                        )}
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Popup für Bewertungen */}
+            {activeReviewInserat && (
+                <div
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label={`Bewertungen für ${activeReviewInserat.title}`}
+                    style={{
+                        position: "fixed",
+                        inset: 0,
+                        backgroundColor: "rgba(0, 0, 0, 0.72)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        padding: "16px",
+                        zIndex: 1100
+                    }}
+                >
+                    <div
+                        style={{
+                            width: "100%",
+                            maxWidth: "480px",
+                            backgroundColor: "#1a1a1a",
+                            border: "1px solid #363636",
+                            borderRadius: "12px",
+                            padding: "20px"
+                        }}
+                    >
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                            <h2 style={{ margin: 0, fontSize: "1.1rem" }}>
+                                Bewertung – {activeReviewInserat.title}
+                            </h2>
+                            <button
+                                type="button"
+                                onClick={closeReviewPopup}
+                                aria-label="Bewertungs-Popup schliessen"
+                                style={{ background: "transparent", border: "none", color: "#bbb", cursor: "pointer" }}
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleAddReview} style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                            <input
+                                type="text"
+                                value={reviewAuthor}
+                                onChange={(e) => setReviewAuthor(e.target.value)}
+                                placeholder="Dein Name (optional)"
+                                style={{
+                                    padding: "9px 12px",
+                                    borderRadius: "6px",
+                                    border: "1px solid #383838",
+                                    backgroundColor: "#121212",
+                                    color: "#fff"
+                                }}
+                            />
+                            <select
+                                value={reviewRating}
+                                onChange={(e) => setReviewRating(Number(e.target.value))}
+                                style={{
+                                    padding: "9px 12px",
+                                    borderRadius: "6px",
+                                    border: "1px solid #383838",
+                                    backgroundColor: "#121212",
+                                    color: "#fff"
+                                }}
+                            >
+                                <option value={5}>5 Sterne</option>
+                                <option value={4}>4 Sterne</option>
+                                <option value={3}>3 Sterne</option>
+                                <option value={2}>2 Sterne</option>
+                                <option value={1}>1 Stern</option>
+                            </select>
+                            <textarea
+                                rows={3}
+                                required
+                                value={reviewComment}
+                                onChange={(e) => setReviewComment(e.target.value)}
+                                placeholder="Deine Bewertung zum Objekt..."
+                                style={{
+                                    padding: "9px 12px",
+                                    borderRadius: "6px",
+                                    border: "1px solid #383838",
+                                    backgroundColor: "#121212",
+                                    color: "#fff",
+                                    resize: "vertical"
+                                }}
+                            />
+                            <button
+                                type="submit"
+                                style={{
+                                    padding: "10px 14px",
+                                    borderRadius: "6px",
+                                    border: "none",
+                                    backgroundColor: "#e62b2b",
+                                    color: "#fff",
+                                    fontWeight: "bold",
+                                    cursor: "pointer"
+                                }}
+                            >
+                                Bewertung speichern
+                            </button>
+                        </form>
+
+                        <div style={{ marginTop: "16px", maxHeight: "180px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "8px" }}>
+                            {activeReviews.length === 0 ? (
+                                <p style={{ margin: 0, fontSize: "13px", color: "#999" }}>Noch keine Bewertungen vorhanden.</p>
+                            ) : (
+                                activeReviews.map((rev) => (
+                                    <div
+                                        key={rev.id}
+                                        style={{
+                                            padding: "10px",
+                                            borderRadius: "8px",
+                                            backgroundColor: "#131313",
+                                            border: "1px solid #292929",
+                                            fontSize: "13px"
+                                        }}
+                                    >
+                                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                            <strong>{rev.author}</strong>
+                                            <span style={{ color: "#fbbf24" }}>{rev.rating}/5 ★</span>
+                                        </div>
+                                        <p style={{ margin: "4px 0 0", color: "#ccc" }}>{rev.comment}</p>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Kurzer Live-Toast unten rechts */}
             {notification && (
                 <div
                     role="status"
-                    aria-live="polite"
                     style={{
                         position: "fixed",
                         bottom: "20px",
                         right: "20px",
                         maxWidth: "360px",
-                        width: "calc(100% - 40px)",
                         backgroundColor: "#1f1f1f",
                         border: "1px solid #e62b2b",
-                        borderLeft: "5px solid #e62b2b",
-                        borderRadius: "8px",
+                        borderRadius: "10px",
                         padding: "14px 16px",
-                        boxShadow: "0 10px 28px rgba(0,0,0,0.55)",
-                        zIndex: 999,
-                        display: "flex",
-                        alignItems: "flex-start",
-                        gap: "12px"
+                        boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+                        zIndex: 1050
                     }}
                 >
-                    <CheckCircle2 size={20} color="#4ade80" style={{ flexShrink: 0, marginTop: "2px" }} />
-                    <div style={{ flexGrow: 1 }}>
-                        <div style={{ fontWeight: "bold", fontSize: "14px", color: "#fff" }}>
-                            {notification.title}
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", gap: "10px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px", fontWeight: "bold", fontSize: "14px" }}>
+                            <CheckCircle2 size={16} color="#4ade80" />
+                            <span>{notification.title}</span>
                         </div>
-                        <div style={{ fontSize: "13px", color: "#ddd", marginTop: "3px" }}>
-                            {notification.text}
-                        </div>
+                        <button
+                            type="button"
+                            onClick={() => setNotification(null)}
+                            aria-label="Hinweis schliessen"
+                            style={{ background: "transparent", border: "none", color: "#aaa", cursor: "pointer" }}
+                        >
+                            <X size={15} />
+                        </button>
                     </div>
+                    <p style={{ margin: "6px 0 8px", fontSize: "13px", color: "#ddd" }}>{notification.text}</p>
                     <button
                         type="button"
-                        onClick={() => setNotification(null)}
-                        aria-label="Benachrichtigung schliessen"
+                        onClick={() => {
+                            setNotification(null);
+                            openInfoPopup();
+                        }}
                         style={{
-                            background: "none",
-                            border: "none",
-                            color: "#aaa",
-                            cursor: "pointer",
-                            padding: "2px"
+                            padding: "4px 8px",
+                            borderRadius: "5px",
+                            border: "1px solid #3a3a3a",
+                            backgroundColor: "#262626",
+                            color: "#ff8577",
+                            fontSize: "11px",
+                            fontWeight: "bold",
+                            cursor: "pointer"
                         }}
                     >
-                        <X size={16} />
+                        Alle Neuigkeiten im Popup öffnen
                     </button>
                 </div>
             )}
