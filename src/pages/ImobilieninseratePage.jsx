@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Bell, PlusCircle, Building2, MapPin, X, CheckCircle2, Compass, Trash2 } from "lucide-react";
+import { Bell, PlusCircle, Building2, MapPin, X, CheckCircle2, Compass, Trash2, Heart } from "lucide-react";
 
 import Locarno from "../assets/Locarno.jfif";
 import Steinhaus from "../assets/Steinhaus.jfif";
@@ -8,6 +8,8 @@ import Dachterasse from "../assets/Dachterasse.jpg";
 import Innenhof from "../assets/Innenhof.jpg";
 
 const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "";
+const STORAGE_KEY_INSERATE = "titocci_immobilien_inserate";
+const STORAGE_KEY_FAVORITES = "titocci_immobilien_favoriten";
 
 const INITIAL_INSERATE = [
     {
@@ -98,7 +100,7 @@ const buildGoogleMapsLink = (ort) =>
 export default function ImmobilienInseratePage({ lang }) {
     const [inserate, setInserate] = useState(() => {
         try {
-            const saved = localStorage.getItem("titocci_immobilien_inserate");
+            const saved = localStorage.getItem(STORAGE_KEY_INSERATE);
             if (saved) {
                 const parsed = JSON.parse(saved);
                 if (Array.isArray(parsed) && parsed.length > 0) return parsed;
@@ -109,6 +111,20 @@ export default function ImmobilienInseratePage({ lang }) {
         return INITIAL_INSERATE;
     });
 
+    const [favoriteIds, setFavoriteIds] = useState(() => {
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY_FAVORITES);
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed)) return parsed;
+            }
+        } catch {
+            // Fallback auf leere Favoritenliste
+        }
+        return [];
+    });
+
+    const [onlyFavorites, setOnlyFavorites] = useState(false);
     const [notification, setNotification] = useState(null);
     const [demoIndex, setDemoIndex] = useState(0);
     const [openStreetViewIds, setOpenStreetViewIds] = useState({});
@@ -121,11 +137,19 @@ export default function ImmobilienInseratePage({ lang }) {
 
     useEffect(() => {
         try {
-            localStorage.setItem("titocci_immobilien_inserate", JSON.stringify(inserate));
+            localStorage.setItem(STORAGE_KEY_INSERATE, JSON.stringify(inserate));
         } catch {
             // Storage-Fehler ignorieren
         }
     }, [inserate]);
+
+    useEffect(() => {
+        try {
+            localStorage.setItem(STORAGE_KEY_FAVORITES, JSON.stringify(favoriteIds));
+        } catch {
+            // Storage-Fehler ignorieren
+        }
+    }, [favoriteIds]);
 
     useEffect(() => {
         if (!notification) return;
@@ -134,6 +158,21 @@ export default function ImmobilienInseratePage({ lang }) {
         }, 5000);
         return () => clearTimeout(timer);
     }, [notification]);
+
+    const toggleFavorite = (item) => {
+        setFavoriteIds((prev) => {
+            const exists = prev.includes(item.id);
+            const next = exists ? prev.filter((id) => id !== item.id) : [...prev, item.id];
+
+            setNotification({
+                id: Date.now(),
+                title: exists ? "Aus Favoriten entfernt" : "Zu Favoriten hinzugefügt",
+                text: `${item.title} (${item.ort})`
+            });
+
+            return next;
+        });
+    };
 
     const toggleStreetView = (id) => {
         setOpenStreetViewIds((prev) => ({
@@ -169,6 +208,7 @@ export default function ImmobilienInseratePage({ lang }) {
     const handleDeleteInserat = (id) => {
         const target = inserate.find((item) => item.id === id);
         setInserate((prev) => prev.filter((item) => item.id !== id));
+        setFavoriteIds((prev) => prev.filter((favId) => favId !== id));
         setOpenStreetViewIds((prev) => {
             const next = { ...prev };
             delete next[id];
@@ -177,7 +217,7 @@ export default function ImmobilienInseratePage({ lang }) {
         if (target) {
             setNotification({
                 id: Date.now(),
-                title: "Inserat  wurde entfernt",
+                title: "Inserat wurde entfernt",
                 text: `${target.title} (${target.ort})`
             });
         }
@@ -216,6 +256,10 @@ export default function ImmobilienInseratePage({ lang }) {
         triggerNotification(created);
     };
 
+    const visibleInserate = onlyFavorites
+        ? inserate.filter((item) => favoriteIds.includes(item.id))
+        : inserate;
+
     return (
         <div
             style={{
@@ -249,6 +293,29 @@ export default function ImmobilienInseratePage({ lang }) {
                     </div>
 
                     <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center" }}>
+                        <button
+                            type="button"
+                            onClick={() => setOnlyFavorites((prev) => !prev)}
+                            style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "7px",
+                                padding: "10px 14px",
+                                borderRadius: "6px",
+                                border: onlyFavorites ? "1px solid #f43f5e" : "1px solid #3a3a3a",
+                                backgroundColor: onlyFavorites ? "#4c0519" : "#1d1d1d",
+                                color: onlyFavorites ? "#fda4af" : "#fff",
+                                fontWeight: "bold",
+                                fontSize: "13px",
+                                cursor: "pointer"
+                            }}
+                        >
+                            <Heart size={15} fill={onlyFavorites ? "#f43f5e" : "none"} color="#f43f5e" />
+                            <span>
+                                {onlyFavorites ? "Alle anzeigen" : "Favoriten"} ({favoriteIds.length})
+                            </span>
+                        </button>
+
                         <button
                             type="button"
                             onClick={handleSimulateIncomingInserat}
@@ -419,192 +486,240 @@ export default function ImmobilienInseratePage({ lang }) {
                         gap: "20px"
                     }}
                 >
-                    {inserate.map((item) => {
-                        const isStreetViewOpen = Boolean(openStreetViewIds[item.id]);
-                        const activeMode = viewModeById[item.id] || "streetview";
-                        const mapUrls = buildMapEmbedUrls(item.ort);
-                        const activeIframeSrc =
-                            activeMode === "place" ? mapUrls.placeSrc : mapUrls.streetViewSrc;
+                    {visibleInserate.length === 0 ? (
+                        <div
+                            style={{
+                                gridColumn: "1 / -1",
+                                padding: "32px",
+                                textAlign: "center",
+                                borderRadius: "10px",
+                                backgroundColor: "#1a1a1a",
+                                border: "1px solid #2e2e2e",
+                                color: "#bbb"
+                            }}
+                        >
+                            Noch keine Immobilien als Favorit markiert.
+                        </div>
+                    ) : (
+                        visibleInserate.map((item) => {
+                            const isFavorite = favoriteIds.includes(item.id);
+                            const isStreetViewOpen = Boolean(openStreetViewIds[item.id]);
+                            const activeMode = viewModeById[item.id] || "streetview";
+                            const mapUrls = buildMapEmbedUrls(item.ort);
+                            const activeIframeSrc =
+                                activeMode === "place" ? mapUrls.placeSrc : mapUrls.streetViewSrc;
 
-                        return (
-                            <article
-                                key={item.id}
-                                style={{
-                                    backgroundColor: "#1a1a1a",
-                                    border: "1px solid #2e2e2e",
-                                    borderRadius: "10px",
-                                    overflow: "hidden",
-                                    display: "flex",
-                                    flexDirection: "column"
-                                }}
-                            >
-                                <div style={{ position: "relative", height: "190px" }}>
-                                    <img
-                                        src={item.image}
-                                        alt={item.title}
-                                        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                                    />
-                                    <span
-                                        style={{
-                                            position: "absolute",
-                                            top: "10px",
-                                            left: "10px",
-                                            backgroundColor: "#e62b2b",
-                                            color: "#fff",
-                                            fontSize: "11px",
-                                            fontWeight: "bold",
-                                            padding: "4px 8px",
-                                            borderRadius: "4px"
-                                        }}
-                                    >
-                                        {item.tag || "Inserat"}
-                                    </span>
+                            return (
+                                <article
+                                    key={item.id}
+                                    style={{
+                                        backgroundColor: "#1a1a1a",
+                                        border: isFavorite ? "1px solid #f43f5e" : "1px solid #2e2e2e",
+                                        borderRadius: "10px",
+                                        overflow: "hidden",
+                                        display: "flex",
+                                        flexDirection: "column"
+                                    }}
+                                >
+                                    <div style={{ position: "relative", height: "190px" }}>
+                                        <img
+                                            src={item.image}
+                                            alt={item.title}
+                                            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                                        />
+                                        <span
+                                            style={{
+                                                position: "absolute",
+                                                top: "10px",
+                                                left: "10px",
+                                                backgroundColor: "#e62b2b",
+                                                color: "#fff",
+                                                fontSize: "11px",
+                                                fontWeight: "bold",
+                                                padding: "4px 8px",
+                                                borderRadius: "4px"
+                                            }}
+                                        >
+                                            {item.tag || "Inserat"}
+                                        </span>
 
-                                    <button
-                                        type="button"
-                                        onClick={() => handleDeleteInserat(item.id)}
-                                        aria-label={`Inserat ${item.title} entfernen`}
-                                        style={{
-                                            position: "absolute",
-                                            top: "10px",
-                                            right: "10px",
-                                            display: "inline-flex",
-                                            alignItems: "center",
-                                            gap: "5px",
-                                            padding: "5px 9px",
-                                            borderRadius: "5px",
-                                            border: "1px solid rgba(255,255,255,0.18)",
-                                            backgroundColor: "rgba(17,17,17,0.82)",
-                                            color: "#dc4b0a",
-                                            fontSize: "30px",
-                                            fontWeight: "bold",
-                                            cursor: "pointer"
-                                        }}
-                                    >
-                                        <Trash2 size={12} />
-                                        <span>Inserat entfernen</span>
-                                    </button>
-                                </div>
-
-                                <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "8px", flexGrow: 1 }}>
-                                    <h3 style={{ margin: 0, fontSize: "1.1rem" }}>{item.title}</h3>
-
-                                    <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#bbb", fontSize: "13px" }}>
-                                        <MapPin size={14} color="#ff6b6b" />
-                                        <span>{item.ort}</span>
-                                    </div>
-
-                                    <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#bbb", fontSize: "13px" }}>
-                                        <Building2 size={14} color="#ff6b6b" />
-                                        <span>{item.zimmer} • {item.flaeche}</span>
-                                    </div>
-
-                                    <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", paddingTop: "4px" }}>
                                         <button
                                             type="button"
-                                            onClick={() => toggleStreetView(item.id)}
+                                            onClick={() => handleDeleteInserat(item.id)}
+                                            aria-label={`Inserat ${item.title} entfernen`}
                                             style={{
+                                                position: "absolute",
+                                                top: "10px",
+                                                right: "10px",
                                                 display: "inline-flex",
                                                 alignItems: "center",
-                                                gap: "6px",
-                                                padding: "6px 10px",
-                                                borderRadius: "6px",
-                                                border: "1px solid #3c3c3c",
-                                                backgroundColor: isStreetViewOpen ? "#e62b2b" : "#242424",
-                                                color: "#fff",
+                                                gap: "5px",
+                                                padding: "5px 9px",
+                                                borderRadius: "5px",
+                                                border: "1px solid rgba(255,255,255,0.18)",
+                                                backgroundColor: "rgba(17,17,17,0.82)",
+                                                color: "#ff8577",
                                                 fontSize: "12px",
+                                                fontWeight: "bold",
                                                 cursor: "pointer"
                                             }}
                                         >
-                                            <Compass size={13} />
-                                            <span>{isStreetViewOpen ? "360° schliessen" : "Google Street View 360°"}</span>
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            onClick={() => openInGoogleMaps(item.ort)}
-                                            style={{
-                                                padding: "6px 10px",
-                                                borderRadius: "6px",
-                                                border: "1px solid #3c3c3c",
-                                                backgroundColor: "#181818",
-                                                color: "#93c5fd",
-                                                fontSize: "12px",
-                                                cursor: "pointer"
-                                            }}
-                                        >
-                                            Auf Google Maps öffnen
+                                            <Trash2 size={12} />
+                                            <span>Entfernen</span>
                                         </button>
                                     </div>
 
-                                    {isStreetViewOpen && (
-                                        <div style={{ marginTop: "6px", borderRadius: "8px", overflow: "hidden", border: "1px solid #333" }}>
-                                            <div
+                                    <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "8px", flexGrow: 1 }}>
+                                        <h3 style={{ margin: 0, fontSize: "1.1rem" }}>{item.title}</h3>
+
+                                        <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#bbb", fontSize: "13px" }}>
+                                            <MapPin size={14} color="#ff6b6b" />
+                                            <span>{item.ort}</span>
+                                        </div>
+
+                                        <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#bbb", fontSize: "13px" }}>
+                                            <Building2 size={14} color="#ff6b6b" />
+                                            <span>{item.zimmer} • {item.flaeche}</span>
+                                        </div>
+
+                                        <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", paddingTop: "4px" }}>
+                                            <button
+                                                type="button"
+                                                onClick={() => toggleFavorite(item)}
+                                                aria-pressed={isFavorite}
+                                                aria-label={
+                                                    isFavorite
+                                                        ? `${item.title} aus Favoriten entfernen`
+                                                        : `${item.title} als Favorit speichern`
+                                                }
                                                 style={{
-                                                    display: "flex",
-                                                    justifyContent: "space-between",
+                                                    display: "inline-flex",
                                                     alignItems: "center",
+                                                    gap: "6px",
                                                     padding: "6px 10px",
-                                                    backgroundColor: "#151515",
-                                                    borderBottom: "1px solid #2b2b2b",
-                                                    fontSize: "11px"
+                                                    borderRadius: "6px",
+                                                    border: isFavorite ? "1px solid #f43f5e" : "1px solid #3c3c3c",
+                                                    backgroundColor: isFavorite ? "#4c0519" : "#242424",
+                                                    color: isFavorite ? "#fda4af" : "#fff",
+                                                    fontSize: "12px",
+                                                    fontWeight: isFavorite ? "bold" : "normal",
+                                                    cursor: "pointer"
                                                 }}
                                             >
-                                                <div style={{ display: "flex", gap: "6px" }}>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setMapMode(item.id, "streetview")}
-                                                        style={{
-                                                            padding: "3px 8px",
-                                                            borderRadius: "4px",
-                                                            border: "none",
-                                                            backgroundColor: activeMode === "streetview" ? "#e62b2b" : "#262626",
-                                                            color: "#fff",
-                                                            cursor: "pointer"
-                                                        }}
-                                                    >
-                                                        Street View
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setMapMode(item.id, "place")}
-                                                        style={{
-                                                            padding: "3px 8px",
-                                                            borderRadius: "4px",
-                                                            border: "none",
-                                                            backgroundColor: activeMode === "place" ? "#e62b2b" : "#262626",
-                                                            color: "#fff",
-                                                            cursor: "pointer"
-                                                        }}
-                                                    >
-                                                        Karte
-                                                    </button>
-                                                </div>
-                                                {!mapUrls.hasApiKey && (
-                                                    <span style={{ color: "#aaa" }}>Fallback-Karte (ohne API-Key)</span>
-                                                )}
-                                            </div>
+                                                <Heart
+                                                    size={13}
+                                                    fill={isFavorite ? "#f43f5e" : "none"}
+                                                    color={isFavorite ? "#f43f5e" : "#fff"}
+                                                />
+                                                <span>{isFavorite ? "Favorit" : "Liken"}</span>
+                                            </button>
 
-                                            <iframe
-                                                title={`Google Maps (${activeMode}) – ${item.title}`}
-                                                src={activeIframeSrc}
-                                                width="100%"
-                                                height="210"
-                                                style={{ border: 0, display: "block" }}
-                                                loading="lazy"
-                                                allowFullScreen
-                                                referrerPolicy="no-referrer-when-downgrade"
-                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => toggleStreetView(item.id)}
+                                                style={{
+                                                    display: "inline-flex",
+                                                    alignItems: "center",
+                                                    gap: "6px",
+                                                    padding: "6px 10px",
+                                                    borderRadius: "6px",
+                                                    border: "1px solid #3c3c3c",
+                                                    backgroundColor: isStreetViewOpen ? "#e62b2b" : "#242424",
+                                                    color: "#fff",
+                                                    fontSize: "12px",
+                                                    cursor: "pointer"
+                                                }}
+                                            >
+                                                <Compass size={13} />
+                                                <span>{isStreetViewOpen ? "360° schliessen" : "Google Street View 360°"}</span>
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                onClick={() => openInGoogleMaps(item.ort)}
+                                                style={{
+                                                    padding: "6px 10px",
+                                                    borderRadius: "6px",
+                                                    border: "1px solid #3c3c3c",
+                                                    backgroundColor: "#181818",
+                                                    color: "#93c5fd",
+                                                    fontSize: "12px",
+                                                    cursor: "pointer"
+                                                }}
+                                            >
+                                                Auf Google Maps öffnen
+                                            </button>
                                         </div>
-                                    )}
 
-                                    <div style={{ marginTop: "auto", paddingTop: "10px", fontSize: "1.1rem", fontWeight: "bold", color: "#4ade80" }}>
-                                        {item.preis}
+                                        {isStreetViewOpen && (
+                                            <div style={{ marginTop: "6px", borderRadius: "8px", overflow: "hidden", border: "1px solid #333" }}>
+                                                <div
+                                                    style={{
+                                                        display: "flex",
+                                                        justifyContent: "space-between",
+                                                        alignItems: "center",
+                                                        padding: "6px 10px",
+                                                        backgroundColor: "#151515",
+                                                        borderBottom: "1px solid #2b2b2b",
+                                                        fontSize: "11px"
+                                                    }}
+                                                >
+                                                    <div style={{ display: "flex", gap: "6px" }}>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setMapMode(item.id, "streetview")}
+                                                            style={{
+                                                                padding: "3px 8px",
+                                                                borderRadius: "4px",
+                                                                border: "none",
+                                                                backgroundColor: activeMode === "streetview" ? "#e62b2b" : "#262626",
+                                                                color: "#fff",
+                                                                cursor: "pointer"
+                                                            }}
+                                                        >
+                                                            Street View
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setMapMode(item.id, "place")}
+                                                            style={{
+                                                                padding: "3px 8px",
+                                                                borderRadius: "4px",
+                                                                border: "none",
+                                                                backgroundColor: activeMode === "place" ? "#e62b2b" : "#262626",
+                                                                color: "#fff",
+                                                                cursor: "pointer"
+                                                            }}
+                                                        >
+                                                            Karte
+                                                        </button>
+                                                    </div>
+                                                    {!mapUrls.hasApiKey && (
+                                                        <span style={{ color: "#aaa" }}>Fallback-Karte (ohne API-Key)</span>
+                                                    )}
+                                                </div>
+
+                                                <iframe
+                                                    title={`Google Maps (${activeMode}) – ${item.title}`}
+                                                    src={activeIframeSrc}
+                                                    width="100%"
+                                                    height="210"
+                                                    style={{ border: 0, display: "block" }}
+                                                    loading="lazy"
+                                                    allowFullScreen
+                                                    referrerPolicy="no-referrer-when-downgrade"
+                                                />
+                                            </div>
+                                        )}
+
+                                        <div style={{ marginTop: "auto", paddingTop: "10px", fontSize: "1.1rem", fontWeight: "bold", color: "#4ade80" }}>
+                                            {item.preis}
+                                        </div>
                                     </div>
-                                </div>
-                            </article>
-                        );
-                    })}
+                                </article>
+                            );
+                        })
+                    )}
                 </section>
             </div>
 
