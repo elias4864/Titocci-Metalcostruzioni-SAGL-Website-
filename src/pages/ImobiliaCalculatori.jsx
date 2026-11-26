@@ -106,6 +106,7 @@ export default function HousePriceCalculator() {
     const [showPdfPreview, setShowPdfPreview] = useState(false);
     const [copySuccess, setCopySuccess] = useState(false);
     const [formMessage, setFormMessage] = useState({ type: '', text: '' });
+    const[aiMessages,setAiMessages]=useState([]);
 
     const reportRef = useRef(null);
     const pdfInputRef = useRef(null);
@@ -126,6 +127,14 @@ export default function HousePriceCalculator() {
         }
         pdfUrlRef.current = nextUrl;
     };
+
+    const getActivePropertyContext = () => {
+        if (result) {
+            return {
+                ...result,
+                hasCalculatedResult: true,
+            };
+        }}
 
     useEffect(() => {
         return () => {
@@ -151,50 +160,198 @@ export default function HousePriceCalculator() {
     const focusEmailField = () => focusInput(emailInputRef);
     const focusPhoneField = () => focusInput(phoneInputRef);
 
-    const buildLocalAiAnalysis = (data, hasImage) => {
-        const age = Math.max(0, currentYear - (Number(data.year) || currentYear));
-        const plausibilityNotes = [];
+        const buildSmartLocalReply = (question, ctx) => {
+            const q = question.toLowerCase();
+            const totalStr = `${Math.round(ctx.totalPrice).toLocaleString('de-CH')} CHF`;
+            const qmPriceStr = `${Math.round(ctx.pricePerQm).toLocaleString('de-CH')} CHF/m²`;
+            const ekStr = `${Math.round(ctx.eigenkapital20).toLocaleString('de-CH')} CHF`;
+            const zinsMonatStr = `${Math.round(ctx.monatlicherZins).toLocaleString('de-CH')} CHF`;
+            const hypothek80 = ctx.totalPrice * 0.8;
+            const tragbarkeitMonat = Math.round(((hypothek80 * 0.05) + (ctx.totalPrice * 0.01)) / 12);
 
-        if (data.condition === 'new' && age > 5) {
-            plausibilityNotes.push(
-                `Hinweis: Der Zustand „Neubau / Erstbezug“ passt kaum zum Baujahr ${data.year} (Alter ca. ${age} Jahre).`
-            );
-        }
-        if (data.condition === 'need_repair' && age < 5) {
-            plausibilityNotes.push(
-                `Hinweis: „Renovierungsbedürftig“ bei Baujahr ${data.year} ist untypisch – bitte Baujahr oder Zustand prüfen.`
-            );
-        }
-        if (Number(data.zinssatz) > 5) {
-            plausibilityNotes.push(
-                `Hinweis: Ein Zinssatz von ${data.zinssatz}% liegt über dem üblichen Richtwert – die monatliche Zinsbelastung fällt entsprechend höher aus.`
-            );
-        }
-        if (plausibilityNotes.length === 0) {
-            plausibilityNotes.push('Alle Eingaben sind plausibel und stimmig zueinander.');
-        }
+            if (q.includes('eigenkapital') || q.includes('hypothek') || q.includes('zins') || q.includes('tragbarkeit')) {
+                return `Beim Richtwert von ${totalStr} (${ctx.qm} m², ${ctx.cantonName}) liegen 20 % Eigenkapital bei ca. ${ekStr}. Bei ${ctx.zinssatz}% Zinssatz beträgt die reine monatliche Zinsbelastung ca. ${zinsMonatStr}. Für die Schweizer Tragbarkeit rechnen Banken oft mit ca. 5 % kalkulatorischem Zins plus ca. 1 % Nebenkosten/Unterhalt p. a. – das entspricht rund ${tragbarkeitMonat.toLocaleString('de-CH')} CHF/Monat.`;
+            }
 
-        const recommendations = [
-            age >= 20
-                ? 'Bei einem Objektalter ab ca. 20 Jahren lohnt sich ein Blick auf Heizung, Fenster, Dach und Fassade (Renovations- & Sanierungsbudget einplanen).'
-                : 'Bei neueren Objekten empfiehlt sich vor allem die Prüfung von Gewährleistung, Nebenkosten und langfristigem Unterhalt.',
-            `Mit 20 % Eigenkapital (${Math.round(data.eigenkapital20).toLocaleString('de-CH')} CHF) liegt die geschätzte monatliche Zinsbelastung bei rund ${Math.round(data.monatlicherZins).toLocaleString('de-CH')} CHF.`,
-        ];
+            if (q.includes('renov') || q.includes('sanier') || q.includes('baujahr') || q.includes('zustand') || q.includes('metall') || q.includes('balkon')) {
+                return `Das Objekt (Baujahr ${ctx.year}, Zustand „${ctx.conditionName}“) liegt bei ${qmPriceStr}. Prüfe je nach Alter gezielt Heizsystem, Gebäudehülle, Fenster, Leitungen sowie Nasszellen/Küche. Für konkrete Bau-, Umbau- oder Metallbauarbeiten (z. B. Geländer, Balkone, Konstruktionen) empfiehlt sich eine direkte Anfrage bei Titocci Metalcostruzioni SAGL.`;
+            }
 
-        if (hasImage) {
-            recommendations.push(
-                'Ein Objektfoto wurde hochgeladen – ideal als Ergänzung für eine Vorab-Einschätzung von Bausubstanz und Umgebung.'
-            );
-        }
+            if (q.includes('lage') || q.includes('kanton') || q.includes('preis') || q.includes('m²') || q.includes('quadratmeter')) {
+                return `Aktuell ergibt sich für ${ctx.qm} m² in ${ctx.cantonName} und der Lage „${ctx.locationName}“ ein Richtwert von ${qmPriceStr} bzw. ${totalStr} insgesamt. Kanton, Lageklasse und Wohnflächengruppe beeinflussen den m²-Preis am stärksten.`;
+            }
 
-        return {
-            generatedAt: new Date().toLocaleString('de-CH'),
-            headline: `KI-Einschätzung für ${data.cantonName} (${data.qm} m²)`,
-            summary: `Geschätzter Gesamtwert von ${Math.round(data.totalPrice).toLocaleString('de-CH')} CHF (${Math.round(data.pricePerQm).toLocaleString('de-CH')} CHF / m²) in der Lage „${data.locationName}“ (${data.conditionName}).`,
-            plausibilityNotes,
-            recommendations,
+            return `Für ${ctx.qm} m² in ${ctx.cantonName} (${ctx.locationName}, Baujahr ${ctx.year}, Zustand „${ctx.conditionName}“) liegt der geschätzte Wert bei ${totalStr} (${qmPriceStr}) und das 20-%-Eigenkapital bei ca. ${ekStr}. Frag gerne gezielt nach Eigenkapital/Tragbarkeit, Sanierung/Baujahr oder Lagefaktoren.`;
         };
-    };
+
+        const callGeminiForPropertyQuestion = async (question, ctx, history) => {
+            const endpoint = import.meta.env.VITE_AI_ENDPOINT || '';
+            const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
+
+            if (!endpoint && !apiKey) {
+                return null;
+            }
+
+            const systemInstruction = [
+                'Du bist ein hilfreicher, sachlicher KI-Assistent für einen Schweizer Immobilienrechner (Titocci Metalcostruzioni SAGL).',
+                'Antworte auf Deutsch, präzise und praxisnah mit Bezug auf Schweizer Immobilien- und Finanzierungslogik (CHF, Eigenkapital, kalkulatorische Tragbarkeit, Unterhalt/Sanierung).',
+                'Weise kurz darauf hin, dass Werte unverbindliche Richtwerte sind und keine verbindliche Schätzung oder Finanz-/Rechtsberatung ersetzen.',
+                `Aktueller Kontext: Wohnfläche ${ctx.qm} m², Kanton ${ctx.cantonName}, Lage ${ctx.locationName}, Zustand ${ctx.conditionName}, Baujahr ${ctx.year}, Personen ${ctx.personen}, Zinssatz ${ctx.zinssatz}%, Richtwert ${Math.round(ctx.totalPrice)} CHF (${Math.round(ctx.pricePerQm)} CHF/m²), 20% Eigenkapital ${Math.round(ctx.eigenkapital20)} CHF, monatlicher Zins ca. ${Math.round(ctx.monatlicherZins)} CHF${ctx.pdfName ? `, PDF: ${ctx.pdfName}` : ''}.`,
+            ].join(' ');
+
+            if (endpoint) {
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        systemInstruction,
+                        question,
+                        context: ctx,
+                        history: history.slice(-6),
+                    }),
+                });
+                if (!res.ok) throw new Error(`AI endpoint error: ${res.status}`);
+                const data = await res.json();
+                return data?.reply || data?.text || null;
+            }
+
+            const contents = [
+                ...history.slice(-6).map((msg) => ({
+                    role: msg.role === 'assistant' ? 'model' : 'user',
+                    parts: [{ text: msg.content }],
+                })),
+                {
+                    role: 'user',
+                    parts: [{ text: `${systemInstruction}\n\nFrage: ${question}` }],
+                },
+            ];
+
+            const res = await fetch(
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents }),
+                }
+            );
+
+            if (!res.ok) throw new Error(`Gemini API error: ${res.status}`);
+            const data = await res.json();
+            return data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || null;
+        };
+
+
+
+
+
+
+
+        const handleAskAiQuestion = async (e, presetQuestion = '') => {
+            if (e) e.preventDefault();
+
+            const trimmedQuestion = (presetQuestion || aiQuestion).trim();
+            if (!trimmedQuestion) {
+                setAiError('Bitte gib zuerst eine Frage ein.');
+                return;
+            }
+
+            const activeCtx = getActivePropertyContext();
+            const nextHistory = [...aiMessages, { role: 'user', content: trimmedQuestion }];
+
+            setIsAiLoading(true);
+            setAiError('');
+            setAiMessages(nextHistory);
+            if (!presetQuestion) {
+                setAiQuestion('');
+            }
+
+            try {
+                let answer = null;
+                try {
+                    answer = await callGeminiForPropertyQuestion(trimmedQuestion, activeCtx, nextHistory);
+                } catch (apiErr) {
+                    console.warn('Gemini-Aufruf fehlgeschlagen, nutze lokalen Assistenten:', apiErr);
+                }
+
+                if (!answer) {
+                    await new Promise((resolve) => setTimeout(resolve, 200));
+                    answer = buildSmartLocalReply(trimmedQuestion, activeCtx);
+                }
+
+                setAiReply(answer);
+                setAiMessages([...nextHistory, { role: 'assistant', content: answer }]);
+            } catch (error) {
+                console.error('Fehler bei der KI-Rückfrage:', error);
+                setAiError('Antwort auf die Frage konnte nicht erzeugt werden.');
+            } finally {
+                setIsAiLoading(false);
+            }
+        };
+
+
+        const buildLocalAiAnalysis = (data, hasImage) => {
+            const age = Math.max(0, currentYear - (Number(data.year) || currentYear));
+            const plausibilityNotes = [];
+
+            if (data.condition === 'new' && age > 5) {
+                plausibilityNotes.push(
+                    `Hinweis: „Neubau / Erstbezug“ passt kaum zum Baujahr ${data.year} (ca. ${age} Jahre alt).`
+                );
+            }
+            if (data.condition === 'need_repair' && age < 5) {
+                plausibilityNotes.push(
+                    `Hinweis: „Renovierungsbedürftig“ bei Baujahr ${data.year} ist untypisch – bitte Baujahr oder Zustand prüfen.`
+                );
+            }
+            if (Number(data.zinssatz) > 5) {
+                plausibilityNotes.push(
+                    `Hinweis: Ein Zinssatz von ${data.zinssatz}% liegt über dem gängigen Richtwert und erhöht die laufende Zinslast spürbar.`
+                );
+            }
+            if (data.qm < 25 && data.personen >= 3) {
+                plausibilityNotes.push(
+                    `Hinweis: ${data.qm} m² für ${data.personen} Personen ist kompakt – Platzbedarf und Stauraum genau prüfen.`
+                );
+            }
+            if (plausibilityNotes.length === 0) {
+                plausibilityNotes.push('Alle Angaben sind plausibel und stimmig zueinander.');
+            }
+
+            const hypothek80 = data.totalPrice * 0.8;
+            const richttragbarkeitMonat = Math.round(((hypothek80 * 0.05) + (data.totalPrice * 0.01)) / 12);
+
+            const recommendations = [
+                age >= 25
+                    ? 'Bei einem Objektalter ab ca. 25 Jahren empfiehlt sich ein Budget für Heizung, Fenster, Dach, Fassade und Leitungen.'
+                    : age >= 12
+                        ? 'Bei rund 12–24 Jahren lohnt sich ein Blick auf Haustechnik, Wärmeerzeugung und kommende Unterhaltsarbeiten.'
+                        : 'Bei neueren Objekten sind Gewährleistungsfristen, Nebenkosten und langfristiger Unterhalt besonders relevant.',
+                `20 % Eigenkapital entsprechen ca. ${Math.round(data.eigenkapital20).toLocaleString('de-CH')} CHF (bei ${data.zinssatz}% Zins ca. ${Math.round(data.monatlicherZins).toLocaleString('de-CH')} CHF/Monat reine Zinslast).`,
+                `Schweizer Richtwert (80 % Hypothek à 5 % kalkulatorisch + ca. 1 % Unterhalt/Nebenkosten p. a.): ~${richttragbarkeitMonat.toLocaleString('de-CH')} CHF/Monat.`,
+            ];
+
+            if (hasImage) {
+                recommendations.push(
+                    'Ein Objektfoto wurde hinterlegt – ideal als visueller Anhaltspunkt (ohne verbindliche Bausubstanz-Garantie).'
+                );
+            }
+            if (data.pdfName) {
+                recommendations.push(
+                    `PDF-Dokument „${data.pdfName}“ ist angehängt – Eckdaten aus dem Dossier sollten bei der Detailprüfung abgeglichen werden.`
+                );
+            }
+
+            return {
+                generatedAt: new Date().toLocaleString('de-CH'),
+                headline: `${data.hasCalculatedResult ? 'KI-Einschätzung' : 'Vorschau-Einschätzung'} für ${data.cantonName} (${data.qm} m²)`,
+                summary: `Richtwert von ca. ${Math.round(data.totalPrice).toLocaleString('de-CH')} CHF (${Math.round(data.pricePerQm).toLocaleString('de-CH')} CHF/m²) in der Lage „${data.locationName}“ (${data.conditionName}).`,
+                plausibilityNotes,
+                recommendations,
+                disclaimer: 'Unverbindlicher Richtwert (keine amtliche Schätzung oder Finanz-/Rechtsberatung).',
+            };
+        };
+
+
 
     const handleRunAiAnalysis = async () => {
         if (!result) {
@@ -213,44 +370,6 @@ export default function HousePriceCalculator() {
         } catch (error) {
             console.error('Fehler bei der KI-Analyse:', error);
             setAiError('Die KI-Analyse konnte nicht erstellt werden.');
-        } finally {
-            setIsAiLoading(false);
-        }
-    };
-
-    const handleAskAiQuestion = async (e) => {
-        if (e) e.preventDefault();
-
-        const trimmedQuestion = aiQuestion.trim();
-        if (!trimmedQuestion) {
-            setAiError('Bitte gib zuerst eine Frage ein.');
-            return;
-        }
-        if (!result) {
-            setAiError('Bitte berechne zuerst einen Immobilienwert, damit sich die KI auf deine Daten beziehen kann.');
-            return;
-        }
-
-        setIsAiLoading(true);
-        setAiError('');
-
-        try {
-            await new Promise((resolve) => setTimeout(resolve, 250));
-            const qLower = trimmedQuestion.toLowerCase();
-
-            let answer;
-            if (qLower.includes('eigenkapital') || qLower.includes('zins') || qLower.includes('hypothek')) {
-                answer = `Bei einem Gesamtwert von ${Math.round(result.totalPrice).toLocaleString('de-CH')} CHF entsprechen 20 % Eigenkapital rund ${Math.round(result.eigenkapital20).toLocaleString('de-CH')} CHF. Bei ${result.zinssatz}% Zinssatz liegt die monatliche Zinsbelastung bei ca. ${Math.round(result.monatlicherZins).toLocaleString('de-CH')} CHF (ohne Amortisation und Nebenkosten).`;
-            } else if (qLower.includes('renov') || qLower.includes('sanier') || qLower.includes('baujahr')) {
-                answer = `Das Objekt hat Baujahr ${result.year} und ist als „${result.conditionName}“ eingestuft. Besonders bei älteren Liegenschaften sollten energetische Massnahmen, Küche/Bäder und Leitungen im Budget berücksichtigt werden.`;
-            } else {
-                answer = `Zur aktuellen Berechnung (${result.qm} m², ${result.cantonName}, ${result.locationName}) liegt der Richtwert bei ${Math.round(result.totalPrice).toLocaleString('de-CH')} CHF (${Math.round(result.pricePerQm).toLocaleString('de-CH')} CHF/m²). Du kannst gerne gezielt nach Eigenkapital, Zinsen oder Sanierung fragen.`;
-            }
-
-            setAiReply(answer);
-        } catch (error) {
-            console.error('Fehler bei der KI-Rückfrage:', error);
-            setAiError('Antwort auf die Frage konnte nicht erzeugt werden.');
         } finally {
             setIsAiLoading(false);
         }
@@ -1149,54 +1268,96 @@ export default function HousePriceCalculator() {
                             color: '#0f172a',
                         }}
                     >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                            <strong style={{ fontSize: '15px' }}>KI-Einschätzung &amp; Rückfragen</strong>
-                            <button
-                                type="button"
-                                onClick={handleRunAiAnalysis}
-                                disabled={isAiLoading}
-                                style={exportBtnStyle(isAiLoading ? '#64748b' : '#4f46e5')}
-                            >
-                                {isAiLoading ? 'Analysiere...' : 'KI-Analyse starten'}
-                            </button>
+                        <div style={{ marginTop: '16px', padding: '14px', borderRadius: '12px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                                <strong>KI-Immobilien-Assistent</strong>
+                                <button
+                                    type="button"
+                                    onClick={handleRunAiAnalysis}
+                                    disabled={isAiLoading}
+                                    style={{ padding: '6px 12px', borderRadius: '8px', border: 'none', backgroundColor: '#0f172a', color: '#fff', cursor: 'pointer', fontSize: '12px' }}
+                                >
+                                    {isAiLoading ? 'Analysiere…' : 'KI-Analyse starten'}
+                                </button>
+                            </div>
+
+                            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '10px' }}>
+                                {[
+                                    'Wie steht es um Eigenkapital und Tragbarkeit?',
+                                    'Welche Sanierungen sind beim Baujahr relevant?',
+                                    'Wie wirken sich Lage und Kanton aus?',
+                                ].map((chip) => (
+                                    <button
+                                        key={chip}
+                                        type="button"
+                                        onClick={() => handleAskAiQuestion(null, chip)}
+                                        disabled={isAiLoading}
+                                        style={{ padding: '4px 10px', borderRadius: '999px', border: '1px solid #cbd5e1', backgroundColor: '#fff', fontSize: '12px', cursor: 'pointer' }}
+                                    >
+                                        {chip}
+                                    </button>
+                                ))}
+                            </div>
+
+                            {aiError && <p style={{ color: '#dc2626', fontSize: '13px', marginTop: '8px' }}>{aiError}</p>}
+
+                            {aiAnalysis && (
+                                <div style={{ marginTop: '12px', padding: '10px', borderRadius: '8px', backgroundColor: '#fff', border: '1px solid #e2e8f0', fontSize: '13px' }}>
+                                    <div style={{ fontWeight: 700 }}>{aiAnalysis.headline}</div>
+                                    <p style={{ margin: '6px 0' }}>{aiAnalysis.summary}</p>
+                                    <ul style={{ margin: '6px 0', paddingLeft: '18px' }}>
+                                        {aiAnalysis.plausibilityNotes.map((note, i) => <li key={i}>{note}</li>)}
+                                        {aiAnalysis.recommendations.map((rec, i) => <li key={`r-${i}`}>{rec}</li>)}
+                                    </ul>
+                                    <small style={{ color: '#64748b' }}>{aiAnalysis.disclaimer}</small>
+                                </div>
+                            )}
+
+                            {aiMessages.length > 0 && (
+                                <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '220px', overflowY: 'auto' }}>
+                                    {aiMessages.map((msg, idx) => (
+                                        <div
+                                            key={idx}
+                                            style={{
+                                                alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
+                                                maxWidth: '88%',
+                                                padding: '8px 12px',
+                                                borderRadius: '10px',
+                                                fontSize: '13px',
+                                                backgroundColor: msg.role === 'user' ? '#2563eb' : '#ffffff',
+                                                color: msg.role === 'user' ? '#ffffff' : '#0f172a',
+                                                border: msg.role === 'assistant' ? '1px solid #e2e8f0' : 'none',
+                                            }}
+                                        >
+                                            {msg.content}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+                                <input
+                                    type="text"
+                                    value={aiQuestion}
+                                    onChange={(e) => setAiQuestion(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') handleAskAiQuestion(e);
+                                    }}
+                                    placeholder="Frage zu Preis, Eigenkapital, Zins oder Sanierung…"
+                                    style={{ ...fieldInputStyle, flex: 1 }}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={(e) => handleAskAiQuestion(e)}
+                                    disabled={isAiLoading}
+                                    style={{ padding: '0 14px', borderRadius: '8px', border: 'none', backgroundColor: '#2563eb', color: '#fff', fontWeight: 600, cursor: 'pointer' }}
+                                >
+                                    Fragen
+                                </button>
+                            </div>
                         </div>
 
-                        {aiError && (
-                            <p style={{ color: '#dc2626', fontSize: '13px', marginTop: '8px' }}>{aiError}</p>
-                        )}
 
-                        {aiAnalysis && (
-                            <div style={{ marginTop: '12px', fontSize: '13px', lineHeight: 1.5 }}>
-                                <p style={{ margin: '0 0 8px 0', fontWeight: 600 }}>{aiAnalysis.summary}</p>
-                                <ul style={{ margin: '0 0 8px 0', paddingLeft: '18px' }}>
-                                    {aiAnalysis.plausibilityNotes.map((note, idx) => (
-                                        <li key={idx}>{note}</li>
-                                    ))}
-                                </ul>
-                                <ul style={{ margin: 0, paddingLeft: '18px', color: '#1e293b' }}>
-                                    {aiAnalysis.recommendations.map((rec, idx) => (
-                                        <li key={idx}>{rec}</li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-
-                        <form onSubmit={handleAskAiQuestion} style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
-                            <input
-                                type="text"
-                                value={aiQuestion}
-                                onChange={(e) => setAiQuestion(e.target.value)}
-                                placeholder="Frage zu Zinsen, Eigenkapital oder Sanierung..."
-                                style={{ ...fieldInputStyle, flex: 1 }}
-                            />
-                            <button
-                                type="submit"
-                                disabled={isAiLoading}
-                                style={exportBtnStyle('#0f172a')}
-                            >
-                                Fragen
-                            </button>
-                        </form>
 
                         {aiReply && (
                             <p style={{ margin: '10px 0 0 0', fontSize: '13px', color: '#0f172a', backgroundColor: '#ffffff', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
