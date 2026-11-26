@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Bell, PlusCircle, Building2, MapPin, X, CheckCircle2, Compass, Trash2, Heart } from "lucide-react";
+import { Bell, PlusCircle, Building2, MapPin, X, CheckCircle2, Compass, Trash2, Heart, Users } from "lucide-react";
 
 import Locarno from "../assets/Locarno.jfif";
 import Steinhaus from "../assets/Steinhaus.jfif";
@@ -19,6 +19,7 @@ const INITIAL_INSERATE = [
         preis: "1'180'000 CHF",
         zimmer: "4.5 Zimmer",
         flaeche: "135 m²",
+        personen: "4 Personen",
         image: Dachterasse,
         tag: "Neu"
     },
@@ -29,6 +30,7 @@ const INITIAL_INSERATE = [
         preis: "890'000 CHF",
         zimmer: "5.5 Zimmer",
         flaeche: "170 m²",
+        personen: "5 Personen",
         image: Steinhaus,
         tag: "Exklusiv"
     },
@@ -39,6 +41,7 @@ const INITIAL_INSERATE = [
         preis: "745'000 CHF",
         zimmer: "3.5 Zimmer",
         flaeche: "102 m²",
+        personen: "3 Personen",
         image: Innenhof,
         tag: "Ruhig"
     }
@@ -51,6 +54,7 @@ const DEMO_NEUE_INSERATE = [
         preis: "1'040'000 CHF",
         zimmer: "4.0 Zimmer",
         flaeche: "118 m²",
+        personen: "4 Personen",
         image: Locarno,
         tag: "Neu eingestellt"
     },
@@ -60,6 +64,7 @@ const DEMO_NEUE_INSERATE = [
         preis: "965'000 CHF",
         zimmer: "5.0 Zimmer",
         flaeche: "155 m²",
+        personen: "5 Personen",
         image: Steinhaus,
         tag: "Neu eingestellt"
     },
@@ -69,10 +74,26 @@ const DEMO_NEUE_INSERATE = [
         preis: "680'000 CHF",
         zimmer: "3.5 Zimmer",
         flaeche: "96 m²",
+        personen: "2 Personen",
         image: Dachterasse,
         tag: "Neu eingestellt"
     }
 ];
+
+const formatFlaeche = (value) => {
+    const trimmed = (value || "").trim();
+    if (!trimmed) return "120 m²";
+    return /m²/i.test(trimmed) ? trimmed : `${trimmed} m²`;
+};
+
+const formatPersonen = (value) => {
+    const trimmed = (value || "").trim();
+    if (!trimmed) return "4 Personen";
+    if (/person/i.test(trimmed)) return trimmed;
+    const count = Number(trimmed);
+    if (!Number.isNaN(count) && count === 1) return "1 Person";
+    return `${trimmed} Personen`;
+};
 
 const buildMapEmbedUrls = (ort) => {
     const cleanOrt = (ort || "Locarno TI").trim();
@@ -134,6 +155,8 @@ export default function ImmobilienInseratePage({ lang }) {
     const [newOrt, setNewOrt] = useState("Locarno TI");
     const [newPreis, setNewPreis] = useState("850'000 CHF");
     const [newZimmer, setNewZimmer] = useState("4.5 Zimmer");
+    const [newFlaeche, setNewFlaeche] = useState("120");
+    const [newPersonen, setNewPersonen] = useState("4");
 
     useEffect(() => {
         try {
@@ -233,7 +256,8 @@ export default function ImmobilienInseratePage({ lang }) {
             ort: newOrt.trim() || "Tessin TI",
             preis: newPreis.trim() || "Auf Anfrage",
             zimmer: newZimmer.trim() || "4.5 Zimmer",
-            flaeche: "120 m²",
+            flaeche: formatFlaeche(newFlaeche),
+            personen: formatPersonen(newPersonen),
             image: Locarno,
             tag: "Neu"
         };
@@ -373,7 +397,7 @@ export default function ImmobilienInseratePage({ lang }) {
                         onSubmit={handleAddCustomInserat}
                         style={{
                             display: "grid",
-                            gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+                            gridTemplateColumns: "repeat(auto-fit, minmax(175px, 1fr))",
                             gap: "10px",
                             alignItems: "end"
                         }}
@@ -408,6 +432,7 @@ export default function ImmobilienInseratePage({ lang }) {
                                 type="text"
                                 value={newOrt}
                                 onChange={(e) => setNewOrt(e.target.value)}
+                                placeholder="z.B. Locarno TI"
                                 style={{
                                     width: "100%",
                                     padding: "9px 12px",
@@ -428,6 +453,51 @@ export default function ImmobilienInseratePage({ lang }) {
                                 type="text"
                                 value={newPreis}
                                 onChange={(e) => setNewPreis(e.target.value)}
+                                placeholder="z.B. 850'000 CHF"
+                                style={{
+                                    width: "100%",
+                                    padding: "9px 12px",
+                                    borderRadius: "6px",
+                                    border: "1px solid #383838",
+                                    backgroundColor: "#121212",
+                                    color: "#fff",
+                                    boxSizing: "border-box"
+                                }}
+                            />
+                        </div>
+
+                        <div>
+                            <label style={{ display: "block", fontSize: "12px", color: "#bbb", marginBottom: "4px" }}>
+                                Quadratmeter (m²)
+                            </label>
+                            <input
+                                type="text"
+                                value={newFlaeche}
+                                onChange={(e) => setNewFlaeche(e.target.value)}
+                                placeholder="z.B. 120"
+                                style={{
+                                    width: "100%",
+                                    padding: "9px 12px",
+                                    borderRadius: "6px",
+                                    border: "1px solid #383838",
+                                    backgroundColor: "#121212",
+                                    color: "#fff",
+                                    boxSizing: "border-box"
+                                }}
+                            />
+                        </div>
+
+                        <div>
+                            <label style={{ display: "block", fontSize: "12px", color: "#bbb", marginBottom: "4px" }}>
+                                Anzahl Personen im Haus
+                            </label>
+                            <input
+                                type="number"
+                                min="1"
+                                max="50"
+                                value={newPersonen}
+                                onChange={(e) => setNewPersonen(e.target.value)}
+                                placeholder="z.B. 4"
                                 style={{
                                     width: "100%",
                                     padding: "9px 12px",
@@ -448,6 +518,7 @@ export default function ImmobilienInseratePage({ lang }) {
                                 type="text"
                                 value={newZimmer}
                                 onChange={(e) => setNewZimmer(e.target.value)}
+                                placeholder="z.B. 4.5 Zimmer"
                                 style={{
                                     width: "100%",
                                     padding: "9px 12px",
@@ -579,7 +650,12 @@ export default function ImmobilienInseratePage({ lang }) {
 
                                         <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#bbb", fontSize: "13px" }}>
                                             <Building2 size={14} color="#ff6b6b" />
-                                            <span>{item.zimmer} • {item.flaeche}</span>
+                                            <span>{item.zimmer} • {item.flaeche || "120 m²"}</span>
+                                        </div>
+
+                                        <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#bbb", fontSize: "13px" }}>
+                                            <Users size={14} color="#ff6b6b" />
+                                            <span>{item.personen || "4 Personen"} im Haus</span>
                                         </div>
 
                                         <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", paddingTop: "4px" }}>
