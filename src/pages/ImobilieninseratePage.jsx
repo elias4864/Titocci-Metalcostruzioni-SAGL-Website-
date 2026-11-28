@@ -230,6 +230,7 @@ export default function ImmobilienInseratePage({ lang }) {
     const [newZimmer, setNewZimmer] = useState("4.5 Zimmer");
     const [newFlaeche, setNewFlaeche] = useState("120");
     const [newPersonen, setNewPersonen] = useState("4");
+    const[startDate,setStartDate] = useState("");
 
     useEffect(() => {
         try {
@@ -709,6 +710,27 @@ export default function ImmobilienInseratePage({ lang }) {
                                     color: "#fff",
                                     boxSizing: "border-box"
                                 }}
+                            />
+                        </div>
+
+
+                        <div>
+                            <label htmlFor="startDate">Startdatum</label>
+                            <input
+                              id="startDate"
+                              type="date"
+                              value={startDate}
+                              required
+                              onChange={(e) => {setStartDate(e.target.value)}}
+                              style={{
+                                  width: "100%",
+                                  padding: "9px 13px",
+                                  borderRadius: "14px",
+                                  border: "1px solid #383838",
+                                  color: "#ffffff", // ggf. an dein Theme anpassen
+                                  backgroundColor: "transparent", // optional: falls dunkler Hintergrund gewünscht
+                                  boxSizing: "border-box",
+                              }}
                             />
                         </div>
 
