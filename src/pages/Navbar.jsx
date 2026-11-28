@@ -159,6 +159,12 @@ function Navbar() {
                         <li><Link to="/calculator" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Online Calculator Operationen</Link></li>
                         <li><Link to="/imobiliaportale" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Imobillienportal</Link></li>
                         <li><Link to="/customers" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Kundenansicht</Link></li>
+                        <li><Link to="/imobilienfilter" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Imobilienfilter</Link></li>
+                        <li><Link to="/customerdashboard" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Kundenvergleich Dashboard</Link></li>
+                        <li><Link to="/maklerdashboard" onClick={closeMenu} style={{ color: 'black', textDecoration: 'none', fontWeight: 'bold' }}>Maklerdashboard</Link></li>
+
+
+
 
 
 

@@ -206,6 +206,9 @@ function Home({ lang }) {
                             <li><Link to="/calculatori" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px' }}>Imobillien Preisrechner</Link></li>
                             <li><Link to="/imobiliaportale" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px' }}>Imobillienportal </Link></li>
                             <li><Link to="/imobilieninserate" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px' }}>Imobilieninserate</Link></li>
+                            <li><Link to="/imobilienfilter" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px' }}>Imobilienfilter</Link></li>
+                            <li><Link to="/customerdashboard" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px' }}>Kundenvergleich Dashboard</Link></li>
+                            <li><Link to="/maklerdashboard" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', borderBottom: '3px solid #e62b2b', paddingBottom: '4px' }}>Maklerdashboard</Link></li>
 
 
                         </ul>

@@ -23,6 +23,9 @@ import Avegno from "./pages/Avegno.jsx";
 import Locarno from "./pages/Locarno.jsx";
 import SEO from './pages/SEO.jsx';
 import Customers from './pages/Kundenansicht.jsx';
+import ImobilienfilterBar from './components/ImmobilienFilterBar.jsx';
+import KundenVergleich from './components/KundenObjektVergleich.jsx';
+import MaklerDashboard from './components/MaklerDashboard.jsx';
 import ImobiliaPortale from "./pages/ImobiliaPortale.jsx";
 
 import Facebook from "./assets/Facebook.png";
@@ -220,6 +223,13 @@ function MainContent() {
                         <Route path="/imobilieninserate" element={<Imobilieninserate lang={language}/>}/>
                         <Route path="/imobiliaportale" element={<ImobiliaPortale lang={language} />}/>
                         <Route path="/customers" element={<Customers lang={language} />}/>
+                        <Route path="/imobilienfilter" element={<ImobilienfilterBar lang={language} />}/>
+                        <Route path="/customerdashboard" element={<KundenVergleich lang={language} />}/>
+                        <Route path="/maklerdashboard" element={<MaklerDashboard lang={language} />}/>
+
+
+
+
                         <Route path="*" element={<Navigate to="/" replace />} />
                     </Routes>
                 </div>
