@@ -22,11 +22,16 @@ import Steinhaus from "../assets/Steinhaus.jfif";
 import Dachterasse from "../assets/Dachterasse.jpg";
 import Innenhof from "../assets/Innenhof.jpg";
 
+import ImmobilienFilterBar from "../components/ImmobilienFilterBar.jsx";
+import KundenObjektVergleich from "../components/KundenObjektVergleich.jsx";
+import MaklerDashboard from "../components/MaklerDashboard.jsx";
+
 const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "";
 const STORAGE_KEY_INSERATE = "titocci_immobilien_inserate";
 const STORAGE_KEY_FAVORITES = "titocci_immobilien_favoriten";
 const STORAGE_KEY_REVIEWS = "titocci_immobilien_reviews";
 const STORAGE_KEY_NOTIFICATIONS = "titocci_immobilien_notifications";
+const STORAGE_KEY_LEADS = "titocci_immobilien_leads";
 
 const INITIAL_INSERATE = [
     {
@@ -224,6 +229,61 @@ export default function ImmobilienInseratePage({ lang }) {
     const [openStreetViewIds, setOpenStreetViewIds] = useState({});
     const [viewModeById, setViewModeById] = useState({});
 
+    // Neue States für Kunden- und Makleransicht & Filter
+    const [activeMainTab, setActiveMainTab] = useState("kunden"); // "kunden" | "makler"
+    const [comparedIds, setComparedIds] = useState([]);
+    const [showCompareView, setShowCompareView] = useState(false);
+    const [filters, setFilters] = useState({
+        ortQuery: "",
+        minZimmer: "",
+        minPreis: "",
+        maxPreis: "",
+        metallFeature: "alle",
+        sortierung: "neu"
+    });
+
+    const [leads, setLeads] = useState(() => {
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY_LEADS);
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+            }
+        } catch {
+            // Fallback auf Demo-Leads
+        }
+        return [
+            {
+                id: 1,
+                name: "Marco Rossi (Architekturbüro Lugano)",
+                email: "rossi@arch-lugano.ch",
+                phone: "+41 91 922 40 10",
+                objektTitle: "Attico con terrazza panoramica (Locarno TI)",
+                status: "Neu",
+                date: "28.11.2026",
+                note: "Interesse an Besichtigung und Geländer-Offerte"
+            },
+            {
+                id: 2,
+                name: "Elena Fontana",
+                email: "elena.fontana@bluewin.ch",
+                phone: "+41 79 334 12 88",
+                objektTitle: "Rustico ristrutturato con giardino (Avegno TI)",
+                status: "Besichtigung",
+                date: "27.11.2026",
+                note: "Besichtigungstermin vor Ort für Samstag vereinbart"
+            }
+        ];
+    });
+
+    useEffect(() => {
+        try {
+            localStorage.setItem(STORAGE_KEY_LEADS, JSON.stringify(leads));
+        } catch {
+            // Storage-Fehler ignorieren
+        }
+    }, [leads]);
+
     const [newTitle, setNewTitle] = useState("");
     const [newOrt, setNewOrt] = useState("Locarno TI");
     const [newPreis, setNewPreis] = useState("850'000 CHF");
@@ -231,6 +291,10 @@ export default function ImmobilienInseratePage({ lang }) {
     const [newFlaeche, setNewFlaeche] = useState("120");
     const [newPersonen, setNewPersonen] = useState("4");
     const[startDate,setStartDate] = useState("");
+
+
+
+
 
     useEffect(() => {
         try {
@@ -294,6 +358,8 @@ export default function ImmobilienInseratePage({ lang }) {
             setIsInfoPopupOpen(true);
         }
     };
+
+
 
     const openInfoPopup = () => {
         setIsInfoPopupOpen(true);
@@ -467,9 +533,145 @@ export default function ImmobilienInseratePage({ lang }) {
         triggerNotification(created, true);
     };
 
-    const visibleInserate = onlyFavorites
-        ? inserate.filter((item) => favoriteIds.includes(item.id))
-        : inserate;
+    // Helper für Kunden- und Makleransicht
+    const toggleCompare = (id) => {
+        setComparedIds((prev) => {
+            if (prev.includes(id)) {
+                return prev.filter((i) => i !== id);
+            }
+            if (prev.length >= 3) {
+                alert("Sie können maximal 3 Objekte gleichzeitig vergleichen.");
+                return prev;
+            }
+            return [...prev, id];
+        });
+        setShowCompareView(true);
+    };
+
+    const handleClearCompare = () => {
+        setComparedIds([]);
+        setShowCompareView(false);
+    };
+
+    const handleRemoveCompare = (id) => {
+        setComparedIds((prev) => prev.filter((i) => i !== id));
+    };
+
+    const handleUpdateStatus = (id, newStatus) => {
+        setInserate((prev) =>
+            prev.map((item) => (item.id === id ? { ...item, status: newStatus } : item))
+        );
+        pushNotification({
+            title: "Inserat-Status aktualisiert",
+            text: `Objekt #${id} steht nun auf "${newStatus}".`
+        });
+    };
+
+    const handleCreateInseratFromMakler = (newItem) => {
+        setInserate((prev) => [newItem, ...prev]);
+        triggerNotification(newItem, true);
+    };
+
+    const handleUpdateLeadStatus = (leadId, newStatus) => {
+        setLeads((prev) =>
+            prev.map((l) => (l.id === leadId ? { ...l, status: newStatus } : l))
+        );
+    };
+
+    const handleAddLead = (newLead) => {
+        setLeads((prev) => [newLead, ...prev]);
+        pushNotification({
+            title: "Neuer Interessent erfasst",
+            text: `${newLead.name} – ${newLead.objektTitle}`
+        });
+    };
+
+    const handleBookAppointment = (item) => {
+        const newLead = {
+            id: Date.now(),
+            name: "Online-Besichtigungsanfrage",
+            email: "anfrage@kunde.ch",
+            phone: "+41 91 000 00 00",
+            objektTitle: `${item.title} (${item.ort})`,
+            status: "Neu",
+            date: new Date().toLocaleDateString("de-CH"),
+            note: `Besichtigungs- & Beratungsanfrage für Objekt (${item.preis})`
+        };
+        setLeads((prev) => [newLead, ...prev]);
+        pushNotification({
+            title: "Terminanfrage übermittelt!",
+            text: `Ihre Anfrage für "${item.title}" wurde erfasst. Unser Maklerteam kontaktiert Sie umgehend.`
+        });
+    };
+
+    const handleResetFilters = () => {
+        setFilters({
+            ortQuery: "",
+            minZimmer: "",
+            minPreis: "",
+            maxPreis: "",
+            metallFeature: "alle",
+            sortierung: "neu"
+        });
+    };
+
+    const comparedItems = inserate.filter((item) => comparedIds.includes(item.id));
+
+    const visibleInserate = inserate.filter((item) => {
+        if (onlyFavorites && !favoriteIds.includes(item.id)) return false;
+
+        // Filter ortQuery (Ort oder Titel)
+        if (filters.ortQuery) {
+            const q = filters.ortQuery.toLowerCase().trim();
+            const matchOrt = (item.ort || "").toLowerCase().includes(q);
+            const matchTitle = (item.title || "").toLowerCase().includes(q);
+            if (!matchOrt && !matchTitle) return false;
+        }
+
+        // Filter minZimmer
+        if (filters.minZimmer) {
+            const reqZimmer = parseFloat(filters.minZimmer);
+            const itemZimmerNum = parseFloat(String(item.zimmer).replace(",", "."));
+            if (!isNaN(reqZimmer) && !isNaN(itemZimmerNum) && itemZimmerNum < reqZimmer) return false;
+        }
+
+        // Filter minPreis
+        if (filters.minPreis) {
+            const reqMin = parseInt(filters.minPreis, 10);
+            const itemPrice = parseInt(String(item.preis).replace(/[^0-9]/g, ""), 10);
+            if (!isNaN(reqMin) && !isNaN(itemPrice) && itemPrice < reqMin) return false;
+        }
+
+        // Filter maxPreis
+        if (filters.maxPreis) {
+            const reqMax = parseInt(filters.maxPreis, 10);
+            const itemPrice = parseInt(String(item.preis).replace(/[^0-9]/g, ""), 10);
+            if (!isNaN(reqMax) && !isNaN(itemPrice) && itemPrice > reqMax) return false;
+        }
+
+        // Filter metallFeature (USP)
+        if (filters.metallFeature && filters.metallFeature !== "alle") {
+            const textContent = `${item.title} ${item.metallbauNote || ""}`.toLowerCase();
+            if (filters.metallFeature === "balkon" && !textContent.includes("balkon") && !textContent.includes("terrazza")) return false;
+            if (filters.metallFeature === "gelaender" && !textContent.includes("geländer") && !textContent.includes("parapetti")) return false;
+            if (filters.metallFeature === "tor" && !textContent.includes("tor") && !textContent.includes("gitter") && !textContent.includes("cancello")) return false;
+        }
+
+        // In Kundenansicht keine Entwürfe anzeigen
+        if (activeMainTab === "kunden" && item.status === "Entwurf") return false;
+
+        return true;
+    }).sort((a, b) => {
+        const priceA = parseInt(String(a.preis).replace(/[^0-9]/g, ""), 10) || 0;
+        const priceB = parseInt(String(b.preis).replace(/[^0-9]/g, ""), 10) || 0;
+        const flaecheA = parseInt(String(a.flaeche).replace(/[^0-9]/g, ""), 10) || 0;
+        const flaecheB = parseInt(String(b.flaeche).replace(/[^0-9]/g, ""), 10) || 0;
+
+        if (filters.sortierung === "preis_asc") return priceA - priceB;
+        if (filters.sortierung === "preis_desc") return priceB - priceA;
+        if (filters.sortierung === "flaeche_desc") return flaecheB - flaecheA;
+        return b.id - a.id;
+    });
 
     const activeReviewInserat = inserate.find((item) => item.id === activeReviewInseratId) || null;
     const activeReviews = activeReviewInseratId
@@ -604,8 +806,141 @@ export default function ImmobilienInseratePage({ lang }) {
                     </div>
                 </header>
 
-                {/* Formular zum Hinzufügen eines neuen Inserats */}
-                <section
+                {/* Rollen-Umschaltung: Kundenansicht vs. Makler-Cockpit */}
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        flexWrap: "wrap",
+                        gap: "12px",
+                        margin: "24px 0 20px",
+                        backgroundColor: "#181818",
+                        border: "1px solid #2e2e2e",
+                        borderRadius: "10px",
+                        padding: "8px 12px"
+                    }}
+                >
+                    <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                        <button
+                            type="button"
+                            onClick={() => setActiveMainTab("kunden")}
+                            style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "8px",
+                                padding: "9px 16px",
+                                borderRadius: "7px",
+                                border: activeMainTab === "kunden" ? "1px solid #e62b2b" : "1px solid transparent",
+                                backgroundColor: activeMainTab === "kunden" ? "#381414" : "transparent",
+                                color: activeMainTab === "kunden" ? "#ff7b7b" : "#aaa",
+                                fontWeight: "bold",
+                                fontSize: "13px",
+                                cursor: "pointer",
+                                transition: "all 0.15s ease"
+                            }}
+                        >
+                            <Building2 size={16} />
+                            <span>Kundenansicht &amp; Suche</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => setActiveMainTab("makler")}
+                            style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "8px",
+                                padding: "9px 16px",
+                                borderRadius: "7px",
+                                border: activeMainTab === "makler" ? "1px solid #e62b2b" : "1px solid transparent",
+                                backgroundColor: activeMainTab === "makler" ? "#381414" : "transparent",
+                                color: activeMainTab === "makler" ? "#ff7b7b" : "#aaa",
+                                fontWeight: "bold",
+                                fontSize: "13px",
+                                cursor: "pointer",
+                                transition: "all 0.15s ease"
+                            }}
+                        >
+                            <Users size={16} />
+                            <span>Makler-Cockpit &amp; CRM</span>
+                            {leads.filter((l) => l.status === "Neu").length > 0 && (
+                                <span
+                                    style={{
+                                        backgroundColor: "#e62b2b",
+                                        color: "#fff",
+                                        borderRadius: "999px",
+                                        padding: "1px 7px",
+                                        fontSize: "11px"
+                                    }}
+                                >
+                                    {leads.filter((l) => l.status === "Neu").length}
+                                </span>
+                            )}
+                        </button>
+                    </div>
+
+                    {activeMainTab === "kunden" && (
+                        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                            <button
+                                type="button"
+                                onClick={() => setShowCompareView((prev) => !prev)}
+                                style={{
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    gap: "6px",
+                                    padding: "7px 12px",
+                                    borderRadius: "6px",
+                                    border: comparedIds.length > 0 ? "1px solid #e62b2b" : "1px solid #383838",
+                                    backgroundColor: comparedIds.length > 0 ? "#2d1616" : "#222",
+                                    color: comparedIds.length > 0 ? "#ff8b8b" : "#bbb",
+                                    fontSize: "12px",
+                                    fontWeight: "bold",
+                                    cursor: "pointer"
+                                }}
+                            >
+                                <CheckCircle2 size={14} color={comparedIds.length > 0 ? "#e62b2b" : "#888"} />
+                                <span>Objekt-Vergleich ({comparedIds.length}/3)</span>
+                            </button>
+                        </div>
+                    )}
+                </div>
+
+                {activeMainTab === "makler" ? (
+                    <MaklerDashboard
+                        inserate={inserate}
+                        onUpdateStatus={handleUpdateStatus}
+                        onCreateInserat={handleCreateInseratFromMakler}
+                        onDeleteInserat={handleDeleteInserat}
+                        leads={leads}
+                        onUpdateLeadStatus={handleUpdateLeadStatus}
+                        onAddLead={handleAddLead}
+                        lang={lang}
+                    />
+                ) : (
+                    <>
+                        {/* Intelligente FilterBar mit Autocomplete */}
+                        <ImmobilienFilterBar
+                            filters={filters}
+                            onChangeFilters={setFilters}
+                            onReset={handleResetFilters}
+                            totalCount={visibleInserate.length}
+                            lang={lang}
+                        />
+
+                        {/* Objekt-Vergleich (wenn aktiv und Elemente ausgewählt) */}
+                        {showCompareView && comparedItems.length > 0 && (
+                            <KundenObjektVergleich
+                                comparedItems={comparedItems}
+                                onRemove={handleRemoveCompare}
+                                onClear={handleClearCompare}
+                                onBookAppointment={handleBookAppointment}
+                                lang={lang}
+                            />
+                        )}
+
+                        {/* Formular zum Hinzufügen eines neuen Inserats */}
+                        <section
                     style={{
                         marginTop: "24px",
                         padding: "18px",
@@ -691,6 +1026,7 @@ export default function ImmobilienInseratePage({ lang }) {
                                 }}
                             />
                         </div>
+
 
                         <div>
                             <label style={{ display: "block", fontSize: "12px", color: "#bbb", marginBottom: "4px" }}>
@@ -840,104 +1176,105 @@ export default function ImmobilienInseratePage({ lang }) {
                                         flexDirection: "column"
                                     }}
                                 >
-                                    <div style={{ position: "relative", height: "190px" }}>
+                                    <div style={{ position: "relative", height: "190px", backgroundColor: "#121212" }}>
                                         <img
                                             src={item.image}
                                             alt={item.title}
                                             style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                                         />
-                                        <span
-                                            style={{
-                                                position: "absolute",
-                                                top: "10px",
-                                                left: "10px",
-                                                backgroundColor: "#e62b2b",
-                                                color: "#fff",
-                                                fontSize: "11px",
-                                                fontWeight: "bold",
-                                                padding: "4px 8px",
-                                                borderRadius: "4px"
-                                            }}
-                                        >
-                                            {item.tag || "Inserat"}
-                                        </span>
-
+                                        {item.tag && (
+                                            <span
+                                                style={{
+                                                    position: "absolute",
+                                                    top: "10px",
+                                                    left: "10px",
+                                                    backgroundColor: "rgba(17, 17, 17, 0.85)",
+                                                    color: "#fff",
+                                                    padding: "4px 10px",
+                                                    borderRadius: "999px",
+                                                    fontSize: "11px",
+                                                    fontWeight: "bold"
+                                                }}
+                                            >
+                                                {item.tag}
+                                            </span>
+                                        )}
                                         <button
                                             type="button"
-                                            onClick={() => handleDeleteInserat(item.id)}
-                                            aria-label={`Inserat ${item.title} entfernen`}
+                                            onClick={() => toggleFavorite(item)}
+                                            aria-label={isFavorite ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen"}
                                             style={{
                                                 position: "absolute",
                                                 top: "10px",
                                                 right: "10px",
-                                                display: "inline-flex",
-                                                alignItems: "center",
-                                                gap: "5px",
-                                                padding: "5px 9px",
-                                                borderRadius: "5px",
-                                                border: "1px solid rgba(255,255,255,0.18)",
-                                                backgroundColor: "rgba(17,17,17,0.82)",
-                                                color: "#ff8577",
-                                                fontSize: "12px",
-                                                fontWeight: "bold",
+                                                width: "36px",
+                                                height: "36px",
+                                                borderRadius: "50%",
+                                                border: "1px solid #3a3a3a",
+                                                backgroundColor: "rgba(17, 17, 17, 0.85)",
+                                                display: "grid",
+                                                placeItems: "center",
                                                 cursor: "pointer"
                                             }}
                                         >
-                                            <Trash2 size={12} />
-                                            <span>Entfernen</span>
+                                            <Heart
+                                                size={17}
+                                                fill={isFavorite ? "#f43f5e" : "none"}
+                                                color="#f43f5e"
+                                            />
                                         </button>
                                     </div>
 
-                                    <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "8px", flexGrow: 1 }}>
-                                        <h3 style={{ margin: 0, fontSize: "1.1rem" }}>{item.title}</h3>
+                                    <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "10px", flex: 1 }}>
+                                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", gap: "8px" }}>
+                                            <h3 style={{ margin: 0, fontSize: "1.1rem" }}>{item.title}</h3>
+                                            <strong style={{ color: "#ff6b6b", whiteSpace: "nowrap" }}>{item.preis}</strong>
+                                        </div>
 
                                         <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#bbb", fontSize: "13px" }}>
                                             <MapPin size={14} color="#ff6b6b" />
                                             <span>{item.ort}</span>
                                         </div>
 
-                                        <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#bbb", fontSize: "13px" }}>
-                                            <Building2 size={14} color="#ff6b6b" />
-                                            <span>{item.zimmer} • {item.flaeche || "120 m²"}</span>
-                                        </div>
-
-                                        <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#bbb", fontSize: "13px" }}>
-                                            <Users size={14} color="#ff6b6b" />
-                                            <span>{item.personen || "4 Personen"} im Haus</span>
-                                        </div>
-
-                                        <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#fbbf24", fontSize: "13px" }}>
-                                            <Star size={14} fill="#fbbf24" color="#fbbf24" />
-                                            <span>
-                                                {ratingInfo.avg
-                                                    ? `${ratingInfo.avg} / 5 (${ratingInfo.count} ${ratingInfo.count === 1 ? "Review" : "Reviews"})`
-                                                    : "Noch keine Reviews"}
+                                        <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", fontSize: "12px", color: "#d4d4d4" }}>
+                                            <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                                                <Building2 size={13} /> {item.zimmer}
                                             </span>
+                                            <span>{item.flaeche}</span>
+                                            <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                                                <Users size={13} /> {item.personen}
+                                            </span>
+                                            {item.startDate && <span>Ab {item.startDate}</span>}
                                         </div>
 
-                                        <div style={{ fontSize: "1.1rem", fontWeight: "bold", color: "#ff7b7b", marginTop: "4px" }}>
-                                            {item.preis}
+                                        <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "#facc15" }}>
+                                            <Star size={14} fill="#facc15" color="#facc15" />
+                                            <span>
+                                                {ratingInfo.count > 0
+                                                    ? `${ratingInfo.avg} / 5 (${ratingInfo.count} Bewertung${ratingInfo.count === 1 ? "" : "en"})`
+                                                    : "Noch keine Bewertungen"}
+                                            </span>
                                         </div>
 
                                         <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "auto", paddingTop: "8px" }}>
                                             <button
                                                 type="button"
-                                                onClick={() => toggleFavorite(item)}
+                                                onClick={() => toggleStreetView(item.id)}
                                                 style={{
                                                     display: "inline-flex",
                                                     alignItems: "center",
-                                                    gap: "5px",
-                                                    padding: "7px 10px",
+                                                    gap: "6px",
+                                                    padding: "8px 10px",
                                                     borderRadius: "6px",
-                                                    border: isFavorite ? "1px solid #f43f5e" : "1px solid #3a3a3a",
-                                                    backgroundColor: isFavorite ? "#4c0519" : "#222",
-                                                    color: isFavorite ? "#fda4af" : "#eee",
+                                                    border: "1px solid #383838",
+                                                    backgroundColor: isStreetViewOpen ? "#262626" : "#141414",
+                                                    color: "#fff",
                                                     fontSize: "12px",
                                                     cursor: "pointer"
                                                 }}
                                             >
-                                                <Heart size={13} fill={isFavorite ? "#f43f5e" : "none"} color="#f43f5e" />
-                                                <span>{isFavorite ? "Favorit" : "Merken"}</span>
+                                                <Compass size={14} />
+                                                <span>{isStreetViewOpen ? "Karte schließen" : "Karte / Ansicht"}</span>
                                             </button>
 
                                             <button
@@ -946,97 +1283,138 @@ export default function ImmobilienInseratePage({ lang }) {
                                                 style={{
                                                     display: "inline-flex",
                                                     alignItems: "center",
-                                                    gap: "5px",
-                                                    padding: "7px 10px",
+                                                    gap: "6px",
+                                                    padding: "8px 10px",
                                                     borderRadius: "6px",
-                                                    border: "1px solid #3a3a3a",
-                                                    backgroundColor: "#222",
-                                                    color: "#eee",
+                                                    border: "1px solid #383838",
+                                                    backgroundColor: "#141414",
+                                                    color: "#fff",
                                                     fontSize: "12px",
                                                     cursor: "pointer"
                                                 }}
                                             >
-                                                <MessageSquarePlus size={13} color="#fbbf24" />
+                                                <MessageSquarePlus size={14} />
                                                 <span>Bewerten</span>
                                             </button>
 
                                             <button
                                                 type="button"
-                                                onClick={() => toggleStreetView(item.id)}
+                                                onClick={() => toggleCompare(item.id)}
                                                 style={{
                                                     display: "inline-flex",
                                                     alignItems: "center",
-                                                    gap: "5px",
-                                                    padding: "7px 10px",
+                                                    gap: "6px",
+                                                    padding: "8px 10px",
                                                     borderRadius: "6px",
-                                                    border: "1px solid #3a3a3a",
-                                                    backgroundColor: isStreetViewOpen ? "#2a2222" : "#222",
-                                                    color: "#eee",
+                                                    border: comparedIds.includes(item.id) ? "1px solid #e62b2b" : "1px solid #383838",
+                                                    backgroundColor: comparedIds.includes(item.id) ? "#3a1414" : "#141414",
+                                                    color: comparedIds.includes(item.id) ? "#ff7b7b" : "#ccc",
                                                     fontSize: "12px",
                                                     cursor: "pointer"
                                                 }}
                                             >
-                                                <Compass size={13} color="#ff6b6b" />
-                                                <span>{isStreetViewOpen ? "Karte schliessen" : "Ansicht"}</span>
+                                                <CheckCircle2 size={13} color={comparedIds.includes(item.id) ? "#e62b2b" : "#888"} />
+                                                <span>{comparedIds.includes(item.id) ? "Im Vergleich" : "+ Vergleichen"}</span>
                                             </button>
 
                                             <button
                                                 type="button"
-                                                onClick={() => openInGoogleMaps(item.ort)}
+                                                onClick={() => handleBookAppointment(item)}
                                                 style={{
-                                                    padding: "7px 10px",
+                                                    display: "inline-flex",
+                                                    alignItems: "center",
+                                                    gap: "6px",
+                                                    padding: "8px 10px",
                                                     borderRadius: "6px",
-                                                    border: "1px solid #3a3a3a",
-                                                    backgroundColor: "transparent",
-                                                    color: "#ccc",
+                                                    border: "1px solid #e62b2b",
+                                                    backgroundColor: "#2a1212",
+                                                    color: "#ff8b8b",
                                                     fontSize: "12px",
                                                     cursor: "pointer"
                                                 }}
                                             >
-                                                Maps
+                                                <span>Besichtigung</span>
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                onClick={() => handleDeleteInserat(item.id)}
+                                                aria-label="Inserat löschen"
+                                                style={{
+                                                    marginLeft: "auto",
+                                                    display: "inline-flex",
+                                                    alignItems: "center",
+                                                    gap: "4px",
+                                                    padding: "8px 10px",
+                                                    borderRadius: "6px",
+                                                    border: "1px solid #451a1a",
+                                                    backgroundColor: "#241111",
+                                                    color: "#fca5a5",
+                                                    fontSize: "12px",
+                                                    cursor: "pointer"
+                                                }}
+                                            >
+                                                <Trash2 size={14} />
                                             </button>
                                         </div>
 
                                         {isStreetViewOpen && (
-                                            <div style={{ marginTop: "10px", borderRadius: "8px", overflow: "hidden", border: "1px solid #333" }}>
-                                                <div style={{ display: "flex", gap: "6px", padding: "6px", backgroundColor: "#141414" }}>
+                                            <div style={{ marginTop: "10px", borderTop: "1px solid #2a2a2a", paddingTop: "10px" }}>
+                                                <div style={{ display: "flex", gap: "8px", marginBottom: "8px", flexWrap: "wrap" }}>
                                                     <button
                                                         type="button"
                                                         onClick={() => setMapMode(item.id, "streetview")}
                                                         style={{
-                                                            padding: "4px 8px",
-                                                            borderRadius: "4px",
-                                                            border: "none",
-                                                            backgroundColor: activeMode === "streetview" ? "#e62b2b" : "#262626",
+                                                            padding: "5px 9px",
+                                                            borderRadius: "5px",
+                                                            border: "1px solid #383838",
+                                                            backgroundColor: activeMode === "streetview" ? "#e62b2b" : "#141414",
                                                             color: "#fff",
                                                             fontSize: "11px",
                                                             cursor: "pointer"
                                                         }}
                                                     >
-                                                        Luftbild / Street
+                                                        {mapUrls.hasApiKey ? "Street View" : "Satellit"}
                                                     </button>
                                                     <button
                                                         type="button"
                                                         onClick={() => setMapMode(item.id, "place")}
                                                         style={{
-                                                            padding: "4px 8px",
-                                                            borderRadius: "4px",
-                                                            border: "none",
-                                                            backgroundColor: activeMode === "place" ? "#e62b2b" : "#262626",
+                                                            padding: "5px 9px",
+                                                            borderRadius: "5px",
+                                                            border: "1px solid #383838",
+                                                            backgroundColor: activeMode === "place" ? "#e62b2b" : "#141414",
                                                             color: "#fff",
                                                             fontSize: "11px",
                                                             cursor: "pointer"
                                                         }}
                                                     >
-                                                        Ort
+                                                        Ort / Karte
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => openInGoogleMaps(item.ort)}
+                                                        style={{
+                                                            marginLeft: "auto",
+                                                            padding: "5px 9px",
+                                                            borderRadius: "5px",
+                                                            border: "1px solid #383838",
+                                                            backgroundColor: "#141414",
+                                                            color: "#93c5fd",
+                                                            fontSize: "11px",
+                                                            cursor: "pointer"
+                                                        }}
+                                                    >
+                                                        Google Maps ↗
                                                     </button>
                                                 </div>
+
                                                 <iframe
-                                                    title={`Karte für ${item.ort}`}
+                                                    title={`${item.title} – ${item.ort}`}
                                                     src={activeIframeSrc}
                                                     width="100%"
-                                                    height="180"
-                                                    style={{ border: 0, display: "block" }}
+                                                    height="190"
+                                                    style={{ border: 0, borderRadius: "6px" }}
                                                     loading="lazy"
                                                     referrerPolicy="no-referrer-when-downgrade"
                                                 />
@@ -1048,78 +1426,85 @@ export default function ImmobilienInseratePage({ lang }) {
                         })
                     )}
                 </section>
-            </div>
+            </>
+        )}
+    </div>
 
-            {/* Popup für neue Informationen & Benachrichtigungen */}
+            {/* Live-Toast unten rechts */}
+            {notification && (
+                <div
+                    style={{
+                        position: "fixed",
+                        bottom: "20px",
+                        right: "20px",
+                        maxWidth: "360px",
+                        backgroundColor: "#1e1e1e",
+                        border: "1px solid #e62b2b",
+                        borderRadius: "10px",
+                        padding: "14px 16px",
+                        boxShadow: "0 10px 30px rgba(0,0,0,0.6)",
+                        zIndex: 40
+                    }}
+                >
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", gap: "10px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "6px", fontWeight: "bold", fontSize: "14px" }}>
+                            <CheckCircle2 size={16} color="#4ade80" />
+                            <span>{notification.title}</span>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => setNotification(null)}
+                            aria-label="Benachrichtigung schließen"
+                            style={{ background: "none", border: "none", color: "#aaa", cursor: "pointer", padding: 0 }}
+                        >
+                            <X size={16} />
+                        </button>
+                    </div>
+                    <p style={{ margin: "6px 0 4px", fontSize: "13px", color: "#e5e5e5" }}>{notification.text}</p>
+                    {notification.meta && (
+                        <div style={{ fontSize: "11px", color: "#a3a3a3" }}>{notification.meta}</div>
+                    )}
+                </div>
+            )}
+
+            {/* Modal: Neuigkeiten / Benachrichtigungen */}
             {isInfoPopupOpen && (
                 <div
-                    role="dialog"
-                    aria-modal="true"
-                    aria-label="Neue Informationen und Benachrichtigungen"
                     style={{
                         position: "fixed",
                         inset: 0,
-                        backgroundColor: "rgba(0, 0, 0, 0.72)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
+                        backgroundColor: "rgba(0,0,0,0.75)",
+                        display: "grid",
+                        placeItems: "center",
                         padding: "16px",
-                        zIndex: 1100
+                        zIndex: 50
                     }}
                 >
                     <div
                         style={{
                             width: "100%",
-                            maxWidth: "540px",
-                            maxHeight: "82vh",
-                            display: "flex",
-                            flexDirection: "column",
+                            maxWidth: "520px",
+                            maxHeight: "80vh",
+                            overflowY: "auto",
                             backgroundColor: "#1a1a1a",
-                            border: "1px solid #363636",
+                            border: "1px solid #333",
                             borderRadius: "12px",
-                            overflow: "hidden"
+                            padding: "20px"
                         }}
                     >
-                        <div
-                            style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                                padding: "16px 18px",
-                                borderBottom: "1px solid #2b2b2b"
-                            }}
-                        >
-                            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                <Bell size={18} color="#ff6b6b" />
-                                <h2 style={{ margin: 0, fontSize: "1.15rem" }}>
-                                    Neue Informationen &amp; Notifications
-                                </h2>
-                            </div>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
+                            <h2 style={{ margin: 0, fontSize: "1.2rem" }}>Neuigkeiten &amp; Aktivitäten</h2>
                             <button
                                 type="button"
                                 onClick={closeInfoPopup}
-                                aria-label="Neuigkeiten-Popup schliessen"
-                                style={{
-                                    background: "transparent",
-                                    border: "none",
-                                    color: "#bbb",
-                                    cursor: "pointer"
-                                }}
+                                aria-label="Schließen"
+                                style={{ background: "none", border: "none", color: "#ccc", cursor: "pointer" }}
                             >
                                 <X size={20} />
                             </button>
                         </div>
 
-                        <div
-                            style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                gap: "8px",
-                                padding: "10px 18px",
-                                backgroundColor: "#151515",
-                                borderBottom: "1px solid #262626"
-                            }}
-                        >
+                        <div style={{ display: "flex", gap: "8px", marginBottom: "14px" }}>
                             <button
                                 type="button"
                                 onClick={markAllNotificationsRead}
@@ -1129,26 +1514,24 @@ export default function ImmobilienInseratePage({ lang }) {
                                     gap: "6px",
                                     padding: "6px 10px",
                                     borderRadius: "6px",
-                                    border: "1px solid #333",
-                                    backgroundColor: "#202020",
-                                    color: "#ddd",
+                                    border: "1px solid #383838",
+                                    backgroundColor: "#141414",
+                                    color: "#fff",
                                     fontSize: "12px",
                                     cursor: "pointer"
                                 }}
                             >
-                                <CheckCheck size={14} color="#4ade80" />
-                                <span>Alle als gelesen markieren</span>
+                                <CheckCheck size={14} /> Alle als gelesen markieren
                             </button>
-
                             <button
                                 type="button"
                                 onClick={clearNotifications}
                                 style={{
                                     padding: "6px 10px",
                                     borderRadius: "6px",
-                                    border: "1px solid #333",
-                                    backgroundColor: "transparent",
-                                    color: "#ff8577",
+                                    border: "1px solid #451a1a",
+                                    backgroundColor: "#241111",
+                                    color: "#fca5a5",
                                     fontSize: "12px",
                                     cursor: "pointer"
                                 }}
@@ -1157,92 +1540,81 @@ export default function ImmobilienInseratePage({ lang }) {
                             </button>
                         </div>
 
-                        <div style={{ padding: "16px 18px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "10px" }}>
-                            {notifications.length === 0 ? (
-                                <p style={{ margin: 0, color: "#aaa", textAlign: "center", padding: "20px 0" }}>
-                                    Keine aktuellen Benachrichtigungen vorhanden.
-                                </p>
-                            ) : (
-                                notifications.map((entry) => (
+                        {notifications.length === 0 ? (
+                            <p style={{ color: "#aaa", fontSize: "13px" }}>Keine Benachrichtigungen vorhanden.</p>
+                        ) : (
+                            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                                {notifications.map((n) => (
                                     <div
-                                        key={entry.id}
+                                        key={n.id}
                                         style={{
-                                            padding: "12px 14px",
+                                            padding: "12px",
                                             borderRadius: "8px",
-                                            backgroundColor: entry.unread ? "#231717" : "#151515",
-                                            border: entry.unread ? "1px solid #e62b2b" : "1px solid #2a2a2a"
+                                            backgroundColor: n.unread ? "#241717" : "#141414",
+                                            border: n.unread ? "1px solid #7f1d1d" : "1px solid #282828"
                                         }}
                                     >
-                                        <div style={{ display: "flex", justifyContent: "space-between", gap: "8px" }}>
-                                            <strong style={{ fontSize: "14px", color: "#fff" }}>
-                                                {entry.unread ? "● " : ""}
-                                                {entry.title}
-                                            </strong>
-                                            <span style={{ fontSize: "11px", color: "#999" }}>{entry.createdAt}</span>
+                                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", fontWeight: "bold" }}>
+                                            <span>{n.title}</span>
+                                            <span style={{ color: "#999", fontSize: "11px" }}>{n.createdAt}</span>
                                         </div>
-                                        <p style={{ margin: "6px 0 0", fontSize: "13px", color: "#ddd" }}>{entry.text}</p>
-                                        {entry.meta && (
-                                            <div style={{ marginTop: "6px", fontSize: "12px", color: "#ff8577" }}>
-                                                {entry.meta}
-                                            </div>
-                                        )}
+                                        <p style={{ margin: "4px 0", fontSize: "12px", color: "#ddd" }}>{n.text}</p>
+                                        {n.meta && <div style={{ fontSize: "11px", color: "#999" }}>{n.meta}</div>}
                                     </div>
-                                ))
-                            )}
-                        </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
 
-            {/* Popup für Bewertungen */}
+            {/* Modal: Bewertungen */}
             {activeReviewInserat && (
                 <div
-                    role="dialog"
-                    aria-modal="true"
-                    aria-label={`Bewertungen für ${activeReviewInserat.title}`}
                     style={{
                         position: "fixed",
                         inset: 0,
-                        backgroundColor: "rgba(0, 0, 0, 0.72)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
+                        backgroundColor: "rgba(0,0,0,0.75)",
+                        display: "grid",
+                        placeItems: "center",
                         padding: "16px",
-                        zIndex: 1100
+                        zIndex: 50
                     }}
                 >
                     <div
                         style={{
                             width: "100%",
-                            maxWidth: "480px",
+                            maxWidth: "500px",
+                            maxHeight: "82vh",
+                            overflowY: "auto",
                             backgroundColor: "#1a1a1a",
-                            border: "1px solid #363636",
+                            border: "1px solid #333",
                             borderRadius: "12px",
                             padding: "20px"
                         }}
                     >
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-                            <h2 style={{ margin: 0, fontSize: "1.1rem" }}>
-                                Bewertung – {activeReviewInserat.title}
+                            <h2 style={{ margin: 0, fontSize: "1.15rem" }}>
+                                Bewertungen – {activeReviewInserat.title}
                             </h2>
                             <button
                                 type="button"
                                 onClick={closeReviewPopup}
-                                aria-label="Bewertungs-Popup schliessen"
-                                style={{ background: "transparent", border: "none", color: "#bbb", cursor: "pointer" }}
+                                aria-label="Bewertungsfenster schließen"
+                                style={{ background: "none", border: "none", color: "#ccc", cursor: "pointer" }}
                             >
                                 <X size={20} />
                             </button>
                         </div>
 
-                        <form onSubmit={handleAddReview} style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                        <form onSubmit={handleAddReview} style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "16px" }}>
                             <input
                                 type="text"
                                 value={reviewAuthor}
                                 onChange={(e) => setReviewAuthor(e.target.value)}
                                 placeholder="Dein Name (optional)"
                                 style={{
-                                    padding: "9px 12px",
+                                    padding: "8px 10px",
                                     borderRadius: "6px",
                                     border: "1px solid #383838",
                                     backgroundColor: "#121212",
@@ -1253,18 +1625,18 @@ export default function ImmobilienInseratePage({ lang }) {
                                 value={reviewRating}
                                 onChange={(e) => setReviewRating(Number(e.target.value))}
                                 style={{
-                                    padding: "9px 12px",
+                                    padding: "8px 10px",
                                     borderRadius: "6px",
                                     border: "1px solid #383838",
                                     backgroundColor: "#121212",
                                     color: "#fff"
                                 }}
                             >
-                                <option value={5}>5 Sterne</option>
-                                <option value={4}>4 Sterne</option>
-                                <option value={3}>3 Sterne</option>
-                                <option value={2}>2 Sterne</option>
-                                <option value={1}>1 Stern</option>
+                                <option value={5}>5 Sterne – Ausgezeichnet</option>
+                                <option value={4}>4 Sterne – Sehr gut</option>
+                                <option value={3}>3 Sterne – In Ordnung</option>
+                                <option value={2}>2 Sterne – Weniger gut</option>
+                                <option value={1}>1 Stern – Nicht empfehlenswert</option>
                             </select>
                             <textarea
                                 rows={3}
@@ -1273,7 +1645,7 @@ export default function ImmobilienInseratePage({ lang }) {
                                 onChange={(e) => setReviewComment(e.target.value)}
                                 placeholder="Deine Bewertung zum Objekt..."
                                 style={{
-                                    padding: "9px 12px",
+                                    padding: "8px 10px",
                                     borderRadius: "6px",
                                     border: "1px solid #383838",
                                     backgroundColor: "#121212",
@@ -1284,7 +1656,7 @@ export default function ImmobilienInseratePage({ lang }) {
                             <button
                                 type="submit"
                                 style={{
-                                    padding: "10px 14px",
+                                    padding: "9px 12px",
                                     borderRadius: "6px",
                                     border: "none",
                                     backgroundColor: "#e62b2b",
@@ -1297,85 +1669,31 @@ export default function ImmobilienInseratePage({ lang }) {
                             </button>
                         </form>
 
-                        <div style={{ marginTop: "16px", maxHeight: "180px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "8px" }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                             {activeReviews.length === 0 ? (
-                                <p style={{ margin: 0, fontSize: "13px", color: "#999" }}>Noch keine Bewertungen vorhanden.</p>
+                                <p style={{ color: "#aaa", fontSize: "13px", margin: 0 }}>Noch keine Bewertungen vorhanden.</p>
                             ) : (
                                 activeReviews.map((rev) => (
                                     <div
                                         key={rev.id}
                                         style={{
-                                            padding: "10px",
+                                            padding: "10px 12px",
                                             borderRadius: "8px",
-                                            backgroundColor: "#131313",
-                                            border: "1px solid #292929",
-                                            fontSize: "13px"
+                                            backgroundColor: "#141414",
+                                            border: "1px solid #282828"
                                         }}
                                     >
-                                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", marginBottom: "4px" }}>
                                             <strong>{rev.author}</strong>
-                                            <span style={{ color: "#fbbf24" }}>{rev.rating}/5 ★</span>
+                                            <span style={{ color: "#facc15" }}>{"★".repeat(rev.rating)} ({rev.rating}/5)</span>
                                         </div>
-                                        <p style={{ margin: "4px 0 0", color: "#ccc" }}>{rev.comment}</p>
+                                        <p style={{ margin: "0 0 4px", fontSize: "13px", color: "#e5e5e5" }}>{rev.comment}</p>
+                                        <div style={{ fontSize: "11px", color: "#888" }}>{rev.createdAt}</div>
                                     </div>
                                 ))
                             )}
                         </div>
                     </div>
-                </div>
-            )}
-
-            {/* Kurzer Live-Toast unten rechts */}
-            {notification && (
-                <div
-                    role="status"
-                    style={{
-                        position: "fixed",
-                        bottom: "20px",
-                        right: "20px",
-                        maxWidth: "360px",
-                        backgroundColor: "#1f1f1f",
-                        border: "1px solid #e62b2b",
-                        borderRadius: "10px",
-                        padding: "14px 16px",
-                        boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
-                        zIndex: 1050
-                    }}
-                >
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", gap: "10px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px", fontWeight: "bold", fontSize: "14px" }}>
-                            <CheckCircle2 size={16} color="#4ade80" />
-                            <span>{notification.title}</span>
-                        </div>
-                        <button
-                            type="button"
-                            onClick={() => setNotification(null)}
-                            aria-label="Hinweis schliessen"
-                            style={{ background: "transparent", border: "none", color: "#aaa", cursor: "pointer" }}
-                        >
-                            <X size={15} />
-                        </button>
-                    </div>
-                    <p style={{ margin: "6px 0 8px", fontSize: "13px", color: "#ddd" }}>{notification.text}</p>
-                    <button
-                        type="button"
-                        onClick={() => {
-                            setNotification(null);
-                            openInfoPopup();
-                        }}
-                        style={{
-                            padding: "4px 8px",
-                            borderRadius: "5px",
-                            border: "1px solid #3a3a3a",
-                            backgroundColor: "#262626",
-                            color: "#ff8577",
-                            fontSize: "11px",
-                            fontWeight: "bold",
-                            cursor: "pointer"
-                        }}
-                    >
-                        Alle Neuigkeiten im Popup öffnen
-                    </button>
                 </div>
             )}
         </div>
